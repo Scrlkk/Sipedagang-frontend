@@ -1,0 +1,339 @@
+<script setup>
+import AdminLayout from '@/layouts/AdminLayout.vue'
+import { ref } from 'vue'
+import Swal from 'sweetalert2'
+
+// Data Pemohon
+const namaSupplier = ref('')
+const namaPerusahaan = ref('')
+const jenisBank = ref('Mandiri')
+const nomerRekening = ref('')
+
+// Detail Purchasing Order
+const nomerPO = ref('')
+const tanggalPengadaan = ref('2025-01-12')
+const jenisPengadaan = ref('Beras')
+const kuantum = ref('')
+
+// Data IN
+const dataIN = ref([
+  { tanggal: '', kuantum: '' },
+])
+
+// Informasi Pembayaran
+const jumlahPembayaran = ref('')
+const jumlahSPP = ref('')
+
+// Form actions
+const clearForm = () => {
+  namaSupplier.value = ''
+  namaPerusahaan.value = ''
+  jenisBank.value = 'Mandiri'
+  nomerRekening.value = ''
+  nomerPO.value = ''
+  tanggalPengadaan.value = '2025-01-12'
+  jenisPengadaan.value = 'Beras'
+  kuantum.value = ''
+  
+  // Keep just one empty row when clearing
+  dataIN.value = [{ tanggal: '', kuantum: '' }]
+  
+  jumlahPembayaran.value = ''
+  jumlahSPP.value = ''
+}
+
+const saveForm = () => {
+  console.log('Form data saved')
+}
+// Function to add a new row to dataIN
+const addDataInRow = () => {
+  if (dataIN.value.length >= 10) {
+    // Show SweetAlert notification
+    Swal.fire({
+      title: 'Batas Maksimum',
+      text: 'Maksimum Untuk Data IN hanya 10 baris',
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Oke'
+    });
+    return; // Exit the function without adding a row
+  }
+  
+  // If under the limit, add a new row as before
+  dataIN.value.push({ tanggal: '', kuantum: '' });
+}
+
+</script>
+
+<template>
+  <AdminLayout class="h-screen overflow-hidden">
+    <div class="flex items-center justify-center min-h-[calc(80vh-120px)] py-6">
+      <!-- Side Navigation (unchanged) -->
+       <div class="fixed left-8 lg:left-1/6 top-1/3 flex flex-col space-y-4 z-20">
+        <router-link 
+          to="/dashboard" 
+          class="bg-blue-500 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </router-link>
+        <router-link 
+          to="/lihat-data" 
+          class="bg-blue-500 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </router-link>
+      </div>
+
+      <!-- Form Card Container -->
+      <div class="w-full max-w-5xl mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-auto max-h-[80vh]">
+          <!-- Form Header -->
+          <div class="text-center pb-2 bg-white z-10">
+            <h2 class="text-xl font-medium mt-10 mb-1" style="color: #0099FF;">Form Input Data</h2>
+            <div class="mx-auto" style="height: 3px; background-color: #0099FF; width: 100%; max-width: 160px; margin-bottom: 20px;"></div>
+          </div>
+
+          <!-- Scrollable Form Content -->
+          <div class="overflow-y-auto flex-grow">
+            <div class="p-6">
+              <!-- Data Pemohon Section -->
+              <div class="mb-8">
+                <h3 class="font-medium text-lg mb-4">Data Pemohon</h3>
+
+                <!-- Horizontal layout for form fields -->
+                <div class="space-y-3">
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Nama Supplier</label>
+                    <input
+                      type="text"
+                      v-model="namaSupplier"
+                      class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="Nama Supplier"
+                    />
+                  </div>
+
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Nama Perusahaan</label>
+                    <input
+                      type="text"
+                      v-model="namaPerusahaan"
+                      class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="UD. Ali Baba"
+                    />
+                  </div>
+
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Jenis Bank</label>
+                    <div class="relative w-3/4">
+                      <select
+                        v-model="jenisBank"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                      >
+                        <option>Mandiri</option>
+                        <option>BCA</option>
+                        <option>BNI</option>
+                        <option>BRI</option>
+                        <option>CIMB Niaga</option>
+                        <option>BTN</option>
+                        <option>Permata</option>
+                      </select>
+                      <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Nomer Rekening</label>
+                    <input
+                      type="text"
+                      v-model="nomerRekening"
+                      class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="123456791011"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Detail Purchasing Order Section -->
+              <div>
+                <h3 class="font-medium text-lg mb-4">Detail Purchasing Order</h3>
+
+                <div class="space-y-3">
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Nomer PO</label>
+                    <input
+                      type="text"
+                      v-model="nomerPO"
+                      class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="1234/12/11C30/2024"
+                    />
+                  </div>
+
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Tanggal Pengadaan</label>
+                    <div class="relative w-3/4">
+                      <input
+                        type="date"
+                        v-model="tanggalPengadaan"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="flex flex-row items-center">
+                    <label class="block text-gray-700 w-1/4">Jenis Pengadaan</label>
+                    <div class="relative w-3/4">
+                      <select
+                        v-model="jenisPengadaan"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                      >
+                        <option>Beras</option>
+                        <option>Jagung</option>
+                        <option>Kedelai</option>
+                      </select>
+                      <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-row items-center">
+  <label class="block text-gray-700 w-1/4">Kuantum</label>
+  <div class="relative w-3/4 flex">
+    <input
+      type="text"
+      v-model="kuantum"
+      class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+      placeholder="2000"
+    />
+    <div class="flex items-center justify-center px-3 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 w-14">
+      KG
+    </div>
+  </div>
+</div>
+                </div>
+
+                <!-- Data IN Section -->
+<div class="mb-8 mt-6 p-4 rounded-lg">
+  <h3 class="font-medium text-lg mb-4">Data IN</h3>
+  
+  <!-- Dynamic rows -->
+  <div v-for="(item, index) in dataIN" :key="index" class="flex items-center mb-4 space-x-2">
+    <div class="flex-none w-10 h-10 bg-white rounded-md flex items-center justify-center border border-gray-300">
+      <span>{{ index + 1 }}</span>
+    </div>
+    <div class="flex-none w-44 sm:w-56">
+      <div class="relative">
+        <input
+          type="date"
+          v-model="dataIN[index].tanggal"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+        <div class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 w-48">
+      <div class="flex">
+        <input
+          type="text"
+          v-model="dataIN[index].kuantum"
+          class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder="2000"
+        />
+        <div class="flex items-center justify-center px-3 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 w-14">
+          KG
+        </div>
+      </div>
+    </div>
+    
+    <!-- Optional: Delete button -->
+    <button 
+  @click="dataIN.length > 1 ? dataIN.splice(index, 1) : ''" 
+  class="text-red-500 hover:text-red-700"
+  type="button"
+  title="Hapus baris"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+  </svg>
+</button>
+  </div>
+  
+  <!-- Add Row button -->
+  <div class="flex justify-center mt-2">
+    <button 
+      @click="addDataInRow" 
+      type="button"
+      class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+      </svg>
+      Tambah Baris
+    </button>
+  </div>
+</div>
+
+                <!-- Informasi Pembayaran Section -->
+                <div class="mb-8">
+                  <h3 class="font-medium text-lg mb-4">Informasi Pembayaran</h3>
+                  
+                  <div class="space-y-3">
+                    <div class="flex flex-row items-center">
+                      <label class="block text-gray-700 w-1/4">Jumlah Pembayaran</label>
+                      <input
+                        type="text"
+                        v-model="jumlahPembayaran"
+                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="2000"
+                      />
+                    </div>
+                    
+                    <div class="flex flex-row items-center">
+                      <label class="block text-gray-700 w-1/4">Jumlah di-SPP</label>
+                      <input
+                        type="text"
+                        v-model="jumlahSPP"
+                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="2000"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Action Buttons (unchanged) -->
+          <div class="px-6 py-4 bg-white z-10 flex justify-end space-x-4">
+            <button 
+              @click="clearForm"
+              class="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors"
+            >
+              Clear
+            </button>
+            <button 
+              @click="saveForm"
+              class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AdminLayout>
+</template>
