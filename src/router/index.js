@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/login/Login.vue'
+import ResetRequest from '../views/login/ResetPassword.vue'
 import DashboardAdmin  from '../views/admin/AdminView.vue'
 import FormAdmin  from '../views/admin/FormData.vue'
 import LihatDataAdmin from '../views/admin/LihatData.vue'
+import EditFormData from '../views/admin/EditFormData.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +24,16 @@ const router = createRouter({
     {
       path : '/lihatdata',
       component: LihatDataAdmin ,
+    },
+     {
+      path : '/resetrequest',
+      component: ResetRequest ,
+    },
+    {
+      path : '/editform',
+      component: EditFormData ,
     }
+
   ],
 })
 

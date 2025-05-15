@@ -95,8 +95,8 @@ const addDataInRow = () => {
           <div class="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col h-auto max-h-[80vh] border border-gray-100 form-card">
             <!-- Form Header -->
             <div class="text-center pb-2 bg-white z-10">
-              <h2 class="text-xl font-medium mt-10 mb-1 form-title" style="color: #0099FF;">Form Input Data</h2>
-              <div class="mx-auto form-divider" style="height: 3px; background-color: #0099FF; width: 100%; max-width: 160px; margin-bottom: 20px;"></div>
+              <h2 class="text-xl font-medium mt-10 mb-1 form-title" style="color: #0099FF;">Edit Form Input Data</h2>
+              <div class="mx-auto form-divider" style="height: 3px; background-color: #0099FF; width: 100%; max-width: 200px; margin-bottom: 20px;"></div>
             </div>
 
             <!-- Scrollable Form Content -->
