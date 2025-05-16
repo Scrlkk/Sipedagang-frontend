@@ -13,16 +13,53 @@ const pageInput = ref(1)
 
 
 
-// Mock data for the table
-const tableData = ref([
-  { jenisPengadaan: 'Gabah', noProorder: '1234/12/C11/30/2023', supplier: 'Purasewa', perusahaan: 'Bulog', kuantum: '500 Kg', tanggal: '12/01/2023' },
-  { jenisPengadaan: 'Beras', noProorder: '1234/12/C11/30/2023', supplier: 'Kaisar', perusahaan: 'Bulog', kuantum: '100 Kg', tanggal: '15/02/2023' },
-  { jenisPengadaan: 'Gula', noProorder: '1234/12/C11/30/2023', supplier: 'Sheva', perusahaan: 'Bulog', kuantum: '200 Kg', tanggal: '20/03/2023' },
-  { jenisPengadaan: 'Minyak Goreng', noProorder: '1234/12/C11/30/2023', supplier: 'Satria', perusahaan: 'Bulog', kuantum: '300 Kg', tanggal: '25/04/2023' },
-  { jenisPengadaan: 'Garam', noProorder: '1234/12/C11/30/2023', supplier: 'Raffi', perusahaan: 'Bulog', kuantum: '400 Kg', tanggal: '30/05/2023' },
-  { jenisPengadaan: 'Kedelai', noProorder: '1234/12/C11/30/2023', supplier: 'Nopal', perusahaan: 'Bulog', kuantum: '600 Kg', tanggal: '05/06/2023' }
+// Data table for storing form submissions
+const tableData = ref([])
 
-])
+// Load stored data from localStorage on component mount
+onMounted(() => {
+  loadStoredData()
+})
+
+// Function to load data from localStorage
+const loadStoredData = () => {
+  const savedData = localStorage.getItem('permohonanDataList')
+  if (savedData) {
+    tableData.value = JSON.parse(savedData)
+  } else {
+    // If no data exists yet, check if there's a single form submission
+    const singleFormData = localStorage.getItem('permohonanFormData')
+    if (singleFormData) {
+      const formData = JSON.parse(singleFormData)
+      
+      // Format tanggal from ISO string to dd/mm/yyyy
+      let tanggalFormatted = ''
+      if (formData.tanggalPengadaan) {
+        const date = new Date(formData.tanggalPengadaan)
+        const day = date.getDate().toString().padStart(2, '0')
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const year = date.getFullYear()
+        tanggalFormatted = `${day}/${month}/${year}`
+      }
+      
+      // Create a data entry for the table
+      const entry = {
+        jenisPengadaan: formData.jenisPengadaan || '',
+        noProorder: formData.nomerPO || '',
+        supplier: formData.namaSupplier || '',
+        perusahaan: formData.namaPerusahaan || '',
+        kuantum: `${formData.kuantum || ''} ${formData.satuan || 'KG'}`,
+        tanggal: tanggalFormatted,
+        rawData: formData // Store the full raw data for preview
+      }
+      
+      tableData.value = [entry]
+      
+      // Save to localStorage as a list
+      localStorage.setItem('permohonanDataList', JSON.stringify(tableData.value))
+    }
+  }
+}
 
 const months = [
   { value: '', label: 'Bulan' },
@@ -40,46 +77,49 @@ const months = [
   { value: '12', label: 'Desember' }
 ]
 
-const filteredData = () => {
+const filteredData = computed(() => {
   let filtered = [...tableData.value]
   
   // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(item => 
-      item.jenisPengadaan.toLowerCase().includes(query) ||
-      item.noProorder.toLowerCase().includes(query) ||
-      item.supplier.toLowerCase().includes(query) ||
-      item.perusahaan.toLowerCase().includes(query)
+      (item.jenisPengadaan && item.jenisPengadaan.toLowerCase().includes(query)) ||
+      (item.noProorder && item.noProorder.toLowerCase().includes(query)) ||
+      (item.supplier && item.supplier.toLowerCase().includes(query)) ||
+      (item.perusahaan && item.perusahaan.toLowerCase().includes(query))
     )
   }
   
   // Filter by selected month
   if (selectedMonth.value) {
     filtered = filtered.filter(item => {
-      const month = item.tanggal.split('/')[1]
-      return month === selectedMonth.value
+      if (item.tanggal && item.tanggal.includes('/')) {
+        const month = item.tanggal.split('/')[1]
+        return month === selectedMonth.value
+      }
+      return false
     })
   }
   
   return filtered
-}
+})
 
-const paginatedData = () => {
-  const filtered = filteredData()
+const paginatedData = computed(() => {
+  const filtered = filteredData.value
   const startIndex = (currentPage.value - 1) * itemsPerPage.value
   const endIndex = startIndex + itemsPerPage.value
   
   return filtered.slice(startIndex, endIndex)
-}
+})
 
-const getTotalPages = () => {
-  return Math.ceil(filteredData().length / itemsPerPage.value)
-}
+const getTotalPages = computed(() => {
+  return Math.ceil(filteredData.value.length / itemsPerPage.value)
+})
 
 // Calculate which page numbers to show (max 5)
 const displayedPageNumbers = computed(() => {
-  const totalPages = getTotalPages()
+  const totalPages = getTotalPages.value
   
   if (totalPages <= 5) {
     // If 5 or fewer pages, show all
@@ -112,12 +152,33 @@ const goBack = () => {
 
 const previewItem = (item) => {
   console.log('Preview:', item)
-  // Add preview functionality here
+  
+  // Store the selected data in localStorage for preview
+  if (item && item.rawData) {
+    localStorage.setItem('permohonanFormData', JSON.stringify(item.rawData))
+    router.push('/previewpermohonan')
+  } else {
+    // If there's no rawData property, try to use the item itself
+    // This is a fallback in case the data isn't formatted as expected
+    localStorage.setItem('permohonanFormData', JSON.stringify(item))
+    router.push('/previewpermohonan')
+  }
 }
 
 const printItem = (item) => {
   console.log('Print:', item)
-  // Add print functionality here
+  
+  // Store the selected data in localStorage for preview
+  if (item && item.rawData) {
+    localStorage.setItem('permohonanFormData', JSON.stringify(item.rawData))
+    localStorage.setItem('autoPrint', 'true') // Set flag to auto-print
+    router.push('/previewpermohonan')
+  } else {
+    // If there's no rawData property, try to use the item itself
+    localStorage.setItem('permohonanFormData', JSON.stringify(item))
+    localStorage.setItem('autoPrint', 'true') // Set flag to auto-print
+    router.push('/previewpermohonan')
+  }
 }
 
 const editItem = (item) => {
@@ -137,28 +198,38 @@ const deleteItem = (item) => {
     cancelButtonText: 'Batal'
   }).then((result) => {
     if (result.isConfirmed) {
-      // Proceed with deletion
-      console.log('Delete:', item)
-      // Add delete functionality here
-      
-      // Show success message
-      Swal.fire(
-        'Terhapus!',
-        'Data berhasil dihapus.',
-        'success'
+      // Find and remove the item from tableData
+      const index = tableData.value.findIndex(
+        i => i.jenisPengadaan === item.jenisPengadaan && 
+             i.noProorder === item.noProorder &&
+             i.tanggal === item.tanggal
       )
+      
+      if (index !== -1) {
+        tableData.value.splice(index, 1)
+        
+        // Update localStorage with the updated list
+        localStorage.setItem('permohonanDataList', JSON.stringify(tableData.value))
+        
+        // Show success message
+        Swal.fire(
+          'Terhapus!',
+          'Data berhasil dihapus.',
+          'success'
+        )
+      }
     }
   })
 }
 
 const goToPage = (page) => {
-  if (page >= 1 && page <= getTotalPages()) {
+  if (page >= 1 && page <= getTotalPages.value) {
     currentPage.value = page
   }
 }
 
 const handlePageInput = () => {
-  const totalPages = getTotalPages()
+  const totalPages = getTotalPages.value
   
   // Make sure it's a number and in valid range
   let newPage = parseInt(pageInput.value)
@@ -281,7 +352,7 @@ onMounted(() => {
     </thead>
     <tbody class="divide-y divide-gray-200">
       <!-- Row template with fixed height and wider cells -->
-      <tr v-for="(item, index) in paginatedData()" :key="index" 
+      <tr v-for="(item, index) in paginatedData" :key="index" 
           :class="index % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
           class="hover:bg-gray-100 transition-colors h-16">
         <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
@@ -334,11 +405,11 @@ onMounted(() => {
 
 
                 <!-- Empty rows to maintain consistent height when data is sparse -->
-                <template v-if="paginatedData().length < itemsPerPage.value">
+                <template v-if="paginatedData.length < itemsPerPage.value">
                   <tr 
-                    v-for="i in (itemsPerPage.value - paginatedData().length)" 
+                    v-for="i in (itemsPerPage.value - paginatedData.length)" 
                     :key="`empty-${i}`"
-                    :class="(paginatedData().length + i) % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
+                    :class="(paginatedData.length + i) % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
                     class="h-16"
                   >
                     <td colspan="7" class="px-6 py-4"></td>
@@ -346,7 +417,7 @@ onMounted(() => {
                 </template>
 
                 <!-- Empty state when no data -->
-                <tr v-if="paginatedData().length === 0" class="h-[400px]">
+                <tr v-if="paginatedData.length === 0" class="h-[400px]">
                   <td colspan="7" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center justify-center text-gray-500">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -397,9 +468,9 @@ onMounted(() => {
                 <!-- Next page button -->
                 <button 
                   @click="goToPage(currentPage + 1)"
-                  :disabled="currentPage === getTotalPages()"
+                  :disabled="currentPage === getTotalPages"
                   class="w-10 h-10 flex items-center justify-center rounded-md border transition-colors"
-                  :class="currentPage === getTotalPages() 
+                  :class="currentPage === getTotalPages 
                     ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
                     : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer'"
                 >
@@ -418,11 +489,11 @@ onMounted(() => {
                       @keyup.enter="handlePageInput"
                       @blur="handlePageInput"
                       min="1"
-                      :max="getTotalPages()"
+                      :max="getTotalPages"
                       class="w-16 pl-3 pr-2 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-blue-300 text-center"
                     />
                     <span class="mx-1 text-gray-500">/</span>
-                    <span class="text-gray-700">{{ getTotalPages() }}</span>
+                    <span class="text-gray-700">{{ getTotalPages }}</span>
                   </div>
                 </div>
               </div>

@@ -2,6 +2,9 @@
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import { ref } from 'vue'
 import Swal from 'sweetalert2'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // Data Pemohon
 const namaSupplier = ref('')
@@ -14,10 +17,11 @@ const nomerPO = ref('')
 const tanggalPengadaan = ref('')
 const jenisPengadaan = ref('Beras')
 const kuantum = ref('')
+const satuan = ref('KG')
 
 // Data IN
 const dataIN = ref([
-  { tanggal: '', kuantum: '' },
+  { tanggal: '', kuantum: '', satuan: 'KG' },
 ])
 
 // Informasi Pembayaran
@@ -31,19 +35,94 @@ const clearForm = () => {
   jenisBank.value = 'Mandiri'
   nomerRekening.value = ''
   nomerPO.value = ''
-  tanggalPengadaan.value = '2025-01-12'
+  tanggalPengadaan.value = ''
   jenisPengadaan.value = 'Beras'
   kuantum.value = ''
+  satuan.value = 'KG'
   
   // Keep just one empty row when clearing
-  dataIN.value = [{ tanggal: '', kuantum: '' }]
+  dataIN.value = [{ tanggal: '', kuantum: '', satuan: 'KG' }]
   
   jumlahPembayaran.value = ''
   jumlahSPP.value = ''
 }
 
 const saveForm = () => {
-  console.log('Form data saved')
+  // Validate essential fields
+  if (!namaSupplier.value || !namaPerusahaan.value || !nomerRekening.value || 
+      !nomerPO.value || !tanggalPengadaan.value || !kuantum.value) {
+    Swal.fire({
+      title: 'Data Tidak Lengkap',
+      text: 'Mohon lengkapi semua field yang diperlukan',
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Ok'
+    });
+    return;
+  }
+  
+  // Collect form data
+  const formData = {
+    namaSupplier: namaSupplier.value,
+    namaPerusahaan: namaPerusahaan.value,
+    jenisBank: jenisBank.value,
+    nomerRekening: nomerRekening.value,
+    nomerPO: nomerPO.value,
+    tanggalPengadaan: tanggalPengadaan.value,
+    jenisPengadaan: jenisPengadaan.value,
+    kuantum: kuantum.value,
+    satuan: satuan.value,
+    dataIN: dataIN.value,
+    jumlahPembayaran: jumlahPembayaran.value,
+    jumlahSPP: jumlahSPP.value
+  }
+  
+  // Save form data to localStorage for PreviewPermohonan.vue
+  localStorage.setItem('permohonanFormData', JSON.stringify(formData))
+  
+  // Also save to the permohonanDataList for LihatData.vue
+  // First, check if there's an existing list
+  let dataList = [];
+  const savedDataList = localStorage.getItem('permohonanDataList');
+  if (savedDataList) {
+    dataList = JSON.parse(savedDataList);
+  }
+  
+  // Format tanggal for the table view
+  const date = new Date(tanggalPengadaan.value);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const tanggalFormatted = `${day}/${month}/${year}`;
+  
+  // Create a table entry
+  const newEntry = {
+    jenisPengadaan: jenisPengadaan.value,
+    noProorder: nomerPO.value,
+    supplier: namaSupplier.value,
+    perusahaan: namaPerusahaan.value,
+    kuantum: `${kuantum.value} ${satuan.value}`,
+    tanggal: tanggalFormatted,
+    rawData: formData // Store the complete form data for preview
+  }
+  
+  // Add to the list and save
+  dataList.push(newEntry);
+  localStorage.setItem('permohonanDataList', JSON.stringify(dataList));
+  
+  // Show success message and then navigate to preview
+  Swal.fire({
+    title: 'Berhasil!',
+    text: 'Data berhasil disimpan',
+    icon: 'success',
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Lihat Preview'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Navigate to the preview page
+      router.push('/previewpermohonan')
+    }
+  });
 }
 
 // Function to add a new row to dataIN
@@ -61,7 +140,7 @@ const addDataInRow = () => {
   }
   
   // If under the limit, add a new row as before
-  dataIN.value.push({ tanggal: '', kuantum: '' });
+  dataIN.value.push({ tanggal: '', kuantum: '', satuan: 'KG' });
 }
 </script>
 
@@ -217,9 +296,14 @@ const addDataInRow = () => {
                           class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Masukan Jumlah Kuantum"
                         />
-                        <div class="flex items-center justify-center px-3 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 w-14">
-                          KG
-                        </div>
+                        <select
+                          v-model="satuan"
+                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="KG">KG</option>
+                          <option value="Liter">Liter</option>
+                          <option value="PCS">PCS</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -256,9 +340,14 @@ const addDataInRow = () => {
                           class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Masukan Jumlah Kuantum"
                         />
-                        <div class="flex items-center justify-center px-3 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 w-14">
-                          KG
-                        </div>
+                        <select
+                          v-model="dataIN[index].satuan"
+                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="KG">KG</option>
+                          <option value="Liter">Liter</option>
+                          <option value="PCS">PCS</option>
+                        </select>
                       </div>
                     </div>
                     
@@ -320,19 +409,20 @@ const addDataInRow = () => {
             </div>
 
             <!-- Form Action Buttons -->
-            <div class="px-6 py-4 bg-white z-10 flex justify-end space-x-4">
-              <button 
-                @click="clearForm"
-                class="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors form-button"
-              >
-                Clear
-              </button>
-              <button 
-                @click="saveForm"
-                class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors form-button"
-              >
-                Save
-              </button>
+<div class="px-6 py-4 bg-white z-10 flex justify-end space-x-4">
+  <button 
+    @click="clearForm"
+    class="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors form-button"
+  >
+    Clear
+  </button>
+  
+  <button 
+    @click="saveForm"
+    class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors form-button"
+  >
+    Save
+  </button>
             </div>
           </div>
         </div>
@@ -448,5 +538,17 @@ const addDataInRow = () => {
     transform: scaleX(1);
     opacity: 1;
   }
+}
+
+/* Remove dropdown arrow from select elements */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none !important;
+}
+
+select::-ms-expand {
+  display: none;
 }
 </style>

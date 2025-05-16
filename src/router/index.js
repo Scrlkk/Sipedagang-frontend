@@ -5,6 +5,7 @@ import DashboardAdmin  from '../views/admin/AdminView.vue'
 import FormAdmin  from '../views/admin/FormData.vue'
 import LihatDataAdmin from '../views/admin/LihatData.vue'
 import EditFormData from '../views/admin/EditFormData.vue'
+import PreviewPermohonan from '../views/admin/PreviewPermohonan.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,10 @@ const router = createRouter({
     {
       path : '/editform',
       component: EditFormData ,
+    },
+      {
+      path : '/previewpermohonan',
+      component: PreviewPermohonan ,
     }
 
   ],
