@@ -183,7 +183,16 @@ const printItem = (item) => {
 
 const editItem = (item) => {
   console.log('Edit:', item)
-  // Add edit functionality here
+  
+  // Store the selected data in localStorage for editing
+  if (item && item.rawData) {
+    localStorage.setItem('permohonanFormData', JSON.stringify(item.rawData))
+    router.push('/editform')
+  } else {
+    // If there's no rawData property, try to use the item itself
+    localStorage.setItem('permohonanFormData', JSON.stringify(item))
+    router.push('/editform')
+  }
 }
 
 const deleteItem = (item) => {
@@ -322,80 +331,95 @@ onMounted(() => {
   </div>
 </div>
             
-         <!-- Table content with fixed dimensions and wider columns -->
-<div class="overflow-y-auto" style="height: 450px;">
+         <!-- Table content with responsive dimensions and text wrapping -->
+<div class="overflow-y-auto overflow-x-hidden" style="height: 450px;">
   <table class="min-w-full table-fixed">
     <thead class="bg-gray-50 sticky top-0 z-10">
       <tr>
-        <th class="w-1/6 px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[15%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Jenis Pengadaan
         </th>
-        <th class="w-1/6 px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[18%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           No Preorder
         </th>
-        <th class="w-1/6 px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[15%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Supplier
         </th>
-        <th class="w-1/6 px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[15%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Perusahaan
         </th>
-        <th class="w-1/6 px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[12%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Kuantum
         </th>
-        <th class="w-1/6 px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[10%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Tanggal
         </th>
-        <th class="w-1/6 px-8 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-[15%] px-4 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
           Aksi
         </th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-200">
-      <!-- Row template with fixed height and wider cells -->
+      <!-- Row template with text wrapping for long content -->
       <tr v-for="(item, index) in paginatedData" :key="index" 
           :class="index % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
-          class="hover:bg-gray-100 transition-colors h-16">
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
-          {{ item.jenisPengadaan }}
+          class="hover:bg-gray-100 transition-colors">
+        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
+          <div class="tooltip">
+            {{ item.jenisPengadaan }}
+            <span class="tooltiptext">{{ item.jenisPengadaan }}</span>
+          </div>
         </td>
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
-          {{ item.noProorder }}
+        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
+          <div class="tooltip">
+            {{ item.noProorder }}
+            <span class="tooltiptext">{{ item.noProorder }}</span>
+          </div>
         </td>
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
-          {{ item.supplier }}
+        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
+          <div class="tooltip">
+            {{ item.supplier }}
+            <span class="tooltiptext">{{ item.supplier }}</span>
+          </div>
         </td>
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
-          {{ item.perusahaan }}
+        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
+          <div class="tooltip">
+            {{ item.perusahaan }}
+            <span class="tooltiptext">{{ item.perusahaan }}</span>
+          </div>
         </td>
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
-          {{ item.kuantum }}
+        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
+          <div class="tooltip">
+            {{ item.kuantum }}
+            <span class="tooltiptext">{{ item.kuantum }}</span>
+          </div>
         </td>
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-700">
+        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
           {{ item.tanggal }}
         </td>
-        <td class="px-8 py-4 whitespace-nowrap text-sm text-center">
-          <div class="flex justify-center gap-5">
+        <td class="px-4 py-4 text-sm text-center">
+          <div class="flex flex-wrap justify-center gap-2">
             <a 
               @click.prevent="previewItem(item)" 
-              class="text-blue-600 hover:text-blue-800 cursor-pointer font-medium underline"
+              class="text-blue-600 hover:text-blue-800 cursor-pointer font-medium underline whitespace-nowrap"
             >
               Preview
             </a>
             <a 
               @click.prevent="printItem(item)" 
-              class="text-green-600 hover:text-green-800 cursor-pointer font-medium underline"
+              class="text-green-600 hover:text-green-800 cursor-pointer font-medium underline whitespace-nowrap"
             >
               Cetak
             </a>
             <a 
               @click.prevent="editItem(item)" 
-              class="text-amber-600 hover:text-amber-800 cursor-pointer font-medium underline"
+              class="text-amber-600 hover:text-amber-800 cursor-pointer font-medium underline whitespace-nowrap"
             >
               Edit
             </a>
             <a 
               @click.prevent="deleteItem(item)" 
-              class="text-red-600 hover:text-red-800 cursor-pointer font-medium underline"
+              class="text-red-600 hover:text-red-800 cursor-pointer font-medium underline whitespace-nowrap"
             >
               Delete
             </a>
@@ -410,15 +434,14 @@ onMounted(() => {
                     v-for="i in (itemsPerPage.value - paginatedData.length)" 
                     :key="`empty-${i}`"
                     :class="(paginatedData.length + i) % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
-                    class="h-16"
                   >
-                    <td colspan="7" class="px-6 py-4"></td>
+                    <td colspan="7" class="px-4 py-4"></td>
                   </tr>
                 </template>
 
                 <!-- Empty state when no data -->
-                <tr v-if="paginatedData.length === 0" class="h-[400px]">
-                  <td colspan="7" class="px-6 py-12 text-center">
+                <tr v-if="paginatedData.length === 0">
+                  <td colspan="7" class="px-4 py-12 text-center">
                     <div class="flex flex-col items-center justify-center text-gray-500">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -548,6 +571,42 @@ button {
 /* Apply Inter font to everything */
 :root {
   font-family: 'Inter', sans-serif;
+}
+
+/* Tooltip for truncated text */
+.tooltip {
+  position: relative;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 20;
+  bottom: 125%;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: normal;
+  max-width: 300px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Make sure the max-w-0 forces truncation */
+.max-w-0 {
+  max-width: 100%;
 }
 
 /* Page transition animations */

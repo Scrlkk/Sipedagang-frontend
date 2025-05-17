@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Swal from 'sweetalert2'
 import { useRouter } from 'vue-router'
 
@@ -24,9 +24,33 @@ const dataIN = ref([
   { tanggal: '', kuantum: '', satuan: 'KG' },
 ])
 
+// Watch satuan changes and update all dataIN rows
+watch(satuan, (newSatuan) => {
+  dataIN.value.forEach(row => {
+    row.satuan = newSatuan;
+  });
+})
+
 // Informasi Pembayaran
 const jumlahPembayaran = ref('')
 const jumlahSPP = ref('')
+
+// Function to format value as Rupiah in input fields
+const formatRupiahInput = (value) => {
+  if (!value) return '';
+  
+  // Remove all non-numeric characters
+  let number = value.toString().replace(/[^\d]/g, '');
+  
+  // Format the number with thousand separators
+  return 'Rp ' + number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// Function to extract numeric value from formatted Rupiah string
+const extractNumericValue = (rupiahString) => {
+  if (!rupiahString) return '';
+  return rupiahString.replace(/[^\d]/g, '');
+}
 
 // Form actions
 const clearForm = () => {
@@ -40,7 +64,7 @@ const clearForm = () => {
   kuantum.value = ''
   satuan.value = 'KG'
   
-  // Keep just one empty row when clearing
+  // Keep just one empty row when clearing with the default satuan
   dataIN.value = [{ tanggal: '', kuantum: '', satuan: 'KG' }]
   
   jumlahPembayaran.value = ''
@@ -54,6 +78,25 @@ const saveForm = () => {
     Swal.fire({
       title: 'Data Tidak Lengkap',
       text: 'Mohon lengkapi semua field yang diperlukan',
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Ok'
+    });
+    return;
+  }
+  
+  // Validate satuan consistency
+  let isDataINValid = true;
+  dataIN.value.forEach((item, index) => {
+    if (item.kuantum && item.satuan !== satuan.value) {
+      isDataINValid = false;
+    }
+  });
+  
+  if (!isDataINValid) {
+    Swal.fire({
+      title: 'Satuan Tidak Konsisten',
+      text: 'Satuan pada Data IN harus sama dengan satuan pada Kuantum',
       icon: 'warning',
       confirmButtonColor: '#3085d6',
       confirmButtonText: 'Ok'
@@ -139,8 +182,8 @@ const addDataInRow = () => {
     return; // Exit the function without adding a row
   }
   
-  // If under the limit, add a new row as before
-  dataIN.value.push({ tanggal: '', kuantum: '', satuan: 'KG' });
+  // If under the limit, add a new row using the current selected satuan
+  dataIN.value.push({ tanggal: '', kuantum: '', satuan: satuan.value });
 }
 </script>
 
@@ -342,11 +385,10 @@ const addDataInRow = () => {
                         />
                         <select
                           v-model="dataIN[index].satuan"
-                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-100 text-gray-500 focus:outline-none"
+                          disabled
                         >
-                          <option value="KG">KG</option>
-                          <option value="Liter">Liter</option>
-                          <option value="PCS">PCS</option>
+                          <option :value="satuan">{{ satuan }}</option>
                         </select>
                       </div>
                     </div>
@@ -388,7 +430,8 @@ const addDataInRow = () => {
                       <label class="block text-gray-700 w-1/4">Jumlah Pembayaran</label>
                       <input
                         type="text"
-                        v-model="jumlahPembayaran"
+                        :value="formatRupiahInput(jumlahPembayaran)"
+                        @input="jumlahPembayaran = extractNumericValue($event.target.value)"
                         class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                         placeholder="Masukan Jumlah Pembayaran"
                       />
@@ -398,7 +441,8 @@ const addDataInRow = () => {
                       <label class="block text-gray-700 w-1/4">Jumlah di-SPP</label>
                       <input
                         type="text"
-                        v-model="jumlahSPP"
+                        :value="formatRupiahInput(jumlahSPP)"
+                        @input="jumlahSPP = extractNumericValue($event.target.value)"
                         class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                         placeholder="Masukan Jumlah di-SPP"
                       />

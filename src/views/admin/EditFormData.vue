@@ -1,7 +1,17 @@
 <script setup>
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import Swal from 'sweetalert2'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+// Store the original data identifier for finding the item to update later
+const originalIdentifier = ref({
+  jenisPengadaan: '',
+  noProorder: '',
+  tanggal: ''
+})
 
 // Data Pemohon
 const namaSupplier = ref('')
@@ -14,15 +24,40 @@ const nomerPO = ref('')
 const tanggalPengadaan = ref('')
 const jenisPengadaan = ref('Beras')
 const kuantum = ref('')
+const satuan = ref('KG')
 
 // Data IN
 const dataIN = ref([
-  { tanggal: '', kuantum: '' },
+  { tanggal: '', kuantum: '', satuan: 'KG' },
 ])
+
+// Watch satuan changes and update all dataIN rows
+watch(satuan, (newSatuan) => {
+  dataIN.value.forEach(row => {
+    row.satuan = newSatuan;
+  });
+})
 
 // Informasi Pembayaran
 const jumlahPembayaran = ref('')
 const jumlahSPP = ref('')
+
+// Function to format value as Rupiah in input fields
+const formatRupiahInput = (value) => {
+  if (!value) return '';
+  
+  // Remove all non-numeric characters
+  let number = value.toString().replace(/[^\d]/g, '');
+  
+  // Format the number with thousand separators
+  return 'Rp ' + number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// Function to extract numeric value from formatted Rupiah string
+const extractNumericValue = (rupiahString) => {
+  if (!rupiahString) return '';
+  return rupiahString.replace(/[^\d]/g, '');
+}
 
 // Form actions
 const clearForm = () => {
@@ -34,17 +69,192 @@ const clearForm = () => {
   tanggalPengadaan.value = '2025-01-12'
   jenisPengadaan.value = 'Beras'
   kuantum.value = ''
-  
-  // Keep just one empty row when clearing
-  dataIN.value = [{ tanggal: '', kuantum: '' }]
+    // Keep just one empty row when clearing
+  dataIN.value = [{ tanggal: '', kuantum: '', satuan: 'KG' }]
   
   jumlahPembayaran.value = ''
   jumlahSPP.value = ''
 }
 
 const saveForm = () => {
-  console.log('Form data saved')
+  // Validate essential fields
+  if (!namaSupplier.value || !namaPerusahaan.value || !nomerRekening.value || 
+      !nomerPO.value || !tanggalPengadaan.value || !kuantum.value) {
+    Swal.fire({
+      title: 'Data Tidak Lengkap',
+      text: 'Mohon lengkapi semua field yang diperlukan',
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Ok'
+    });
+    return;
+  }
+  
+  // Validate satuan consistency
+  let isDataINValid = true;
+  dataIN.value.forEach((item, index) => {
+    if (item.kuantum && item.satuan !== satuan.value) {
+      isDataINValid = false;
+    }
+  });
+  
+  if (!isDataINValid) {
+    Swal.fire({
+      title: 'Satuan Tidak Konsisten',
+      text: 'Satuan pada Data IN harus sama dengan satuan pada Kuantum',
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Ok'
+    });
+    return;
+  }
+  
+  // Collect form data
+  const formData = {
+    namaSupplier: namaSupplier.value,
+    namaPerusahaan: namaPerusahaan.value,
+    jenisBank: jenisBank.value,
+    nomerRekening: nomerRekening.value,
+    nomerPO: nomerPO.value,
+    tanggalPengadaan: tanggalPengadaan.value,
+    jenisPengadaan: jenisPengadaan.value,
+    kuantum: kuantum.value,
+    satuan: satuan.value,
+    dataIN: dataIN.value,
+    jumlahPembayaran: jumlahPembayaran.value,
+    jumlahSPP: jumlahSPP.value
+  }
+    // Save form data to localStorage
+  localStorage.setItem('permohonanFormData', JSON.stringify(formData))
+  
+  // Also update the data in permohonanDataList
+  const savedDataList = localStorage.getItem('permohonanDataList');
+  if (savedDataList) {
+    try {
+      const dataList = JSON.parse(savedDataList);
+      
+      // Format tanggal for the table view
+      const date = new Date(tanggalPengadaan.value);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const tanggalFormatted = `${day}/${month}/${year}`;
+      
+      // Create updated entry
+      const updatedEntry = {
+        jenisPengadaan: jenisPengadaan.value,
+        noProorder: nomerPO.value,
+        supplier: namaSupplier.value,
+        perusahaan: namaPerusahaan.value,
+        kuantum: `${kuantum.value} ${satuan.value}`,
+        tanggal: tanggalFormatted,
+        rawData: formData // Store the full raw data for preview
+      }      // Find the index of the entry with the original identifiers (before any edits)
+      // Using the same criteria as the deleteItem function in LihatData.vue
+      const index = dataList.findIndex(
+        item => item.jenisPengadaan === originalIdentifier.value.jenisPengadaan && 
+               item.noProorder === originalIdentifier.value.noProorder &&
+               item.tanggal === originalIdentifier.value.tanggal
+      );
+        console.log('Looking for entry with:', originalIdentifier.value);
+      console.log('Index found:', index);
+      
+      if (index !== -1) {
+        // Replace the existing entry
+        console.log('Updating existing entry at index:', index);
+        dataList[index] = updatedEntry;
+      } else {
+        // If no match found, add as a new entry
+        console.log('No matching entry found, adding new entry');
+        dataList.push(updatedEntry);
+      }
+      
+      // Save the updated list back to localStorage
+      localStorage.setItem('permohonanDataList', JSON.stringify(dataList));
+    } catch (e) {
+      console.error('Error updating data list:', e);
+    }
+  }
+  
+  // Show success message
+  Swal.fire({
+    title: 'Berhasil!',
+    text: 'Data berhasil diperbarui',
+    icon: 'success',
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Lihat Data'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Navigate back to the data list
+      router.push('/lihatdata')
+    }
+  });
 }
+
+// Function to load stored data from localStorage when component mounts
+onMounted(() => {
+  const savedData = localStorage.getItem('permohonanFormData');
+  if (savedData) {
+    try {
+      const parsedData = JSON.parse(savedData);
+        // Store the original data identifier for finding the record to update later
+      // Format date exactly like it's shown in the table
+      let formattedDate = '';
+      if (parsedData.tanggalPengadaan) {
+        const date = new Date(parsedData.tanggalPengadaan);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        formattedDate = `${day}/${month}/${year}`;
+      }
+
+      originalIdentifier.value = {
+        jenisPengadaan: parsedData.jenisPengadaan || '',
+        noProorder: parsedData.nomerPO || '',
+        tanggal: formattedDate
+      };
+      
+      // Populate form fields with the parsed data
+      namaSupplier.value = parsedData.namaSupplier || '';
+      namaPerusahaan.value = parsedData.namaPerusahaan || '';
+      jenisBank.value = parsedData.jenisBank || 'Mandiri';
+      nomerRekening.value = parsedData.nomerRekening || '';
+      nomerPO.value = parsedData.nomerPO || '';
+      tanggalPengadaan.value = parsedData.tanggalPengadaan || '';
+      jenisPengadaan.value = parsedData.jenisPengadaan || 'Beras';
+      kuantum.value = parsedData.kuantum || '';
+      satuan.value = parsedData.satuan || 'KG';
+      
+      // Handle dataIN separately to ensure it's formatted correctly
+      if (parsedData.dataIN && Array.isArray(parsedData.dataIN) && parsedData.dataIN.length > 0) {
+        // Ensure each dataIN entry has a satuan property that matches the current satuan
+        dataIN.value = parsedData.dataIN.map(item => ({
+          tanggal: item.tanggal || '',
+          kuantum: item.kuantum || '',
+          satuan: satuan.value // Apply the current satuan to all rows
+        }));
+      } else {
+        // Default to a single empty row if no dataIN is present
+        dataIN.value = [{ tanggal: '', kuantum: '', satuan: satuan.value }];
+      }
+      
+      jumlahPembayaran.value = parsedData.jumlahPembayaran || '';
+      jumlahSPP.value = parsedData.jumlahSPP || '';
+      
+      console.log('Form data loaded from localStorage:', parsedData);
+    } catch (e) {
+      console.error('Error parsing saved data:', e);
+      
+      // Handle error case - show notification to user
+      Swal.fire({
+        title: 'Error',
+        text: 'Terjadi kesalahan saat memuat data. Silahkan coba lagi.',
+        icon: 'error',
+        confirmButtonColor: '#3085d6'
+      });
+    }
+  }
+})
 
 // Function to add a new row to dataIN
 const addDataInRow = () => {
@@ -59,9 +269,8 @@ const addDataInRow = () => {
     });
     return; // Exit the function without adding a row
   }
-  
-  // If under the limit, add a new row as before
-  dataIN.value.push({ tanggal: '', kuantum: '' });
+    // If under the limit, add a new row with the current satuan value
+  dataIN.value.push({ tanggal: '', kuantum: '', satuan: satuan.value });
 }
 </script>
 
@@ -209,17 +418,21 @@ const addDataInRow = () => {
                     </div>
 
                     <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Kuantum</label>
-                      <div class="relative w-3/4 flex">
+                      <label class="block text-gray-700 w-1/4">Kuantum</label>                      <div class="relative w-3/4 flex">
                         <input
                           type="text"
                           v-model="kuantum"
                           class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Masukan Jumlah Kuantum"
                         />
-                        <div class="flex items-center justify-center px-3 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 w-14">
-                          KG
-                        </div>
+                        <select
+                          v-model="satuan"
+                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="KG">KG</option>
+                          <option value="Liter">Liter</option>
+                          <option value="PCS">PCS</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -255,10 +468,13 @@ const addDataInRow = () => {
                           v-model="dataIN[index].kuantum"
                           class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Masukan Jumlah Kuantum"
-                        />
-                        <div class="flex items-center justify-center px-3 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 w-14">
-                          KG
-                        </div>
+                        />                        <select
+                          v-model="dataIN[index].satuan"
+                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          disabled
+                        >
+                          <option :value="satuan">{{ satuan }}</option>
+                        </select>
                       </div>
                     </div>
                     
@@ -294,12 +510,12 @@ const addDataInRow = () => {
                 <div class="mb-8 form-section">
                   <h3 class="font-medium text-lg mb-4">Informasi Pembayaran</h3>
                   
-                  <div class="space-y-3">
-                    <div class="flex flex-row items-center">
+                  <div class="space-y-3">                    <div class="flex flex-row items-center">
                       <label class="block text-gray-700 w-1/4">Jumlah Pembayaran</label>
                       <input
                         type="text"
-                        v-model="jumlahPembayaran"
+                        :value="formatRupiahInput(jumlahPembayaran)"
+                        @input="jumlahPembayaran = extractNumericValue($event.target.value)"
                         class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                         placeholder="Masukan Jumlah Pembayaran"
                       />
@@ -309,7 +525,8 @@ const addDataInRow = () => {
                       <label class="block text-gray-700 w-1/4">Jumlah di-SPP</label>
                       <input
                         type="text"
-                        v-model="jumlahSPP"
+                        :value="formatRupiahInput(jumlahSPP)"
+                        @input="jumlahSPP = extractNumericValue($event.target.value)"
                         class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                         placeholder="Masukan Jumlah di-SPP"
                       />
