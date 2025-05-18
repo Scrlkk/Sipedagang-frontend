@@ -41,8 +41,7 @@ const emit = defineEmits([
   'add-data-row',
   'remove-data-row',
   'clear-form',
-  'save-form',
-  'form-preview'
+  'save-form'
 ])
 
 // Helper methods for UI formatting (these are UI-specific, so can stay in the component)
@@ -311,12 +310,6 @@ const updateDataIN = (index, field, value) => {
         </div>
       </div>      <!-- Form Action Buttons -->
       <div class="px-6 py-4 bg-white z-10 flex justify-end space-x-4">
-        <button 
-          @click="emit('form-preview')"
-          class="px-6 py-2 bg-[#0099FF] text-white rounded-md hover:bg-[#0088EE] transition-colors form-button"
-        >
-          Preview
-        </button>
         <button 
           @click="emit('clear-form')"
           class="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors form-button"

@@ -59,8 +59,7 @@ const emit = defineEmits([
   'add-data-row',
   'remove-data-row',
   'clear-form',
-  'save-form',
-  'form-preview'
+  'save-form'
 ])
 
 const formatRupiah = (value) => {
@@ -254,10 +253,12 @@ const updateDataIN = (index, field, value) => {
                     placeholder="Masukan Jumlah Kuantum"
                   />                  <select
                     :value="item.satuan"
+                    @change="updateDataIN(index, 'satuan', $event.target.value)"
                     class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#0099FF]"
-                    disabled
                   >
-                    <option :value="satuan">{{ satuan }}</option>
+                    <option value="KG">KG</option>
+                    <option value="Liter">Liter</option>
+                    <option value="PCS">PCS</option>
                   </select>
                 </div>
               </div>

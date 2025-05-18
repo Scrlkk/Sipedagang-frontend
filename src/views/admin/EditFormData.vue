@@ -29,13 +29,12 @@ const dataIN = ref([
 const jumlahPembayaran = ref('')
 const jumlahSPP = ref('')
 const formattedPembayaran = ref('')
-const formattedSPP = ref('')
-
-// Store the original data identifier for finding the item to update later
+const formattedSPP = ref('')  // Store the original data identifier for finding the item to update later
 const originalIdentifier = ref({
   jenisPengadaan: '',
   noProorder: '',
-  tanggal: ''
+  tanggal: '',
+  formattedTanggal: '' // Store the formatted date for proper comparison
 })
 
 // Key for localStorage
@@ -78,12 +77,21 @@ const loadData = () => {
     // Format currency display values
     formattedPembayaran.value = formatRupiah(jumlahPembayaran.value)
     formattedSPP.value = formatRupiah(jumlahSPP.value)
-    
-    // Store original identifier for updating the right item
+      // Store original identifier for updating the right item
     originalIdentifier.value = {
       jenisPengadaan: formData.jenisPengadaan || '',
       noProorder: formData.nomerPO || '',
-      tanggal: formData.tanggalPengadaan || ''
+      tanggal: formData.tanggalPengadaan || '',
+      formattedTanggal: ''
+    }
+    
+    // Calculate the formatted date for matching with displayed data
+    if (formData.tanggalPengadaan) {
+      const date = new Date(formData.tanggalPengadaan)
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear()
+      originalIdentifier.value.formattedTanggal = `${day}/${month}/${year}`
     }
   }
 }
@@ -92,6 +100,35 @@ const loadData = () => {
 const formatRupiah = (value) => {
   if (!value) return '';
   return 'Rp ' + value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// Helper: extract numeric value from formatted string
+const extractNumericValue = (rupiahString) => {
+  if (!rupiahString) return '';
+  return rupiahString.replace(/[^\d]/g, '');
+}
+
+// Handler for input pembayaran
+const handleJumlahPembayaranInput = (value) => {
+  jumlahPembayaran.value = extractNumericValue(value);
+  formattedPembayaran.value = formatRupiah(jumlahPembayaran.value);
+}
+
+const handleJumlahSPPInput = (value) => {
+  jumlahSPP.value = extractNumericValue(value);
+  formattedSPP.value = formatRupiah(jumlahSPP.value);
+}
+
+// Watch for changes in the main satuan and update all dataIN rows
+const updateAllDataINSatuan = (newSatuan) => {
+  satuan.value = newSatuan
+  if (dataIN.value && dataIN.value.length > 0) {
+    const updatedDataIN = dataIN.value.map(item => ({
+      ...item,
+      satuan: newSatuan
+    }))
+    dataIN.value = updatedDataIN
+  }
 }
 
 // Handler for updating dataIN rows
@@ -105,7 +142,9 @@ const maxDataInRows = 10
 // Add row to dataIN
 const addDataINRow = () => {
   if (dataIN.value.length < maxDataInRows) {
-    dataIN.value.push({ tanggal: '', kuantum: '', satuan: 'KG' })
+    // Get the satuan value from the last row, or use the default satuan if no rows exist
+    const lastSatuan = dataIN.value.length > 0 ? dataIN.value[dataIN.value.length - 1].satuan : satuan.value
+    dataIN.value.push({ tanggal: '', kuantum: '', satuan: lastSatuan })
   }
 }
 
@@ -122,8 +161,34 @@ const updateFormattedValues = () => {
   formattedSPP.value = formatRupiah(jumlahSPP.value)
 }
 
+// Validation function to check if all required fields are filled
+const validateForm = () => {
+  // Check if all required fields are filled, including Data IN tanggal field
+  const emptyDateFound = dataIN.value.some(item => !item.tanggal);
+  
+  if (!namaSupplier.value || !namaPerusahaan.value || !nomerRekening.value || 
+      !nomerPO.value || !tanggalPengadaan.value || !kuantum.value || emptyDateFound) {
+    
+    Swal.fire({
+      title: 'Data Tidak Lengkap',
+      text: 'Mohon lengkapi semua field yang diperlukan, termasuk tanggal pada Data IN',
+      icon: 'warning',
+      confirmButtonColor: '#0099FF',
+      confirmButtonText: 'OK'
+    });
+    return false;
+  }
+  
+  return true;
+}
+
 // Handler untuk event save dari EditFormComponent
 const handleSave = () => {
+  // Validate form first
+  if (!validateForm()) {
+    return;
+  }
+  
   // Build the complete form data
   const formData = {
     namaSupplier: namaSupplier.value,
@@ -160,7 +225,7 @@ const handleSave = () => {
     tanggal: tanggalFormatted,
     rawData: formData
   }
-    // Update or add the data in storage
+  // Update or add the data in storage
   let savedDataList = []
   const savedDataString = localStorage.getItem(dataKey)
   
@@ -168,18 +233,21 @@ const handleSave = () => {
     savedDataList = JSON.parse(savedDataString)
   }
   
-  // Check if we need to update existing or add new
+  console.log('Original identifier:', originalIdentifier.value)
+  console.log('Formatted date to match:', originalIdentifier.value.formattedTanggal)
+    // Check if we need to update existing or add new
   const existingIndex = savedDataList.findIndex(item => 
     item.jenisPengadaan === originalIdentifier.value.jenisPengadaan &&
     item.noProorder === originalIdentifier.value.noProorder &&
-    item.tanggal === originalIdentifier.value.tanggal
+    item.tanggal === originalIdentifier.value.formattedTanggal
   )
-  
-  if (existingIndex !== -1) {
+    if (existingIndex !== -1) {
     // Update existing entry
+    console.log('Found existing entry at index:', existingIndex)
     savedDataList[existingIndex] = displayEntry
   } else {
     // Add new entry
+    console.log('No matching entry found, adding new entry')
     savedDataList.push(displayEntry)
   }
     // Save updated list back to localStorage
@@ -239,26 +307,7 @@ const handleClear = () => {
   })
 }
 
-// Handler for preview form before saving
-const handleFormPreview = () => {
-  // Save current form state temporarily
-  const formData = {
-    namaSupplier: namaSupplier.value,
-    namaPerusahaan: namaPerusahaan.value,
-    jenisBank: jenisBank.value,
-    nomerRekening: nomerRekening.value,
-    nomerPO: nomerPO.value,
-    tanggalPengadaan: tanggalPengadaan.value,
-    jenisPengadaan: jenisPengadaan.value,
-    kuantum: kuantum.value,
-    satuan: satuan.value,
-    dataIN: dataIN.value,
-    jumlahPembayaran: jumlahPembayaran.value,
-    jumlahSPP: jumlahSPP.value
-  }
-    localStorage.setItem(formDataKey, JSON.stringify(formData))
-  router.push('/previewpermohonan')
-}
+// Preview functionality has been removed
 </script>
 
 <template>
@@ -307,18 +356,15 @@ const handleFormPreview = () => {
           @update:jenisBank="jenisBank = $event"
           @update:nomerRekening="nomerRekening = $event"
           @update:nomerPO="nomerPO = $event"
-          @update:tanggalPengadaan="tanggalPengadaan = $event"
-          @update:jenisPengadaan="jenisPengadaan = $event"
+          @update:tanggalPengadaan="tanggalPengadaan = $event"          @update:jenisPengadaan="jenisPengadaan = $event"
           @update:kuantum="kuantum = $event"
-          @update:satuan="satuan = $event"
+          @update:satuan="updateAllDataINSatuan($event)"
           @update:dataIN="updateDataINRow($event)"
-          @update:jumlahPembayaran="jumlahPembayaran = $event; updateFormattedValues()"
-          @update:jumlahSPP="jumlahSPP = $event; updateFormattedValues()"
-          @add-data-row="addDataINRow"
+          @update:jumlahPembayaran="handleJumlahPembayaranInput($event)"
+          @update:jumlahSPP="handleJumlahSPPInput($event)"          @add-data-row="addDataINRow"
           @remove-data-row="removeDataINRow($event)"
           @clear-form="handleClear"
           @save-form="handleSave"
-          @form-preview="handleFormPreview"
           @cancel="handleCancel"
         />
       </div>

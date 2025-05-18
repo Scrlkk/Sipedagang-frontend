@@ -98,9 +98,12 @@ const clearForm = () => {
 
 // Validation functions
 const validateForm = () => {
-  // Validate essential fields
+  // Check if any Data IN row has an empty tanggal (date) field
+  const emptyDateFound = dataIN.value.some(item => !item.tanggal);
+  
+  // Validate all essential fields including Data IN dates
   if (!namaSupplier.value || !namaPerusahaan.value || !nomerRekening.value || 
-      !nomerPO.value || !tanggalPengadaan.value || !kuantum.value) {
+      !nomerPO.value || !tanggalPengadaan.value || !kuantum.value || emptyDateFound) {
     Swal.fire({
       title: 'Data Tidak Lengkap',
       text: 'Mohon lengkapi semua field yang diperlukan',
@@ -179,9 +182,6 @@ const saveForm = () => {
     jumlahSPP: jumlahSPP.value
   }
   
-  // Save form data to localStorage for PreviewPermohonan.vue
-  localStorage.setItem('permohonanFormData', JSON.stringify(formData))
-  
   // Also save to the permohonanDataList for LihatData.vue
   // First, check if there's an existing list
   let dataList = [];
@@ -228,32 +228,7 @@ const saveForm = () => {
   });
 }
 
-// Handle preview navigation
-const handlePreview = () => {
-  // Validate form before preview
-  if (!validateForm()) return;
-  // Collect current form data including Data IN
-  const formDataForPreview = {
-    namaSupplier: namaSupplier.value,
-    namaPerusahaan: namaPerusahaan.value,
-    jenisBank: jenisBank.value,
-    nomerRekening: nomerRekening.value,
-    nomerPO: nomerPO.value,
-    tanggalPengadaan: tanggalPengadaan.value,
-    jenisPengadaan: jenisPengadaan.value,
-    kuantum: kuantum.value,
-    satuan: satuan.value,
-    dataIN: dataIN.value,
-    jumlahPembayaran: jumlahPembayaran.value,
-    jumlahSPP: jumlahSPP.value
-  };
-  // Save to localStorage for preview component
-  localStorage.setItem('permohonanFormData', JSON.stringify(formDataForPreview));
-  // Navigate to preview page
-  // Note: We keep this programmatic navigation since it's inside an event handler
-  // But other component-based navigation should use router-link
-  router.push('/previewpermohonan');
-};
+// Preview functionality has been removed
 </script>
 
 <template>
@@ -321,12 +296,10 @@ const handlePreview = () => {
           
           :formattedPembayaran="formattedPembayaran"
           :formattedSPP="formattedSPP"
-          
-          @add-data-row="addDataInRow"
+            @add-data-row="addDataInRow"
           @remove-data-row="removeDataRow"
           @clear-form="clearForm"
           @save-form="saveForm"
-          @form-preview="handlePreview"
         />
       </div>
     </transition>

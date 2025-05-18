@@ -85,11 +85,11 @@ const navigateToPrint = (id) => {
 
 <template>  <div class="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6">
     <!-- Main Container with improved visual hierarchy and mobile optimizations -->
-    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg overflow-hidden flex flex-col h-auto max-h-[95vh] sm:max-h-[90vh] md:max-h-[80vh] border border-gray-100">      <!-- Modern Header with gradient background and improved styling -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 border-b border-gray-200 rounded-t-lg">
+    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg overflow-hidden flex flex-col h-auto max-h-[95vh] sm:max-h-[90vh] md:max-h-[80vh] border border-gray-100">      <!-- Header with blue background and improved styling -->
+      <div class="bg-[#0099FF]/10 p-4 sm:p-6 border-b border-gray-200 rounded-t-lg">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 class="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-2 sm:mb-0 flex items-center">
-            <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white mr-3 shadow-md">
+          <h2 class="text-xl sm:text-2xl font-bold text-[#0099FF] mb-2 sm:mb-0 flex items-center">
+            <div class="p-2 rounded-lg bg-[#0099FF] text-white mr-3 shadow-md">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
@@ -156,10 +156,9 @@ const navigateToPrint = (id) => {
                 </div>
               </div>
             </div>            <!-- Modern filter badges and counts with animations -->
-            <div v-if="searchQuery || selectedMonth" class="flex flex-wrap items-center mt-3 gap-2">
-              <div v-if="searchQuery" class="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 text-indigo-700 text-xs font-medium px-3 py-1.5 rounded-full flex items-center border border-indigo-200/50 shadow-sm animate-fadeIn">
+            <div v-if="searchQuery || selectedMonth" class="flex flex-wrap items-center mt-3 gap-2">              <div v-if="searchQuery" class="bg-[#0099FF]/10 text-[#0099FF] text-xs font-medium px-3 py-1.5 rounded-full flex items-center border border-[#0099FF]/30 shadow-sm animate-fadeIn">
                 <span>Pencarian: {{ searchQuery }}</span>
-                <button @click="searchQuery = ''" class="ml-2 text-indigo-500 hover:text-red-500 transition-colors duration-200" aria-label="Clear search">
+                <button @click="searchQuery = ''" class="ml-2 text-[#0099FF] hover:text-red-500 transition-colors duration-200" aria-label="Clear search">
                   <div class="bg-white/80 rounded-full p-0.5 hover:bg-red-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -167,7 +166,7 @@ const navigateToPrint = (id) => {
                   </div>
                 </button>
               </div>
-              <div v-if="selectedMonth" class="bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-700 text-xs font-medium px-3 py-1.5 rounded-full flex items-center border border-purple-200/50 shadow-sm animate-fadeIn">
+              <div v-if="selectedMonth" class="bg-[#0099FF]/10 text-[#0099FF] text-xs font-medium px-3 py-1.5 rounded-full flex items-center border border-[#0099FF]/30 shadow-sm animate-fadeIn">
                 <span>Bulan: {{ months.find(m => m.value === selectedMonth)?.label }}</span>
                 <button @click="selectedMonth = ''" class="ml-2 text-purple-500 hover:text-red-500 transition-colors duration-200" aria-label="Clear month filter">
                   <div class="bg-white/80 rounded-full p-0.5 hover:bg-red-100 transition-colors">
@@ -180,10 +179,9 @@ const navigateToPrint = (id) => {
               <div class="text-xs font-medium text-gray-600 px-2 py-1 bg-gray-100/70 rounded-full border border-gray-200/50 shadow-sm">
                 <span class="font-bold text-indigo-700">{{ filteredData.length }}</span> hasil ditemukan
               </div>
-              <!-- Modern reset all filters button -->
-              <button 
+              <!-- Modern reset all filters button -->              <button 
                 @click="resetFilters" 
-                class="ml-auto text-xs font-medium text-white flex items-center bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 px-3 py-1.5 rounded-full shadow-sm hover:shadow transition-all duration-200 transform hover:-translate-y-0.5"
+                class="ml-auto text-xs font-medium text-white flex items-center bg-[#0099FF] hover:bg-[#0077CC] px-3 py-1.5 rounded-full shadow-sm hover:shadow transition-all duration-200 transform hover:-translate-y-0.5"
                 aria-label="Reset all filters"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -199,38 +197,35 @@ const navigateToPrint = (id) => {
         <div class="min-w-full inline-block align-middle">
           <div class="overflow-hidden border border-gray-200/50 sm:rounded-xl shadow-md bg-white/80 backdrop-blur-sm sm:shadow-lg rounded-lg">
             <!-- Responsive table with elegant styling and glass-morphism -->
-            <table class="min-w-full divide-y divide-gray-200/50 table-auto sm:table-fixed">              <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 sticky top-0 z-10 shadow-sm">
+            <table class="min-w-full divide-y divide-gray-200/50 table-auto sm:table-fixed">              <thead class="bg-[#0099FF]/10 sticky top-0 z-10 shadow-sm">
                 <tr>
-                  <!-- Modern mobile optimized headers with gradients and better mobile labels -->
-                  <th class="px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
+                  <!-- Mobile optimized headers with better mobile labels -->                  <th class="px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
                     <div class="hidden sm:inline">Jenis Pengadaan</div>
                     <div class="sm:hidden flex items-center">
-                      <span class="bg-indigo-100 text-indigo-800 p-1 rounded-md text-[10px] font-bold mr-1">JP</span>
+                      <span class="bg-[#0099FF]/20 text-[#0099FF] p-1 rounded-md text-[10px] font-bold mr-1">JP</span>
                       <span>/ Detail</span>
                     </div>
-                  </th><th class="hidden sm:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[18%] whitespace-nowrap">
+                  </th><th class="hidden sm:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[18%] whitespace-nowrap">
                     <span>No Preorder</span>
-                  </th>
-                  <th class="hidden sm:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
+                  </th>                  <th class="hidden sm:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
                     Supplier
                   </th>
-                  <th class="hidden md:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
+                  <th class="hidden md:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
                     Perusahaan
-                  </th>                  <th class="hidden sm:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[12%] whitespace-nowrap">
+                  </th>                  <th class="hidden sm:table-cell px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[12%] whitespace-nowrap">
                     Kuantum
                   </th>
-                  <th class="px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[10%] whitespace-nowrap">
+                  <th class="px-3 py-3.5 sm:px-4 sm:py-4 text-left text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[10%] whitespace-nowrap">
                     <span class="hidden sm:inline">Tanggal</span>
                     <span class="sm:hidden">Tgl</span>
-                  </th>
-                  <th class="px-3 py-3.5 sm:px-4 sm:py-4 text-center text-xs font-semibold text-indigo-700 uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
+                  </th>                  <th class="px-3 py-3.5 sm:px-4 sm:py-4 text-center text-xs font-semibold text-[#0099FF] uppercase tracking-wider w-auto sm:w-[15%] whitespace-nowrap">
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <!-- Row template with optimizations for all screen sizes -->                <tr v-for="(item, index) in paginatedData" :key="index" 
-                    :class="index % 2 === 0 ? 'bg-gradient-to-r from-blue-50/40 to-indigo-50/40' : 'bg-gradient-to-r from-amber-50/30 to-yellow-50/30'"
+                    :class="index % 2 === 0 ? 'bg-[#0099FF]/5' : 'bg-white'"
                     class="transition-all duration-200"><td class="px-3 py-4 sm:px-4 text-sm text-gray-700 truncate max-w-[100px] sm:max-w-none border-b border-gray-200/30">
                     <div class="tooltip py-1 font-medium">
                       <!-- Mobile-optimized layout for the first column -->
@@ -274,8 +269,7 @@ const navigateToPrint = (id) => {
                     <span class="bg-gray-100 px-2 py-1 rounded-md text-gray-700 hidden sm:inline-block">
                       {{ item.tanggal }}
                     </span>
-                    <!-- Mobile-specific date display -->
-                    <span class="sm:hidden bg-gradient-to-r from-blue-100 to-indigo-100 px-2 py-1 rounded-md text-indigo-800 font-medium inline-block shadow-sm">
+                    <!-- Mobile-specific date display -->                    <span class="sm:hidden bg-[#0099FF]/20 px-2 py-1 rounded-md text-[#0077CC] font-medium inline-block shadow-sm">
                       {{ item.tanggal }}
                     </span>
                   </td><td class="px-2 py-4 sm:px-4 text-sm text-center whitespace-nowrap border-b border-gray-200/30">                    <!-- Redesigned action buttons for desktop with compact and consistent styling -->
@@ -347,9 +341,8 @@ const navigateToPrint = (id) => {
                     <!-- Mobile view uses the action buttons in the detailed row below instead -->
                     <div class="sm:hidden"></div>
                   </td>
-                </tr>                <!-- Enhanced mobile view details row with improved organized layout -->
-                <tr v-for="(item, index) in paginatedData" :key="`mobile-${index}`" 
-                    :class="index % 2 === 0 ? 'bg-gradient-to-r from-blue-50/20 to-indigo-50/20' : 'bg-gradient-to-r from-amber-50/20 to-yellow-50/20'"
+                </tr>                <!-- Enhanced mobile view details row with improved organized layout -->                <tr v-for="(item, index) in paginatedData" :key="`mobile-${index}`" 
+                    :class="index % 2 === 0 ? 'bg-[#0099FF]/5' : 'bg-white'"
                     class="sm:hidden border-t-0">
                   <td colspan="5" class="px-3 py-2.5 text-xs text-gray-500">                    <!-- Redesigned mobile card with better structure -->
                     <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-gray-100">
@@ -362,11 +355,10 @@ const navigateToPrint = (id) => {
                             {{ item.tanggal }}
                           </span>
                         </div>
-                        
-                        <!-- Secondary identifier - PO number -->
-                        <div class="flex items-center mb-1 bg-gradient-to-r from-blue-50 to-indigo-50 p-1.5 rounded-lg">
-                          <div class="bg-blue-100 rounded-md p-1 mr-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <!-- Secondary identifier - PO number -->
+                        <div class="flex items-center mb-1 bg-[#0099FF]/10 p-1.5 rounded-lg">
+                          <div class="bg-[#0099FF]/20 rounded-md p-1 mr-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#0099FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                             </svg>
                           </div>
