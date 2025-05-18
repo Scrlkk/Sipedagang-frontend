@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/login/Login.vue'
 import ResetRequest from '../views/login/ResetPassword.vue'
+import ResetPasswordAccepted from '../views/login/ResetPasswordAccepted.vue'
 import DashboardAdmin  from '../views/admin/AdminView.vue'
 import FormAdmin  from '../views/admin/FormData.vue'
 import LihatDataAdmin from '../views/admin/LihatData.vue'
@@ -29,6 +30,10 @@ const router = createRouter({
      {
       path : '/resetrequest',
       component: ResetRequest ,
+    },
+    {
+      path : '/resetpasswordaccepted',
+      component: ResetPasswordAccepted ,
     },
     {
       path : '/editform',

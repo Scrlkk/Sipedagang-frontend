@@ -16,8 +16,7 @@ const handleSubmit = async () => {
   }
   
   isLoading.value = true
-  
-  try {
+    try {
     // Here you would add your actual password reset request logic
     console.log('Reset password for:', username.value)
     
@@ -25,6 +24,11 @@ const handleSubmit = async () => {
     setTimeout(() => {
       requestSent.value = true
       isLoading.value = false
+      
+      // Redirect to ResetPasswordAccepted after a short delay
+      setTimeout(() => {
+        router.push('/resetpasswordaccepted')
+      }, 1500) // Give user time to see success message before redirecting
     }, 1000)
   } catch (error) {
     errorMessage.value = 'Permintaan gagal, silakan coba lagi'
@@ -87,11 +91,19 @@ const goToLogin = () => {
             Tidak bisa mengakses? hubungi admin
           </div>
         </form>
-        
-        <!-- Success message after request sent -->
+          <!-- Success message after request sent -->
         <div v-else class="space-y-6 text-center">
-          <div class="p-3 bg-green-50 text-green-700 rounded-md">
-            Tautan reset kata sandi telah dikirim. Silakan periksa email Anda.
+          <div class="p-4 bg-green-50 text-green-700 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="font-medium mb-1">Verifikasi Berhasil!</h3>
+            <p>Tautan reset kata sandi telah dikirim. Anda akan dialihkan ke halaman reset kata sandi.</p>
+            <div class="mt-2 text-sm">
+              <div class="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
+              <div class="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500 mx-1"></div>
+              <div class="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
+            </div>
           </div>
         </div>
         

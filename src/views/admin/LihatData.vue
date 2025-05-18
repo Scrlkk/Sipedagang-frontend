@@ -1,17 +1,18 @@
 <script setup>
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import LihatDataComponent from '@/views/component/LihatDataComponent.vue'
+import { useRouter } from 'vue-router'
 import { ref, onMounted, watch, computed } from 'vue'
 import Swal from 'sweetalert2'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
 const searchQuery = ref('')
 const selectedMonth = ref('')
 const currentPage = ref(1)
 const itemsPerPage = ref(6)
 const pageInput = ref(1)
-
-
+const isExtraSmallScreen = ref(false)
 
 // Data table for storing form submissions
 const tableData = ref([])
@@ -19,7 +20,19 @@ const tableData = ref([])
 // Load stored data from localStorage on component mount
 onMounted(() => {
   loadStoredData()
+  checkScreenSize()
+  window.addEventListener('resize', checkScreenSize)
 })
+
+// Clean up event listener
+const onBeforeUnmount = () => {
+  window.removeEventListener('resize', checkScreenSize)
+}
+
+// Function to check if screen is extra small
+const checkScreenSize = () => {
+  isExtraSmallScreen.value = window.innerWidth < 480
+}
 
 // Function to load data from localStorage
 const loadStoredData = () => {
@@ -117,85 +130,96 @@ const getTotalPages = computed(() => {
   return Math.ceil(filteredData.value.length / itemsPerPage.value)
 })
 
-// Calculate which page numbers to show (max 5)
+// Calculate which page numbers to show (max 5, fewer on small screens)
 const displayedPageNumbers = computed(() => {
   const totalPages = getTotalPages.value
   
-  if (totalPages <= 5) {
-    // If 5 or fewer pages, show all
+  // For extra small screens, show fewer pages
+  const maxPages = isExtraSmallScreen.value ? 3 : 5
+  
+  if (totalPages <= maxPages) {
+    // If fewer pages than maximum, show all
     return Array.from({ length: totalPages }, (_, i) => i + 1)
   }
   
-  // We need to display 5 page numbers centered around current page if possible
+  // We need to display pagination numbers centered around current page if possible
   let start, end
   
-  if (currentPage.value <= 3) {
-    // If at the beginning, show first 5 pages
-    start = 1
-    end = 5
-  } else if (currentPage.value >= totalPages - 2) {
-    // If near the end, show last 5 pages
-    start = totalPages - 4
-    end = totalPages
+  if (isExtraSmallScreen.value) {
+    // For extra small screens, simplify pagination further
+    if (currentPage.value === 1) {
+      // At start, show first 3
+      start = 1
+      end = 3
+    } else if (currentPage.value >= totalPages) {
+      // At end, show last 3
+      start = totalPages - 2
+      end = totalPages
+    } else {
+      // Show current page and neighbors
+      start = currentPage.value - 1
+      end = currentPage.value + 1
+    }
   } else {
-    // Show 2 pages before and 2 after current page (total of 5)
-    start = currentPage.value - 2
-    end = currentPage.value + 2
+    // For larger screens
+    if (currentPage.value <= 3) {
+      // If at the beginning, show first 5 pages
+      start = 1
+      end = 5
+    } else if (currentPage.value >= totalPages - 2) {
+      // If near the end, show last 5 pages
+      start = totalPages - 4
+      end = totalPages
+    } else {
+      // Show 2 pages before and 2 after current page (total of 5)
+      start = currentPage.value - 2
+      end = currentPage.value + 2
+    }
   }
   
   return Array.from({ length: end - start + 1 }, (_, i) => start + i)
 })
 
-const goBack = () => {
-  router.push('/dashboard')
-}
-
-const previewItem = (item) => {
+// Event handlers for storing data before navigation
+const handlePreview = (item) => {
   console.log('Preview:', item)
   
   // Store the selected data in localStorage for preview
   if (item && item.rawData) {
     localStorage.setItem('permohonanFormData', JSON.stringify(item.rawData))
-    router.push('/previewpermohonan')
   } else {
     // If there's no rawData property, try to use the item itself
-    // This is a fallback in case the data isn't formatted as expected
     localStorage.setItem('permohonanFormData', JSON.stringify(item))
-    router.push('/previewpermohonan')
   }
 }
 
-const printItem = (item) => {
+const handlePrint = (item) => {
   console.log('Print:', item)
   
-  // Store the selected data in localStorage for preview
+  // Store the selected data in localStorage for print
   if (item && item.rawData) {
     localStorage.setItem('permohonanFormData', JSON.stringify(item.rawData))
     localStorage.setItem('autoPrint', 'true') // Set flag to auto-print
-    router.push('/previewpermohonan')
   } else {
     // If there's no rawData property, try to use the item itself
     localStorage.setItem('permohonanFormData', JSON.stringify(item))
     localStorage.setItem('autoPrint', 'true') // Set flag to auto-print
-    router.push('/previewpermohonan')
   }
 }
 
-const editItem = (item) => {
+const handleEdit = (item) => {
   console.log('Edit:', item)
   
   // Store the selected data in localStorage for editing
   if (item && item.rawData) {
     localStorage.setItem('permohonanFormData', JSON.stringify(item.rawData))
-    router.push('/editform')
   } else {
     // If there's no rawData property, try to use the item itself
     localStorage.setItem('permohonanFormData', JSON.stringify(item))
-    router.push('/editform')
   }
 }
 
-const deleteItem = (item) => {
+const handleDelete = (item) => {
   Swal.fire({
     title: 'Konfirmasi Hapus',
     text: `Anda yakin ingin menghapus data ${item.jenisPengadaan}?`,
@@ -259,16 +283,16 @@ const handlePageInput = () => {
   currentPage.value = newPage
 }
 
+const resetFilters = () => {
+  searchQuery.value = '';
+  selectedMonth.value = '';
+  currentPage.value = 1;
+}
+
 // Watch for currentPage changes to update input field
 watch(currentPage, (newValue) => {
   pageInput.value = newValue
 })
-
-// Initialize pageInput with currentPage on mounted
-onMounted(() => {
-  pageInput.value = currentPage.value
-})
-
 </script>
 
 <template>
@@ -276,339 +300,38 @@ onMounted(() => {
     <!-- Add page transition wrapper -->
     <transition name="page" appear>
       <div class="flex items-center justify-center h-[calc(100vh-120px)] py-6 font-inter">
-        <div class="w-full max-w-7xl mx-auto px-4">
-          <!-- Main Container with improved visual hierarchy -->
-          <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col h-auto max-h-[80vh] border border-gray-100">
-            <!-- Enhanced Header with white background and blue title -->
-<div class="bg-white p-6 border-b border-gray-200">
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-    <h2 class="text-2xl font-bold text-[#0099FF] mb-4 sm:mb-0 flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="#0099FF">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-      </svg>
-      Lihat Data
-    </h2>
-    
-    <!-- Improved search controls with better spacing -->
-    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 w-full sm:w-auto">
-      <!-- Search input with enhanced styling -->
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Cari data..."
-          class="pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+        <!-- Using our reusable presentational component -->
+        <LihatDataComponent
+          :tableData="tableData"
+          :searchQuery="searchQuery"
+          :selectedMonth="selectedMonth"
+          :currentPage="currentPage"
+          :itemsPerPage="itemsPerPage"
+          :pageInput="pageInput"
+          :months="months"
+          :filteredData="filteredData"
+          :paginatedData="paginatedData"
+          :getTotalPages="getTotalPages"
+          :isExtraSmallScreen="isExtraSmallScreen"
+          :displayedPageNumbers="displayedPageNumbers"
+          userType="admin"
+          @update:searchQuery="searchQuery = $event"
+          @update:selectedMonth="selectedMonth = $event"
+          @update:currentPage="currentPage = $event"
+          @update:pageInput="pageInput = $event"
+          @page-input-submit="handlePageInput"
+          @back="handleBack"
+          @preview="handlePreview"
+          @print="handlePrint"
+          @edit="handleEdit"
+          @delete="handleDelete"
         />
-      </div>
-      
-      <!-- Month dropdown with enhanced styling -->
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <select
-          v-model="selectedMonth"
-          class="pl-10 pr-8 py-2 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent w-full text-gray-500"
-        >
-          <option v-for="month in months" :key="month.value" :value="month.value">
-            {{ month.label }}
-          </option>
-        </select>
-        <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-            
-         <!-- Table content with responsive dimensions and text wrapping -->
-<div class="overflow-y-auto overflow-x-hidden" style="height: 450px;">
-  <table class="min-w-full table-fixed">
-    <thead class="bg-gray-50 sticky top-0 z-10">
-      <tr>
-        <th class="w-[15%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Jenis Pengadaan
-        </th>
-        <th class="w-[18%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          No Preorder
-        </th>
-        <th class="w-[15%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Supplier
-        </th>
-        <th class="w-[15%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Perusahaan
-        </th>
-        <th class="w-[12%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Kuantum
-        </th>
-        <th class="w-[10%] px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Tanggal
-        </th>
-        <th class="w-[15%] px-4 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Aksi
-        </th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-200">
-      <!-- Row template with text wrapping for long content -->
-      <tr v-for="(item, index) in paginatedData" :key="index" 
-          :class="index % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
-          class="hover:bg-gray-100 transition-colors">
-        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
-          <div class="tooltip">
-            {{ item.jenisPengadaan }}
-            <span class="tooltiptext">{{ item.jenisPengadaan }}</span>
-          </div>
-        </td>
-        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
-          <div class="tooltip">
-            {{ item.noProorder }}
-            <span class="tooltiptext">{{ item.noProorder }}</span>
-          </div>
-        </td>
-        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
-          <div class="tooltip">
-            {{ item.supplier }}
-            <span class="tooltiptext">{{ item.supplier }}</span>
-          </div>
-        </td>
-        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
-          <div class="tooltip">
-            {{ item.perusahaan }}
-            <span class="tooltiptext">{{ item.perusahaan }}</span>
-          </div>
-        </td>
-        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
-          <div class="tooltip">
-            {{ item.kuantum }}
-            <span class="tooltiptext">{{ item.kuantum }}</span>
-          </div>
-        </td>
-        <td class="px-4 py-4 text-sm text-gray-700 truncate max-w-0">
-          {{ item.tanggal }}
-        </td>
-        <td class="px-4 py-4 text-sm text-center">
-          <div class="flex flex-wrap justify-center gap-2">
-            <a 
-              @click.prevent="previewItem(item)" 
-              class="text-blue-600 hover:text-blue-800 cursor-pointer font-medium underline whitespace-nowrap"
-            >
-              Preview
-            </a>
-            <a 
-              @click.prevent="printItem(item)" 
-              class="text-green-600 hover:text-green-800 cursor-pointer font-medium underline whitespace-nowrap"
-            >
-              Cetak
-            </a>
-            <a 
-              @click.prevent="editItem(item)" 
-              class="text-amber-600 hover:text-amber-800 cursor-pointer font-medium underline whitespace-nowrap"
-            >
-              Edit
-            </a>
-            <a 
-              @click.prevent="deleteItem(item)" 
-              class="text-red-600 hover:text-red-800 cursor-pointer font-medium underline whitespace-nowrap"
-            >
-              Delete
-            </a>
-          </div>
-        </td>
-      </tr>
-
-
-                <!-- Empty rows to maintain consistent height when data is sparse -->
-                <template v-if="paginatedData.length < itemsPerPage.value">
-                  <tr 
-                    v-for="i in (itemsPerPage.value - paginatedData.length)" 
-                    :key="`empty-${i}`"
-                    :class="(paginatedData.length + i) % 2 === 0 ? 'bg-blue-50/60' : 'bg-amber-50/60'"
-                  >
-                    <td colspan="7" class="px-4 py-4"></td>
-                  </tr>
-                </template>
-
-                <!-- Empty state when no data -->
-                <tr v-if="paginatedData.length === 0">
-                  <td colspan="7" class="px-4 py-12 text-center">
-                    <div class="flex flex-col items-center justify-center text-gray-500">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <p class="text-lg font-medium">Tidak ada data</p>
-                      <p class="text-sm mt-1">Tidak ada data yang sesuai dengan filter yang dipilih</p>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-            
-            <!-- Footer with improved pagination and back button -->
-            <div class="p-5 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-between items-center">
-              <!-- Enhanced pagination with limit of 10 page numbers -->
-              <div class="flex items-center space-x-2 mb-4 sm:mb-0">
-                <!-- Previous page button -->
-                <button 
-                  @click="goToPage(currentPage - 1)"
-                  :disabled="currentPage === 1"
-                  class="w-10 h-10 flex items-center justify-center rounded-md border transition-colors"
-                  :class="currentPage === 1 
-                    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer'"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                
-                <!-- Limited Page Numbers (only show max 10) -->
-                <div 
-                  v-for="page in displayedPageNumbers" 
-                  :key="page"
-                  @click="goToPage(page)"
-                  class="w-10 h-10 flex items-center justify-center rounded-md cursor-pointer transition-colors"
-                  :class="[
-                    currentPage === page 
-                      ? 'border-2 border-blue-500 text-blue-600 font-semibold' 
-                      : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                  ]"
-                >
-                  {{ page }}
-                </div>
-                
-                <!-- Next page button -->
-                <button 
-                  @click="goToPage(currentPage + 1)"
-                  :disabled="currentPage === getTotalPages"
-                  class="w-10 h-10 flex items-center justify-center rounded-md border transition-colors"
-                  :class="currentPage === getTotalPages 
-                    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer'"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                
-                <!-- Page input with manual typing -->
-                <div class="relative ml-3 flex items-center">
-                  <span class="mr-2 text-gray-600">Halaman:</span>
-                  <div class="flex items-center">
-                    <input
-                      type="number"
-                      v-model.number="pageInput"
-                      @keyup.enter="handlePageInput"
-                      @blur="handlePageInput"
-                      min="1"
-                      :max="getTotalPages"
-                      class="w-16 pl-3 pr-2 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-blue-300 text-center"
-                    />
-                    <span class="mx-1 text-gray-500">/</span>
-                    <span class="text-gray-700">{{ getTotalPages }}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Enhanced back button -->
-              <button 
-                @click="goBack"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium flex items-center transition-colors shadow-sm focus:ring-2 focus:ring-offset-1 focus:ring-blue-500"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Kembali
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </transition>
   </AdminLayout>
 </template>
 
 <style scoped>
-/* Custom scrollbar styling */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #ddd;
-  border-radius: 4px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #bbb;
-}
-
-/* Subtle row highlight effect */
-tr {
-  transition: all 0.2s ease;
-}
-
-/* Button hover effects */
-button {
-  transition: all 0.2s ease;
-}
-
-/* Apply Inter font to everything */
-:root {
-  font-family: 'Inter', sans-serif;
-}
-
-/* Tooltip for truncated text */
-.tooltip {
-  position: relative;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px 12px;
-  position: absolute;
-  z-index: 20;
-  bottom: 125%;
-  left: 0;
-  opacity: 0;
-  transition: opacity 0.3s;
-  white-space: normal;
-  max-width: 300px;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Make sure the max-w-0 forces truncation */
-.max-w-0 {
-  max-width: 100%;
-}
-
 /* Page transition animations */
 .page-enter-active,
 .page-leave-active {
@@ -623,31 +346,5 @@ button {
 .page-leave-to {
   opacity: 0;
   transform: translateY(-20px);
-}
-
-/* Pagination hover animations */
-.pagination-item {
-  transition: all 0.2s ease;
-}
-
-.pagination-item:hover {
-  transform: translateY(-2px);
-}
-
-/* Table row animations */
-tbody tr {
-  transition: all 0.3s ease;
-  animation: fadeIn 0.5s ease forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>

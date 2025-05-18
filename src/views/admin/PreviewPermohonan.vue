@@ -18,7 +18,28 @@ const formData = ref({
 onMounted(() => {
   const savedData = localStorage.getItem('permohonanFormData');
   if (savedData) {
-    formData.value = JSON.parse(savedData);
+    try {
+      const parsedData = JSON.parse(savedData);
+      
+      // Ensure dataIN is always initialized as an array
+      if (!parsedData.dataIN || !Array.isArray(parsedData.dataIN)) {
+        parsedData.dataIN = [];
+      }
+      
+      // If dataIN is empty but we have kuantum and satuan, create a default entry
+      if (parsedData.dataIN.length === 0 && parsedData.kuantum) {
+        parsedData.dataIN.push({
+          tanggal: parsedData.tanggalPengadaan,
+          kuantum: parsedData.kuantum,
+          satuan: parsedData.satuan || 'KG'
+        });
+      }
+      
+      formData.value = parsedData;
+      console.log('Loaded formData with dataIN:', formData.value.dataIN);
+    } catch (error) {
+      console.error('Error parsing form data:', error);
+    }
   }
   
   // Check if auto-print is requested

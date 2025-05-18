@@ -1,17 +1,11 @@
 <script setup>
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { ref, onMounted, watch } from 'vue'
-import Swal from 'sweetalert2'
 import { useRouter } from 'vue-router'
+import EditFormComponent from '@/views/component/EditFormComponent.vue'
+import { ref, onMounted } from 'vue'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
-
-// Store the original data identifier for finding the item to update later
-const originalIdentifier = ref({
-  jenisPengadaan: '',
-  noProorder: '',
-  tanggal: ''
-})
 
 // Data Pemohon
 const namaSupplier = ref('')
@@ -26,90 +20,111 @@ const jenisPengadaan = ref('Beras')
 const kuantum = ref('')
 const satuan = ref('KG')
 
-// Data IN
+// Data In
 const dataIN = ref([
-  { tanggal: '', kuantum: '', satuan: 'KG' },
+  { tanggal: '', kuantum: '', satuan: 'KG' }
 ])
 
-// Watch satuan changes and update all dataIN rows
-watch(satuan, (newSatuan) => {
-  dataIN.value.forEach(row => {
-    row.satuan = newSatuan;
-  });
-})
-
-// Informasi Pembayaran
+// Data Pembayaran
 const jumlahPembayaran = ref('')
 const jumlahSPP = ref('')
+const formattedPembayaran = ref('')
+const formattedSPP = ref('')
 
-// Function to format value as Rupiah in input fields
-const formatRupiahInput = (value) => {
-  if (!value) return '';
-  
-  // Remove all non-numeric characters
-  let number = value.toString().replace(/[^\d]/g, '');
-  
-  // Format the number with thousand separators
-  return 'Rp ' + number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
+// Store the original data identifier for finding the item to update later
+const originalIdentifier = ref({
+  jenisPengadaan: '',
+  noProorder: '',
+  tanggal: ''
+})
 
-// Function to extract numeric value from formatted Rupiah string
-const extractNumericValue = (rupiahString) => {
-  if (!rupiahString) return '';
-  return rupiahString.replace(/[^\d]/g, '');
-}
+// Key for localStorage
+const dataKey = 'permohonanDataList'
+const formDataKey = 'permohonanFormData'
 
-// Form actions
-const clearForm = () => {
-  namaSupplier.value = ''
-  namaPerusahaan.value = ''
-  jenisBank.value = 'Mandiri'
-  nomerRekening.value = ''
-  nomerPO.value = ''
-  tanggalPengadaan.value = '2025-01-12'
-  jenisPengadaan.value = 'Beras'
-  kuantum.value = ''
-    // Keep just one empty row when clearing
-  dataIN.value = [{ tanggal: '', kuantum: '', satuan: 'KG' }]
-  
-  jumlahPembayaran.value = ''
-  jumlahSPP.value = ''
-}
+// Load data from localStorage on mount
+onMounted(() => {
+  loadData()
+})
 
-const saveForm = () => {
-  // Validate essential fields
-  if (!namaSupplier.value || !namaPerusahaan.value || !nomerRekening.value || 
-      !nomerPO.value || !tanggalPengadaan.value || !kuantum.value) {
-    Swal.fire({
-      title: 'Data Tidak Lengkap',
-      text: 'Mohon lengkapi semua field yang diperlukan',
-      icon: 'warning',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Ok'
-    });
-    return;
-  }
+const loadData = () => {
+  const storedData = localStorage.getItem(formDataKey)
   
-  // Validate satuan consistency
-  let isDataINValid = true;
-  dataIN.value.forEach((item, index) => {
-    if (item.kuantum && item.satuan !== satuan.value) {
-      isDataINValid = false;
+  if (storedData) {
+    const formData = JSON.parse(storedData)
+    
+    // Data Pemohon
+    namaSupplier.value = formData.namaSupplier || ''
+    namaPerusahaan.value = formData.namaPerusahaan || ''
+    jenisBank.value = formData.jenisBank || 'Mandiri'
+    nomerRekening.value = formData.nomerRekening || ''
+    
+    // Detail PO
+    nomerPO.value = formData.nomerPO || ''
+    tanggalPengadaan.value = formData.tanggalPengadaan || ''
+    jenisPengadaan.value = formData.jenisPengadaan || 'Beras'
+    kuantum.value = formData.kuantum || ''
+    satuan.value = formData.satuan || 'KG'
+    
+    // Data IN
+    dataIN.value = Array.isArray(formData.dataIN) && formData.dataIN.length > 0
+      ? formData.dataIN
+      : [{ tanggal: '', kuantum: '', satuan: 'KG' }]
+    
+    // Data Pembayaran
+    jumlahPembayaran.value = formData.jumlahPembayaran || ''
+    jumlahSPP.value = formData.jumlahSPP || ''
+    
+    // Format currency display values
+    formattedPembayaran.value = formatRupiah(jumlahPembayaran.value)
+    formattedSPP.value = formatRupiah(jumlahSPP.value)
+    
+    // Store original identifier for updating the right item
+    originalIdentifier.value = {
+      jenisPengadaan: formData.jenisPengadaan || '',
+      noProorder: formData.nomerPO || '',
+      tanggal: formData.tanggalPengadaan || ''
     }
-  });
-  
-  if (!isDataINValid) {
-    Swal.fire({
-      title: 'Satuan Tidak Konsisten',
-      text: 'Satuan pada Data IN harus sama dengan satuan pada Kuantum',
-      icon: 'warning',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Ok'
-    });
-    return;
   }
-  
-  // Collect form data
+}
+
+// Function for formatting currency
+const formatRupiah = (value) => {
+  if (!value) return '';
+  return 'Rp ' + value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// Handler for updating dataIN rows
+const updateDataINRow = (updatedDataIN) => {
+  dataIN.value = updatedDataIN
+}
+
+// Maximum number of dataIN rows
+const maxDataInRows = 10
+
+// Add row to dataIN
+const addDataINRow = () => {
+  if (dataIN.value.length < maxDataInRows) {
+    dataIN.value.push({ tanggal: '', kuantum: '', satuan: 'KG' })
+  }
+}
+
+// Remove row from dataIN
+const removeDataINRow = (index) => {
+  if (dataIN.value.length > 1) {
+    dataIN.value.splice(index, 1)
+  }
+}
+
+// Update currency formatted values
+const updateFormattedValues = () => {
+  formattedPembayaran.value = formatRupiah(jumlahPembayaran.value)
+  formattedSPP.value = formatRupiah(jumlahSPP.value)
+}
+
+// Handler untuk event save dari EditFormComponent
+const handleSave = () => {
+  // Build the complete form data
   const formData = {
     namaSupplier: namaSupplier.value,
     namaPerusahaan: namaPerusahaan.value,
@@ -124,153 +139,125 @@ const saveForm = () => {
     jumlahPembayaran: jumlahPembayaran.value,
     jumlahSPP: jumlahSPP.value
   }
-    // Save form data to localStorage
-  localStorage.setItem('permohonanFormData', JSON.stringify(formData))
   
-  // Also update the data in permohonanDataList
-  const savedDataList = localStorage.getItem('permohonanDataList');
-  if (savedDataList) {
-    try {
-      const dataList = JSON.parse(savedDataList);
-      
-      // Format tanggal for the table view
-      const date = new Date(tanggalPengadaan.value);
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      const tanggalFormatted = `${day}/${month}/${year}`;
-      
-      // Create updated entry
-      const updatedEntry = {
-        jenisPengadaan: jenisPengadaan.value,
-        noProorder: nomerPO.value,
-        supplier: namaSupplier.value,
-        perusahaan: namaPerusahaan.value,
-        kuantum: `${kuantum.value} ${satuan.value}`,
-        tanggal: tanggalFormatted,
-        rawData: formData // Store the full raw data for preview
-      }      // Find the index of the entry with the original identifiers (before any edits)
-      // Using the same criteria as the deleteItem function in LihatData.vue
-      const index = dataList.findIndex(
-        item => item.jenisPengadaan === originalIdentifier.value.jenisPengadaan && 
-               item.noProorder === originalIdentifier.value.noProorder &&
-               item.tanggal === originalIdentifier.value.tanggal
-      );
-        console.log('Looking for entry with:', originalIdentifier.value);
-      console.log('Index found:', index);
-      
-      if (index !== -1) {
-        // Replace the existing entry
-        console.log('Updating existing entry at index:', index);
-        dataList[index] = updatedEntry;
-      } else {
-        // If no match found, add as a new entry
-        console.log('No matching entry found, adding new entry');
-        dataList.push(updatedEntry);
-      }
-      
-      // Save the updated list back to localStorage
-      localStorage.setItem('permohonanDataList', JSON.stringify(dataList));
-    } catch (e) {
-      console.error('Error updating data list:', e);
-    }
+  // Format tanggal for display
+  let tanggalFormatted = ''
+  if (tanggalPengadaan.value) {
+    const date = new Date(tanggalPengadaan.value)
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    tanggalFormatted = `${day}/${month}/${year}`
   }
   
-  // Show success message
+  // Create entry for table display
+  const displayEntry = {
+    jenisPengadaan: jenisPengadaan.value,
+    noProorder: nomerPO.value,
+    supplier: namaSupplier.value,
+    perusahaan: namaPerusahaan.value,
+    kuantum: `${kuantum.value} ${satuan.value}`,
+    tanggal: tanggalFormatted,
+    rawData: formData
+  }
+    // Update or add the data in storage
+  let savedDataList = []
+  const savedDataString = localStorage.getItem(dataKey)
+  
+  if (savedDataString) {
+    savedDataList = JSON.parse(savedDataString)
+  }
+  
+  // Check if we need to update existing or add new
+  const existingIndex = savedDataList.findIndex(item => 
+    item.jenisPengadaan === originalIdentifier.value.jenisPengadaan &&
+    item.noProorder === originalIdentifier.value.noProorder &&
+    item.tanggal === originalIdentifier.value.tanggal
+  )
+  
+  if (existingIndex !== -1) {
+    // Update existing entry
+    savedDataList[existingIndex] = displayEntry
+  } else {
+    // Add new entry
+    savedDataList.push(displayEntry)
+  }
+    // Save updated list back to localStorage
+  localStorage.setItem(dataKey, JSON.stringify(savedDataList))
+    // Show success message
   Swal.fire({
-    title: 'Berhasil!',
-    text: 'Data berhasil diperbarui',
+    title: 'Tersimpan!',
+    text: 'Data berhasil diperbarui.',
     icon: 'success',
-    confirmButtonColor: '#3085d6',
-    confirmButtonText: 'Lihat Data'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Navigate back to the data list
-      router.push('/lihatdata')
-    }
-  });
+    confirmButtonColor: '#0099FF'
+  }).then(() => {
+    // Navigate back to the data list using the router object
+    // Note: We can't use router-link here since this is a JS function
+    // but other component-based navigation should use router-link
+    router.push('/lihatdata');
+  })
 }
 
-// Function to load stored data from localStorage when component mounts
-onMounted(() => {
-  const savedData = localStorage.getItem('permohonanFormData');
-  if (savedData) {
-    try {
-      const parsedData = JSON.parse(savedData);
-        // Store the original data identifier for finding the record to update later
-      // Format date exactly like it's shown in the table
-      let formattedDate = '';
-      if (parsedData.tanggalPengadaan) {
-        const date = new Date(parsedData.tanggalPengadaan);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        formattedDate = `${day}/${month}/${year}`;
-      }
+// Handler untuk event cancel dari EditFormComponent
+const handleCancel = () => {
+  // Navigate back to the dashboard
+  // Note: We keep this programmatic navigation since it's inside an event handler
+  // But other component-based navigation should use router-link
+  router.push('/dashboard');
+}
 
-      originalIdentifier.value = {
-        jenisPengadaan: parsedData.jenisPengadaan || '',
-        noProorder: parsedData.nomerPO || '',
-        tanggal: formattedDate
-      };
-      
-      // Populate form fields with the parsed data
-      namaSupplier.value = parsedData.namaSupplier || '';
-      namaPerusahaan.value = parsedData.namaPerusahaan || '';
-      jenisBank.value = parsedData.jenisBank || 'Mandiri';
-      nomerRekening.value = parsedData.nomerRekening || '';
-      nomerPO.value = parsedData.nomerPO || '';
-      tanggalPengadaan.value = parsedData.tanggalPengadaan || '';
-      jenisPengadaan.value = parsedData.jenisPengadaan || 'Beras';
-      kuantum.value = parsedData.kuantum || '';
-      satuan.value = parsedData.satuan || 'KG';
-      
-      // Handle dataIN separately to ensure it's formatted correctly
-      if (parsedData.dataIN && Array.isArray(parsedData.dataIN) && parsedData.dataIN.length > 0) {
-        // Ensure each dataIN entry has a satuan property that matches the current satuan
-        dataIN.value = parsedData.dataIN.map(item => ({
-          tanggal: item.tanggal || '',
-          kuantum: item.kuantum || '',
-          satuan: satuan.value // Apply the current satuan to all rows
-        }));
-      } else {
-        // Default to a single empty row if no dataIN is present
-        dataIN.value = [{ tanggal: '', kuantum: '', satuan: satuan.value }];
-      }
-      
-      jumlahPembayaran.value = parsedData.jumlahPembayaran || '';
-      jumlahSPP.value = parsedData.jumlahSPP || '';
-      
-      console.log('Form data loaded from localStorage:', parsedData);
-    } catch (e) {
-      console.error('Error parsing saved data:', e);
-      
-      // Handle error case - show notification to user
-      Swal.fire({
-        title: 'Error',
-        text: 'Terjadi kesalahan saat memuat data. Silahkan coba lagi.',
-        icon: 'error',
-        confirmButtonColor: '#3085d6'
-      });
+// Handler to clear form data
+const handleClear = () => {
+  // Confirm via SweetAlert
+  Swal.fire({
+    title: 'Reset Form?',
+    text: 'Semua data yang sudah diisi akan hilang.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Reset',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Reset all form fields
+      namaSupplier.value = ''
+      namaPerusahaan.value = ''
+      jenisBank.value = 'Mandiri'
+      nomerRekening.value = ''
+      nomerPO.value = ''
+      tanggalPengadaan.value = ''
+      jenisPengadaan.value = 'Beras'
+      kuantum.value = ''
+      satuan.value = 'KG'
+      dataIN.value = [{ tanggal: '', kuantum: '', satuan: 'KG' }]
+      jumlahPembayaran.value = ''
+      jumlahSPP.value = ''
+      formattedPembayaran.value = ''
+      formattedSPP.value = ''
     }
-  }
-})
+  })
+}
 
-// Function to add a new row to dataIN
-const addDataInRow = () => {
-  if (dataIN.value.length >= 10) {
-    // Show SweetAlert notification
-    Swal.fire({
-      title: 'Batas Maksimum',
-      text: 'Maksimum Untuk Data IN hanya 10 baris',
-      icon: 'warning',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Oke'
-    });
-    return; // Exit the function without adding a row
+// Handler for preview form before saving
+const handleFormPreview = () => {
+  // Save current form state temporarily
+  const formData = {
+    namaSupplier: namaSupplier.value,
+    namaPerusahaan: namaPerusahaan.value,
+    jenisBank: jenisBank.value,
+    nomerRekening: nomerRekening.value,
+    nomerPO: nomerPO.value,
+    tanggalPengadaan: tanggalPengadaan.value,
+    jenisPengadaan: jenisPengadaan.value,
+    kuantum: kuantum.value,
+    satuan: satuan.value,
+    dataIN: dataIN.value,
+    jumlahPembayaran: jumlahPembayaran.value,
+    jumlahSPP: jumlahSPP.value
   }
-    // If under the limit, add a new row with the current satuan value
-  dataIN.value.push({ tanggal: '', kuantum: '', satuan: satuan.value });
+    localStorage.setItem(formDataKey, JSON.stringify(formData))
+  router.push('/previewpermohonan')
 }
 </script>
 
@@ -299,260 +286,41 @@ const addDataInRow = () => {
           </router-link>
         </div>
 
-        <!-- Form Card Container -->
-        <div class="w-full max-w-5xl mx-auto px-4">
-          <div class="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col h-auto max-h-[80vh] border border-gray-100 form-card">
-            <!-- Form Header -->
-            <div class="text-center pb-2 bg-white z-10">
-              <h2 class="text-xl font-medium mt-10 mb-1 form-title" style="color: #0099FF;">Edit Form Input Data</h2>
-              <div class="mx-auto form-divider" style="height: 3px; background-color: #0099FF; width: 100%; max-width: 200px; margin-bottom: 20px;"></div>
-            </div>
-
-            <!-- Scrollable Form Content -->
-            <div class="overflow-y-auto flex-grow">
-              <div class="p-6">
-                <!-- Data Pemohon Section -->
-                <div class="mb-8 form-section">
-                  <h3 class="font-medium text-lg mb-4">Data Pemohon</h3>
-
-                  <!-- Horizontal layout for form fields -->
-                  <div class="space-y-3">
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Nama Supplier</label>
-                      <input
-                        type="text"
-                        v-model="namaSupplier"
-                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Masukan Nama Supplier"
-                      />
-                    </div>
-
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Nama Perusahaan</label>
-                      <input
-                        type="text"
-                        v-model="namaPerusahaan"
-                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Masukan Nama Perusahaan"
-                      />
-                    </div>
-
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Jenis Bank</label>
-                      <div class="relative w-3/4">
-                        <select
-                          v-model="jenisBank"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-                        >
-                          <option>Mandiri</option>
-                          <option>BCA</option>
-                          <option>BNI</option>
-                          <option>BRI</option>
-                          <option>CIMB Niaga</option>
-                          <option>BTN</option>
-                          <option>Permata</option>
-                        </select>
-                        <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Nomer Rekening</label>
-                      <input
-                        type="text"
-                        v-model="nomerRekening"
-                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Masukan Nomer Rekening"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Detail Purchasing Order Section -->
-                <div class="form-section">
-                  <h3 class="font-medium text-lg mb-4">Detail Purchasing Order</h3>
-
-                  <div class="space-y-3">
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Nomer PO</label>
-                      <input
-                        type="text"
-                        v-model="nomerPO"
-                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Masukan Nomer PO Contoh (1234/12/11C30/2024)"
-                      />
-                    </div>
-
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Tanggal Pengadaan</label>
-                      <div class="relative w-3/4">
-                        <input
-                          type="date"
-                          v-model="tanggalPengadaan"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Jenis Pengadaan</label>
-                      <div class="relative w-3/4">
-                        <select
-                          v-model="jenisPengadaan"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-                        >
-                          <option>Beras</option>
-                          <option>Jagung</option>
-                          <option>Kedelai</option>
-                        </select>
-                        <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Kuantum</label>                      <div class="relative w-3/4 flex">
-                        <input
-                          type="text"
-                          v-model="kuantum"
-                          class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="Masukan Jumlah Kuantum"
-                        />
-                        <select
-                          v-model="satuan"
-                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="KG">KG</option>
-                          <option value="Liter">Liter</option>
-                          <option value="PCS">PCS</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Data IN Section -->
-                <div class="mb-8 mt-6 p-4 rounded-lg form-section">
-                  <h3 class="font-medium text-lg mb-4">Data IN</h3>
-                  
-                  <!-- Dynamic rows -->
-                  <div v-for="(item, index) in dataIN" :key="index" class="flex items-center mb-4 space-x-2">
-                    <div class="flex-none w-10 h-10 bg-white rounded-md flex items-center justify-center border border-gray-300">
-                      <span>{{ index + 1 }}</span>
-                    </div>
-                    <div class="flex-none w-44 sm:w-56">
-                      <div class="relative">
-                        <input
-                          type="date"
-                          v-model="dataIN[index].tanggal"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <div class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex-1 w-48">
-                      <div class="flex">
-                        <input
-                          type="text"
-                          v-model="dataIN[index].kuantum"
-                          class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="Masukan Jumlah Kuantum"
-                        />                        <select
-                          v-model="dataIN[index].satuan"
-                          class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-white text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          disabled
-                        >
-                          <option :value="satuan">{{ satuan }}</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <!-- Optional: Delete button -->
-                    <button 
-                      @click="dataIN.length > 1 ? dataIN.splice(index, 1) : ''" 
-                      class="text-red-500 hover:text-red-700"
-                      type="button"
-                      title="Hapus baris"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  <!-- Add Row button -->
-                  <div class="flex justify-center mt-2">
-                    <button 
-                      @click="addDataInRow" 
-                      type="button"
-                      class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                      </svg>
-                      Tambah Baris
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Informasi Pembayaran Section -->
-                <div class="mb-8 form-section">
-                  <h3 class="font-medium text-lg mb-4">Informasi Pembayaran</h3>
-                  
-                  <div class="space-y-3">                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Jumlah Pembayaran</label>
-                      <input
-                        type="text"
-                        :value="formatRupiahInput(jumlahPembayaran)"
-                        @input="jumlahPembayaran = extractNumericValue($event.target.value)"
-                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Masukan Jumlah Pembayaran"
-                      />
-                    </div>
-                    
-                    <div class="flex flex-row items-center">
-                      <label class="block text-gray-700 w-1/4">Jumlah di-SPP</label>
-                      <input
-                        type="text"
-                        :value="formatRupiahInput(jumlahSPP)"
-                        @input="jumlahSPP = extractNumericValue($event.target.value)"
-                        class="w-3/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Masukan Jumlah di-SPP"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Form Action Buttons -->
-            <div class="px-6 py-4 bg-white z-10 flex justify-end space-x-4">
-              <button 
-                @click="clearForm"
-                class="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors form-button"
-              >
-                Clear
-              </button>
-              <button 
-                @click="saveForm"
-                class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors form-button"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
+        <!-- Menggunakan EditFormComponent yang sudah dibuat sebagai presentational component -->
+        <EditFormComponent 
+          :namaSupplier="namaSupplier"
+          :namaPerusahaan="namaPerusahaan"
+          :jenisBank="jenisBank"
+          :nomerRekening="nomerRekening"
+          :nomerPO="nomerPO"
+          :tanggalPengadaan="tanggalPengadaan"
+          :jenisPengadaan="jenisPengadaan"
+          :kuantum="kuantum"
+          :satuan="satuan"
+          :dataIN="dataIN"
+          :jumlahPembayaran="jumlahPembayaran"
+          :jumlahSPP="jumlahSPP"
+          :formattedPembayaran="formattedPembayaran"
+          :formattedSPP="formattedSPP"
+          @update:namaSupplier="namaSupplier = $event"
+          @update:namaPerusahaan="namaPerusahaan = $event"
+          @update:jenisBank="jenisBank = $event"
+          @update:nomerRekening="nomerRekening = $event"
+          @update:nomerPO="nomerPO = $event"
+          @update:tanggalPengadaan="tanggalPengadaan = $event"
+          @update:jenisPengadaan="jenisPengadaan = $event"
+          @update:kuantum="kuantum = $event"
+          @update:satuan="satuan = $event"
+          @update:dataIN="updateDataINRow($event)"
+          @update:jumlahPembayaran="jumlahPembayaran = $event; updateFormattedValues()"
+          @update:jumlahSPP="jumlahSPP = $event; updateFormattedValues()"
+          @add-data-row="addDataINRow"
+          @remove-data-row="removeDataINRow($event)"
+          @clear-form="handleClear"
+          @save-form="handleSave"
+          @form-preview="handleFormPreview"
+          @cancel="handleCancel"
+        />
       </div>
     </transition>
   </AdminLayout>
