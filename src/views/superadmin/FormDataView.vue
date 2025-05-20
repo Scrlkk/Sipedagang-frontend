@@ -7,6 +7,14 @@
   import ArrowIconElement from '@/components/ArrowIconElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
   const iconHover = ref(false)
+
+  const formRef = ref(null)
+
+  function handleClear() {
+    if (formRef.value && formRef.value.clearForm) {
+      formRef.value.clearForm()
+    }
+  }
 </script>
 
 <template>
@@ -50,10 +58,10 @@
         </div>
 
         <!-- FORM -->
-        <FormElement />
+        <FormElement ref="formRef" />
 
         <!-- BUTTON -->
-        <ButtonElement />
+        <ButtonElement @onClickLeft="handleClear" />
       </section>
     </MainElement>
   </SuperAdminLayout>

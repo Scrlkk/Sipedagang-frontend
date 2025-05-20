@@ -1,8 +1,32 @@
 <script setup>
   import { ref, watch } from 'vue'
 
+  const namaSupplier = ref('')
+  const namaPerusahaan = ref('')
+  const jenisBank = ref('')
+  const nomorRekening = ref('')
+  const nomorPO = ref('')
+  const tanggalPengadaan = ref('')
+  const jenisPengadaan = ref('')
+  const kuantum = ref('')
+  const jumlahSPP = ref('')
+
   const rawValue = ref(0)
   const displayValue = ref('')
+
+  function clearForm() {
+    namaSupplier.value = ''
+    namaPerusahaan.value = ''
+    jenisBank.value = ''
+    nomorRekening.value = ''
+    nomorPO.value = ''
+    tanggalPengadaan.value = ''
+    jenisPengadaan.value = ''
+    kuantum.value = ''
+    displayValue.value = ''
+    jumlahSPP.value = ''
+    dataInList.value = [{ tanggal: '', jumlah: '' }]
+  }
 
   const formatCurrency = (value) => {
     if (!value) return ''
@@ -61,6 +85,8 @@
     },
     { deep: true },
   )
+
+  defineExpose({ clearForm })
 </script>
 
 <template>
@@ -82,6 +108,7 @@
           id="nama-supplier"
           placeholder="Punakawan"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="namaSupplier"
         />
       </div>
 
@@ -95,6 +122,7 @@
           id="nama-perusahaan"
           placeholder="UD. Ali Baba"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="namaPerusahaan"
         />
       </div>
 
@@ -106,6 +134,7 @@
           id="jenis-bank"
           placeholder="Mandiri"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="jenisBank"
         />
       </div>
 
@@ -119,6 +148,7 @@
           id="nomor-rekening"
           placeholder="1234567891011"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          v-model="nomorRekening"
         />
       </div>
     </div>
@@ -135,6 +165,7 @@
           id="nomor-po"
           placeholder="1234/12/11C30/2024"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="nomorPO"
         />
       </div>
 
@@ -147,6 +178,7 @@
           type="date"
           id="tanggal-pengadaan"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="tanggalPengadaan"
         />
       </div>
 
@@ -160,6 +192,7 @@
           id="jenis-pengadaan"
           placeholder="Beras"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="jenisPengadaan"
         />
       </div>
 
@@ -172,6 +205,7 @@
             id="kuantum"
             placeholder="2000"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            v-model="kuantum"
           />
           <span
             class="absolute inset-y-0 right-4 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-4"
@@ -229,7 +263,7 @@
     </div>
 
     <!-- INFORMASI PEMBAYARAN -->
-    <div class="font-bold text-xl mt-4">Infomrasi Pembayaran</div>
+    <div class="font-bold text-xl mt-4">Informasi Pembayaran</div>
 
     <div class="flex flex-col gap-6">
       <!-- JUMLAH PEMBAYARAN -->
@@ -240,11 +274,11 @@
         <input
           type="text"
           id="jumlah-pembayaran"
-          v-model="displayValue"
           @input="handleInput"
           @blur="formatCurrency"
           placeholder="Rp 2.000.000"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
+          v-model="displayValue"
         />
       </div>
 
@@ -256,6 +290,7 @@
           id="jumlah-spp"
           placeholder="2000"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          v-model="jumlahSPP"
         />
       </div>
     </div>

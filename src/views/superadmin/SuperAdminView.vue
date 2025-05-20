@@ -2,22 +2,23 @@
   import { ref } from 'vue'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import IndexElement from '@/components/IndexElement.vue'
+  import IndexIcon from '../../components/IndexIcon.vue'
 
   const data = ref([
     {
-      title: '-',
+      title: 'Total Pengadaan',
       desc: '-',
     },
     {
-      title: '-',
+      title: 'Total Anggaran',
       desc: '-',
     },
     {
-      title: '-',
+      title: 'Kontrak Aktif',
       desc: '-',
     },
     {
-      title: '-',
+      title: 'Staff',
       desc: '-',
     },
   ])
@@ -26,7 +27,7 @@
 <template>
   <SuperAdminLayout>
     <!-- TITLE -->
-    <section>
+    <section class="w-full h-full">
       <div class="font-bold text-3xl text-[#575757] text-center py-16">
         Halo, Selamat Datang SuperAdmin
       </div>

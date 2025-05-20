@@ -25,21 +25,21 @@
     <button
       v-if="showDelete"
       type="button"
-      class="bg-[#F44336] text-white rounded-lg h-10 px-9 mr-2 font-semibold"
+      class="bg-[#F44336] text-white rounded-lg h-10 px-9 mr-2 font-semibold cursor-pointer"
       @click="$emit('onClickDelete')"
     >
       {{ deleteLabel }}
     </button>
     <button
       type="button"
-      class="bg-[#9BA1AA] text-white rounded-lg h-10 px-11 font-semibold"
+      class="bg-[#9BA1AA] text-white rounded-lg h-10 px-11 font-semibold cursor-pointer"
       @click="$emit('onClickLeft')"
     >
       {{ leftLabel }}
     </button>
     <button
       type="button"
-      class="bg-[#0099FF] text-white rounded-lg h-10 px-20 font-semibold"
+      class="bg-[#0099FF] text-white rounded-lg h-10 px-20 font-semibold cursor-pointer"
       @click="$emit('onClickRight')"
     >
       {{ rightLabel }}

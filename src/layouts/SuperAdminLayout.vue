@@ -42,10 +42,10 @@
           <div class="flex flex-col gap-4">
             <!-- DASHBOARD -->
             <RouterLink
-              to="/"
+              to="/superadmin/dashboard"
               class="group flex px-7 w-55 h-12 mt-16 rounded-xl transition-all duration-300 ease-in-out"
               :class="[
-                isHovered.dashboard || route.path === '/'
+                isHovered.dashboard || route.path === '/superadmin/dashboard'
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
                   : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
               ]"
@@ -55,7 +55,8 @@
               <div class="flex items-center gap-3">
                 <DashboardIconElement
                   :color="
-                    isHovered.dashboard || route.path === '/'
+                    isHovered.dashboard ||
+                    route.path === '/superadmin/dashboard'
                       ? '#ffff'
                       : '#9BA1AA'
                   "
@@ -63,7 +64,8 @@
                 <div
                   class="font-poppins font-medium text-[#9BA1AA] text-sm"
                   :class="
-                    isHovered.dashboard || route.path === '/'
+                    isHovered.dashboard ||
+                    route.path === '/superadmin/dashboard'
                       ? 'text-white'
                       : 'group-hover:text-white'
                   "
@@ -75,10 +77,10 @@
 
             <!-- INPUT -->
             <RouterLink
-              to="/input"
+              to="/superadmin/input"
               class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
               :class="[
-                isHovered.input || route.path === '/input'
+                isHovered.input || route.path === '/superadmin/input'
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
                   : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
               ]"
@@ -88,12 +90,12 @@
               <div class="flex items-center gap-3">
                 <InputIconElement
                   :color="
-                    isHovered.input || route.path === '/input'
+                    isHovered.input || route.path === '/superadmin/input'
                       ? '#ffff'
                       : '#9BA1AA'
                   "
                   :innerColor="
-                    isHovered.input || route.path === '/input'
+                    isHovered.input || route.path === '/superadmin/input'
                       ? '#0099FF'
                       : '#ffff'
                   "
@@ -101,7 +103,7 @@
                 <div
                   class="font-poppins font-medium text-[#9BA1AA] text-sm"
                   :class="
-                    isHovered.input || route.path === '/input'
+                    isHovered.input || route.path === '/superadmin/input'
                       ? 'text-white'
                       : 'group-hover:text-white'
                   "
@@ -113,12 +115,12 @@
 
             <!-- RIWAYAT -->
             <RouterLink
-              to="/riwayat"
+              to="/superadmin/riwayat"
               class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
               :class="[
                 isHovered.riwayat ||
-                route.path === '/riwayat' ||
-                route.path.startsWith('/riwayat-edit')
+                route.path === '/superadmin/riwayat' ||
+                route.path.startsWith('/superadmin/riwayat-edit')
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
                   : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
               ]"
@@ -129,8 +131,8 @@
                 <RiwayatIconElement
                   :color="
                     isHovered.riwayat ||
-                    route.path === '/riwayat' ||
-                    route.path.startsWith('/riwayat-edit')
+                    route.path === '/superadmin/riwayat' ||
+                    route.path.startsWith('/superadmin/riwayat-edit')
                       ? '#ffff'
                       : '#9BA1AA'
                   "
@@ -139,8 +141,8 @@
                   class="font-poppins font-medium text-[#9BA1AA] text-sm"
                   :class="
                     isHovered.riwayat ||
-                    route.path === '/riwayat' ||
-                    route.path.startsWith('/riwayat-edit')
+                    route.path === '/superadmin/riwayat' ||
+                    route.path.startsWith('/superadmin/riwayat-edit')
                       ? 'text-white'
                       : 'group-hover:text-white'
                   "
@@ -152,13 +154,13 @@
 
             <!-- STAFF -->
             <RouterLink
-              to="/staff"
+              to="/superadmin/staff"
               class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
               :class="[
                 isHovered.staff ||
-                route.path === '/staff' ||
-                route.path === '/staff-add' ||
-                route.path.startsWith('/staff-edit')
+                route.path === '/superadmin/staff' ||
+                route.path === '/superadmin/staff-add' ||
+                route.path.startsWith('/superadmin/staff-edit')
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
                   : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
               ]"
@@ -169,16 +171,16 @@
                 <StaffIconElement
                   :color="
                     isHovered.staff ||
-                    route.path === '/staff' ||
-                    route.path === '/staff-add' ||
+                    route.path === '/superadmin/staff' ||
+                    route.path === '/superadmin/staff-add' ||
                     route.path.startsWith('/staff-edit')
                       ? '#ffff'
                       : '#9BA1AA'
                   "
                   :stroke="
                     isHovered.staff ||
-                    route.path === '/staff' ||
-                    route.path === '/staff-add' ||
+                    route.path === '/superadmin/staff' ||
+                    route.path === '/superadmin/staff-add' ||
                     route.path.startsWith('/staff-edit')
                       ? '#0099FF'
                       : '#ffff'
@@ -188,9 +190,9 @@
                   class="font-poppins font-medium text-[#9BA1AA] text-sm"
                   :class="
                     isHovered.staff ||
-                    route.path === '/staff' ||
-                    route.path === '/staff-add' ||
-                    route.path.startsWith('/staff-edit')
+                    route.path === '/superadmin/staff' ||
+                    route.path === '/superadmin/staff-add' ||
+                    route.path.startsWith('/superadmin/staff-edit')
                       ? 'text-white'
                       : 'group-hover:text-white'
                   "
@@ -202,10 +204,10 @@
 
             <!-- REKAP DATA -->
             <RouterLink
-              to="/rekapdata"
+              to="/superadmin/rekapdata"
               class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
               :class="[
-                isHovered.rekap || route.path === '/rekapdata'
+                isHovered.rekap || route.path === '/superadmin/rekapdata'
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
                   : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
               ]"
@@ -215,12 +217,12 @@
               <div class="flex items-center gap-3">
                 <RekapIconElement
                   :color="
-                    isHovered.rekap || route.path === '/rekapdata'
+                    isHovered.rekap || route.path === '/superadmin/rekapdata'
                       ? '#ffff'
                       : '#9BA1AA'
                   "
                   :stroke="
-                    isHovered.rekap || route.path === '/rekapdata'
+                    isHovered.rekap || route.path === '/superadmin/rekapdata'
                       ? '#0099FF'
                       : '#ffff'
                   "
@@ -228,7 +230,7 @@
                 <div
                   class="font-poppins font-medium text-[#9BA1AA] text-sm"
                   :class="
-                    isHovered.rekap || route.path === '/rekapdata'
+                    isHovered.rekap || route.path === '/superadmin/rekapdata'
                       ? 'text-white'
                       : 'group-hover:text-white'
                   "

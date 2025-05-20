@@ -115,7 +115,7 @@
               Reset Password
             </div>
             <RouterLink
-              to="/staff-add"
+              to="/superadmin/staff-add"
               class="flex bg-[#4CAF50] w-[9rem] h-9 font-bold text-white text-xs justify-center items-center rounded-md"
             >
               Tambah Staff
