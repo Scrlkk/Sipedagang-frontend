@@ -58,9 +58,15 @@ const handleResetPassword = async () => {
 }
 
 const goToLogin = () => {
-  router.push('/')
+  router.push('/admin')
 }
 </script>
+
+<style scoped>
+* {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
 
 <template>
   <GuestLayout>

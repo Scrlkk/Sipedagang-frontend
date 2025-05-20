@@ -23,32 +23,48 @@ const router = createRouter({
       component: Login,
     },
     {
-      path: '/admin/dashboard',
+      path: '/admin',
+      component: Login,
+    },
+    {
+      path : '/admin/dashboard',
       component: DashboardAdmin,
+      name: 'Dashboard'
     },
     {
-      path: '/admin/form',
+      path : '/admin/form',
       component: FormAdmin,
+      name: 'Form'
     },
     {
-      path: '/admin/lihatdata',
+      path : '/admin/lihatdata',
       component: LihatDataAdmin,
+      name: 'LihatData'
     },
     {
-      path: '/admin/resetrequest',
+      path : '/admin/resetrequest',
       component: ResetRequest,
+      name: 'ResetRequest'
     },
     {
-      path: '/admin/resetpasswordaccepted',
+      path : '/admin/resetpasswordaccepted',
       component: ResetPasswordAccepted,
+      name: 'ResetPasswordAccepted'
     },
     {
-      path: '/admin/editform',
+      path : '/admin/editform',
       component: EditFormData,
+      name: 'EditPage'
     },
     {
-      path: '/admin/previewpermohonan',
+      path : '/admin/previewpermohonan',
       component: PreviewPermohonan,
+      name: 'DetailPage' 
+    },
+    {
+      path : '/admin/cetakkwitansi',
+      component: () => import('../views/admin/CetakKwitansi.vue'),
+      name: 'PrintPage'
     },
     {
       path: '/superadmin/dashboard',

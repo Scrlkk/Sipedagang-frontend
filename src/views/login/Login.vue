@@ -24,7 +24,7 @@ const handleLogin = async () => {
     
     // Simulate successful login
     setTimeout(() => {
-      router.push('/dashboard')
+      router.push('/admin/dashboard')
       isLoading.value = false
     }, 1000)
   } catch (error) {
@@ -42,6 +42,13 @@ const handleForgotPassword = () => {
   console.log('Forgot password clicked')
 }
 </script>
+
+<style scoped>
+/* Set Poppins as the default font for the login page */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
 
 <template>
   <GuestLayout>
@@ -117,7 +124,7 @@ const handleForgotPassword = () => {
          <!-- Forgot password link -->
 <div class="text-center">
   <router-link 
-    to="/resetrequest" 
+    to="/admin/resetrequest" 
     class="text-sm text-blue-600 hover:underline"
   >
     Lupa kata sandi?

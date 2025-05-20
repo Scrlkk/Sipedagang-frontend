@@ -219,11 +219,10 @@ const saveForm = () => {
     confirmButtonColor: '#0099FF',
     confirmButtonText: 'Lihat Data'
   }).then((result) => {
-    if (result.isConfirmed) {
-      // Navigate to lihatdata page
+    if (result.isConfirmed) {      // Navigate to lihatdata page
       // Note: We keep this programmatic navigation since it's inside an event handler
       // But other component-based navigation should use router-link
-      router.push('/lihatdata');
+      router.push('/admin/lihatdata');
     }
   });
 }
@@ -239,7 +238,7 @@ const saveForm = () => {
         <!-- Side Navigation (unchanged) -->
         <div class="fixed left-8 lg:left-1/6 top-1/3 flex flex-col space-y-4 z-20">
           <router-link 
-            to="/dashboard" 
+            to="/admin/dashboard" 
             class="bg-[#0099FF] text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -247,7 +246,7 @@ const saveForm = () => {
             </svg>
           </router-link>
           <router-link 
-            to="/lihatdata" 
+            to="/admin/lihatdata" 
             class="bg-[#0099FF] text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
