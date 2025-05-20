@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '@/views/login/Login.vue'
+
 import SuperAdminView from '@/views/superadmin/SuperAdminView.vue'
 import RiwayatView from '@/views/superadmin/RiwayatView.vue'
 import RiwayatEditView from '@/views/superadmin/RiwayatEditView.vue'
