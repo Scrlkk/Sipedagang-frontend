@@ -7,6 +7,7 @@ import FormAdmin from '../views/admin/FormData.vue'
 import LihatDataAdmin from '../views/admin/LihatData.vue'
 import EditFormData from '../views/admin/EditFormData.vue'
 import PreviewPermohonan from '../views/admin/PreviewPermohonan.vue'
+import CetakKwitansi from '../views/admin/CetakKwitansi.vue'
 import SuperAdminView from '@/views/superadmin/SuperAdminView.vue'
 import RiwayatView from '@/views/superadmin/RiwayatView.vue'
 import RiwayatEditView from '@/views/superadmin/RiwayatEditView.vue'
@@ -27,44 +28,44 @@ const router = createRouter({
       component: Login,
     },
     {
-      path : '/admin/dashboard',
+      path: '/admin/dashboard',
       component: DashboardAdmin,
-      name: 'Dashboard'
+      name: 'Dashboard',
     },
     {
-      path : '/admin/form',
+      path: '/admin/form',
       component: FormAdmin,
-      name: 'Form'
+      name: 'Form',
     },
     {
-      path : '/admin/lihatdata',
+      path: '/admin/lihatdata',
       component: LihatDataAdmin,
-      name: 'LihatData'
+      name: 'LihatData',
     },
     {
-      path : '/admin/resetrequest',
+      path: '/resetpassword',
       component: ResetRequest,
-      name: 'ResetRequest'
+      name: 'ResetRequest',
     },
     {
-      path : '/admin/resetpasswordaccepted',
+      path: '/resetpasswordaccepted',
       component: ResetPasswordAccepted,
-      name: 'ResetPasswordAccepted'
+      name: 'ResetPasswordAccepted',
     },
     {
-      path : '/admin/editform',
+      path: '/admin/editform',
       component: EditFormData,
-      name: 'EditPage'
+      name: 'EditPage',
     },
     {
-      path : '/admin/previewpermohonan',
+      path: '/admin/previewpermohonan',
       component: PreviewPermohonan,
-      name: 'DetailPage' 
+      name: 'DetailPage',
     },
     {
-      path : '/admin/cetakkwitansi',
-      component: () => import('../views/admin/CetakKwitansi.vue'),
-      name: 'PrintPage'
+      path: '/admin/cetakkwitansi',
+      component: CetakKwitansi,
+      name: 'PrintPage',
     },
     {
       path: '/superadmin/dashboard',
