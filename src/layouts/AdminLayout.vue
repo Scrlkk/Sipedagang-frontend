@@ -1,75 +1,123 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+  import { ref, onMounted, onUnmounted } from 'vue'
 
-// Track dropdown visibility
-const isProfileDropdownOpen = ref(false);
+  // Track dropdown visibility
+  const isProfileDropdownOpen = ref(false)
 
-// Toggle dropdown
-const toggleProfileDropdown = () => {
-  isProfileDropdownOpen.value = !isProfileDropdownOpen.value;
-};
-
-// Close dropdown when clicking outside
-const closeDropdown = (event) => {
-  const profileElement = document.getElementById('profile-dropdown-container');
-  if (profileElement && !profileElement.contains(event.target)) {
-    isProfileDropdownOpen.value = false;
+  // Toggle dropdown
+  const toggleProfileDropdown = () => {
+    isProfileDropdownOpen.value = !isProfileDropdownOpen.value
   }
-};
 
-// Add and remove event listeners for clicking outside
-onMounted(() => {
-  document.addEventListener('click', closeDropdown);
-});
+  // Close dropdown when clicking outside
+  const closeDropdown = (event) => {
+    const profileElement = document.getElementById('profile-dropdown-container')
+    if (profileElement && !profileElement.contains(event.target)) {
+      isProfileDropdownOpen.value = false
+    }
+  }
 
-onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown);
-});
+  // Add and remove event listeners for clicking outside
+  onMounted(() => {
+    document.addEventListener('click', closeDropdown)
+  })
+
+  onUnmounted(() => {
+    document.removeEventListener('click', closeDropdown)
+  })
 </script>
 
 <template>
   <div class="min-h-screen w-full relative overflow-x-hidden">
     <!-- Top SVG Wave -->
     <div class="absolute top-0 left-0 right-0 z-0">
-      <svg width="100%" height="173" preserveAspectRatio="none" viewBox="0 0 1514 173" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M1514 142.27V173C1489.62 160.399 1440.3 100.191 1143.36 104.5C1019.81 104.5 997.051 54 868.084 48.5C744.537 44.679 620.989 71.4258 497.442 48.5C373.894 25.5742 63.9413 5.12171 0 0H93.2025C154.976 0 278.524 0 402.072 0C525.619 0 649.167 0 772.714 0C896.262 0 1019.81 0 1143.36 0C1266.9 0 1390.45 0 1452.23 0H1514V142.27Z" fill="#0099FF"/>
+      <svg
+        width="100%"
+        height="173"
+        preserveAspectRatio="none"
+        viewBox="0 0 1514 173"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M1514 142.27V173C1489.62 160.399 1440.3 100.191 1143.36 104.5C1019.81 104.5 997.051 54 868.084 48.5C744.537 44.679 620.989 71.4258 497.442 48.5C373.894 25.5742 63.9413 5.12171 0 0H93.2025C154.976 0 278.524 0 402.072 0C525.619 0 649.167 0 772.714 0C896.262 0 1019.81 0 1143.36 0C1266.9 0 1390.45 0 1452.23 0H1514V142.27Z"
+          fill="#0099FF"
+        />
       </svg>
     </div>
 
     <!-- Bottom Left SVG Wave -->
     <div class="absolute bottom-0 left-0 z-0 w-1/3 md:w-auto">
-      <svg width="100%" height="105" preserveAspectRatio="none" viewBox="0 0 548 105" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M548 105.271H499.5C476.5 108.5 434.546 88.9172 391.092 86.1614C347.637 83.6812 304.182 73.5796 260.728 57.596C217.273 41.8881 173.818 9.92093 130.364 2.20472C86.9092 -5.78706 43.4546 9.92093 21.7273 17.9127L0 25.9045V105.271H21.7273C43.4546 105.271 86.9092 105.271 130.364 105.271C173.818 105.271 217.273 105.271 260.728 105.271C304.182 105.271 347.637 105.271 391.092 105.271C434.546 105.271 478 104.776 499.5 105.271H521.455H548Z" fill="#F0AB26"/>
+      <svg
+        width="100%"
+        height="105"
+        preserveAspectRatio="none"
+        viewBox="0 0 548 105"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M548 105.271H499.5C476.5 108.5 434.546 88.9172 391.092 86.1614C347.637 83.6812 304.182 73.5796 260.728 57.596C217.273 41.8881 173.818 9.92093 130.364 2.20472C86.9092 -5.78706 43.4546 9.92093 21.7273 17.9127L0 25.9045V105.271H21.7273C43.4546 105.271 86.9092 105.271 130.364 105.271C173.818 105.271 217.273 105.271 260.728 105.271C304.182 105.271 347.637 105.271 391.092 105.271C434.546 105.271 478 104.776 499.5 105.271H521.455H548Z"
+          fill="#F0AB26"
+        />
       </svg>
     </div>
 
     <!-- Bottom Right SVG Wave -->
     <div class="absolute bottom-0 right-0 z-0 w-2/3 md:w-auto">
-      <svg width="100%" height="157" preserveAspectRatio="none" viewBox="0 0 1051 157" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1051 157H0.602539C29.1097 153.456 59.8947 149.303 90.6797 144.537C170.706 132.148 250.733 115.63 330.76 103.241C410.786 90.8523 490.813 82.5923 570.84 90.8516C650.866 99.1108 730.893 123.889 810.92 111.5C890.947 99.1111 970.973 49.5551 1010.99 24.7773L1051 0V157Z" fill="#1B4F88"/>
+      <svg
+        width="100%"
+        height="157"
+        preserveAspectRatio="none"
+        viewBox="0 0 1051 157"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1051 157H0.602539C29.1097 153.456 59.8947 149.303 90.6797 144.537C170.706 132.148 250.733 115.63 330.76 103.241C410.786 90.8523 490.813 82.5923 570.84 90.8516C650.866 99.1108 730.893 123.889 810.92 111.5C890.947 99.1111 970.973 49.5551 1010.99 24.7773L1051 0V157Z"
+          fill="#1B4F88"
+        />
       </svg>
     </div>
 
     <!-- Header -->
-    <header class="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 md:px-10 py-5 relative z-10">
+    <header
+      class="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 md:px-10 py-5 relative z-10"
+    >
       <!-- Logo -->
-      <div class="text-[32px] sm:text-[48px] font-bold font-poppins mb-4 sm:mb-0">
-  <span class="text-[#F0AB26]">Si</span><span class="text-[#176BC7]">PEDAGANG</span>
-</div>
+      <div
+        class="text-[32px] sm:text-[48px] font-bold font-poppins mb-4 sm:mb-0"
+      >
+        <span class="text-[#F0AB26]">Si</span
+        ><span class="text-[#176BC7]">PEDAGANG</span>
+      </div>
 
       <!-- User Profile -->
       <div class="flex items-center gap-3 sm:gap-5">
         <!-- Notification Icon -->
-        <button 
+        <button
           type="button"
-          aria-label="Notifications" 
+          aria-label="Notifications"
           class="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F0AB26] transition-colors shadow-sm"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="sm:w-6 sm:h-6">
-            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="#F0AB26"/>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="sm:w-6 sm:h-6"
+          >
+            <path
+              d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"
+              fill="#F0AB26"
+            />
           </svg>
         </button>
-        
        <!-- User Avatar and Name with Dropdown -->
 <div id="profile-dropdown-container" class="relative">
   <div 
