@@ -43,6 +43,13 @@ const handleForgotPassword = () => {
 }
 </script>
 
+<style scoped>
+/* Set Poppins as the default font for the login page */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
+
 <template>
   <GuestLayout>
     <div class="flex items-center justify-center min-h-screen px-4">

@@ -40,6 +40,12 @@ const goToLogin = () => {
 }
 </script>
 
+<style scoped>
+* {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
+
 <template>
   <GuestLayout>
     <div class="flex items-center justify-center min-h-screen px-4">
