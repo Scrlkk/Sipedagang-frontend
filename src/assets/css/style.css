@@ -7,5 +7,4 @@ body {
 @theme {
   --font-inter: 'Inter', 'sans-serif';
   --font-poppins: 'Poppins', 'sans-serif';
-  --breakpoint-3xl: 120rem;
 }
