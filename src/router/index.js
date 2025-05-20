@@ -16,31 +16,31 @@ const router = createRouter({
       component: Login,
     },
     {
-      path : '/dashboard',
+      path : '/admin/dashboard',
       component: DashboardAdmin  ,
     },
     {
-      path : '/form',
+      path : '/admin/form',
       component: FormAdmin ,
     },
     {
-      path : '/lihatdata',
+      path : '/admin/lihatdata',
       component: LihatDataAdmin ,
     },
      {
-      path : '/resetrequest',
+      path : '/admin/resetrequest',
       component: ResetRequest ,
     },
     {
-      path : '/resetpasswordaccepted',
+      path : '/admin/resetpasswordaccepted',
       component: ResetPasswordAccepted ,
     },
     {
-      path : '/editform',
+      path : '/admin/editform',
       component: EditFormData ,
     },
       {
-      path : '/previewpermohonan',
+      path : '/admin/previewpermohonan',
       component: PreviewPermohonan ,
     }
 
