@@ -1,5 +1,12 @@
-# Vue 3 + Vite
+<p align="center">
+  <img src="./src/assets/svg/LOGO.svg" alt="SiPEDAGANG Logo" width="180"/>
+</p>
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+<h1 align="center">PROJECT FRONTEND SiPEDAGANG</h1>
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+<p align="center">
+  <b>SiPEDAGANG</b> (Sistem Pengadaan Beras dan Gabah) adalah sistem informasi yang dikembangkan untuk mendukung proses pengadaan beras dan gabah oleh <b>Perum BULOG</b> secara digital dan terintegrasi.<br>
+  Sistem ini bertujuan untuk memfasilitasi pencatatan data pembelian gabah dan beras dari petani atau mitra secara efisien, transparan, dan akuntabel.
+</p>
+
+---

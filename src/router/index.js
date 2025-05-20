@@ -19,10 +19,23 @@ import RekapDataView from '@/views/superadmin/RekapDataView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // Guest Route
     {
       path: '/',
       component: Login,
     },
+    {
+      path: '/resetpassword',
+      component: ResetRequest,
+      name: 'ResetRequest',
+    },
+    {
+      path: '/resetpasswordaccepted',
+      component: ResetPasswordAccepted,
+      name: 'ResetPasswordAccepted',
+    },
+
+    // Admin Routes
     {
       path: '/admin',
       component: Login,
@@ -43,16 +56,6 @@ const router = createRouter({
       name: 'LihatData',
     },
     {
-      path: '/resetpassword',
-      component: ResetRequest,
-      name: 'ResetRequest',
-    },
-    {
-      path: '/resetpasswordaccepted',
-      component: ResetPasswordAccepted,
-      name: 'ResetPasswordAccepted',
-    },
-    {
       path: '/admin/editform',
       component: EditFormData,
       name: 'EditPage',
@@ -67,6 +70,8 @@ const router = createRouter({
       component: CetakKwitansi,
       name: 'PrintPage',
     },
+
+    // Super Admin Routes
     {
       path: '/superadmin/dashboard',
       name: 'superadmin dashboard',

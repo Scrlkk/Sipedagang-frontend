@@ -1,5 +1,6 @@
 <script setup>
   import { ref, defineProps, computed } from 'vue'
+  import { useRouter } from 'vue-router'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import StaffIconElement from '@/components/StaffIconElement.vue'
@@ -18,6 +19,7 @@
   const photoUrl = ref('')
 
   const fileInputRef = ref(null)
+  const router = useRouter()
 
   function onPhotoChange(e) {
     const file = e.target.files[0]
@@ -28,6 +30,17 @@
 
   function triggerFileInput() {
     fileInputRef.value && fileInputRef.value.click()
+  }
+  function handleLeft() {
+    router.back()
+  }
+
+  function handleRight() {
+    // Handle the right button click
+  }
+
+  function handleDelete() {
+    // Handle the delete button click
   }
 </script>
 
@@ -160,6 +173,7 @@
         <!-- BUTTON -->
         <section>
           <ButtonElement
+            left-label="Back"
             :show-delete="showDeleteButton"
             :delete-label="'Hapus'"
             @onClickDelete="handleDelete"
