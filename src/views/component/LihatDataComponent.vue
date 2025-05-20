@@ -274,9 +274,8 @@ const navigateToPrint = (id) => {
                     </span>
                   </td><td class="px-2 py-4 sm:px-4 text-sm text-center whitespace-nowrap border-b border-gray-200/30">                    <!-- Redesigned action buttons for desktop with compact and consistent styling -->
                     <div class="hidden sm:flex items-center justify-center">
-                      <div class="inline-flex bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100/80 p-0.5">                        
-                        <router-link 
-                          to="/previewpermohonan"
+                      <div class="inline-flex bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100/80 p-0.5">                          <router-link 
+                          to="/admin/previewpermohonan"
                           @click.native="previewItem(item)" 
                           class="relative group px-2 py-1 rounded-l-md hover:bg-blue-50 transition-all duration-200 flex items-center border-r border-gray-100"
                           role="button"
@@ -292,7 +291,7 @@ const navigateToPrint = (id) => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
                         </router-link>                        <router-link 
-                          to="/cetakkwitansi"
+                          to="/admin/cetakkwitansi"
                           @click.native="printItem(item)" 
                           class="relative group px-2 py-1 hover:bg-green-50 transition-all duration-200 flex items-center border-r border-gray-100"
                           role="button"
@@ -307,7 +306,7 @@ const navigateToPrint = (id) => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                           </svg>
                         </router-link>                        <router-link 
-                          to="/editform"
+                          to="/admin/editform"
                           @click.native="editItem(item)" 
                           class="relative group px-2 py-1 hover:bg-amber-50 transition-all duration-200 flex items-center border-r border-gray-100"
                           role="button"
@@ -410,7 +409,7 @@ const navigateToPrint = (id) => {
                       <div class="mt-2 pt-2 border-t border-gray-200/50">
                         <div class="flex justify-center">
                           <div class="grid grid-cols-4 gap-1.5 w-full bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100/80 p-1">                            <router-link 
-                              to="/previewpermohonan"
+                              to="/admin/previewpermohonan"
                               @click.native="previewItem(item)" 
                               class="flex flex-col items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-50 rounded-md transition-all duration-200"
                               aria-label="Preview data"
@@ -421,7 +420,7 @@ const navigateToPrint = (id) => {
                               </svg>
                               <span>Preview</span>
                             </router-link>                            <router-link 
-                              to="/cetakkwitansi"
+                              to="/admin/cetakkwitansi"
                               @click.native="printItem(item)" 
                               class="flex flex-col items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 rounded-md transition-all duration-200"
                               aria-label="Cetak data"
@@ -431,7 +430,7 @@ const navigateToPrint = (id) => {
                               </svg>
                               <span>Cetak</span>
                             </router-link>                            <router-link 
-                              to="/editformdata"
+                              to="/admin/editform"
                               @click.native="editItem(item)" 
                               class="flex flex-col items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50 rounded-md transition-all duration-200"
                               aria-label="Edit data" 
@@ -581,9 +580,8 @@ const navigateToPrint = (id) => {
             </div>
           </div>
         </div>
-          <!-- Beautiful back button with modern design using router-link -->
-        <router-link 
-          to="/dashboard"
+          <!-- Beautiful back button with modern design using router-link -->        <router-link 
+          to="/admin/dashboard"
           @click.native="goBack"
           class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 text-white px-5 sm:px-6 py-2.5 rounded-xl font-medium flex items-center transition-colors shadow-sm hover:shadow focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transform transition-transform hover:-translate-y-0.5"
           aria-label="Go back"

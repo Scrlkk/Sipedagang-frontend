@@ -16,7 +16,7 @@ import { RouterLink } from 'vue-router'
                 <div class="flex flex-col md:flex-row gap-[73px] justify-center w-full">
                     
                     <!-- Form Input Data Card -->
-                    <RouterLink to="/form" class="block w-full md:w-auto">
+                    <RouterLink to="/admin/form" class="block w-full md:w-auto">
                         <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:scale-102 hover:shadow-lg cursor-pointer h-[469px] w-full md:w-[455px]">
                             <div class="h-[369px] overflow-hidden">
                                 <img 
@@ -32,7 +32,7 @@ import { RouterLink } from 'vue-router'
                     </RouterLink>
                     
                     <!-- Rekap Data Card -->
-                    <RouterLink to="/lihatdata" class="block w-full md:w-auto">
+                    <RouterLink to="/admin/lihatdata" class="block w-full md:w-auto">
                         <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:scale-102 hover:shadow-lg cursor-pointer h-[469px] w-full md:w-[455px]">
                             <div class="h-[369px] overflow-hidden">
                                 <img 

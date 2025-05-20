@@ -24,7 +24,7 @@ const handleLogin = async () => {
     
     // Simulate successful login
     setTimeout(() => {
-      router.push('/dashboard')
+      router.push('/admin/dashboard')
       isLoading.value = false
     }, 1000)
   } catch (error) {
@@ -117,7 +117,7 @@ const handleForgotPassword = () => {
          <!-- Forgot password link -->
 <div class="text-center">
   <router-link 
-    to="/resetrequest" 
+    to="/admin/resetrequest" 
     class="text-sm text-blue-600 hover:underline"
   >
     Lupa kata sandi?

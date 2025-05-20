@@ -16,32 +16,48 @@ const router = createRouter({
       component: Login,
     },
     {
+      path: '/admin',
+      component: Login,
+    },
+    {
       path : '/admin/dashboard',
-      component: DashboardAdmin  ,
+      component: DashboardAdmin,
+      name: 'Dashboard'
     },
     {
       path : '/admin/form',
-      component: FormAdmin ,
+      component: FormAdmin,
+      name: 'Form'
     },
     {
       path : '/admin/lihatdata',
-      component: LihatDataAdmin ,
+      component: LihatDataAdmin,
+      name: 'LihatData'
     },
-     {
+    {
       path : '/admin/resetrequest',
-      component: ResetRequest ,
+      component: ResetRequest,
+      name: 'ResetRequest'
     },
     {
       path : '/admin/resetpasswordaccepted',
-      component: ResetPasswordAccepted ,
+      component: ResetPasswordAccepted,
+      name: 'ResetPasswordAccepted'
     },
     {
       path : '/admin/editform',
-      component: EditFormData ,
+      component: EditFormData,
+      name: 'EditPage'
     },
-      {
+    {
       path : '/admin/previewpermohonan',
-      component: PreviewPermohonan ,
+      component: PreviewPermohonan,
+      name: 'DetailPage' 
+    },
+    {
+      path : '/admin/cetakkwitansi',
+      component: () => import('../views/admin/CetakKwitansi.vue'),
+      name: 'PrintPage'
     }
 
   ],

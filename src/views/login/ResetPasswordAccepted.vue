@@ -58,7 +58,7 @@ const handleResetPassword = async () => {
 }
 
 const goToLogin = () => {
-  router.push('/')
+  router.push('/admin')
 }
 </script>
 

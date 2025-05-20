@@ -24,10 +24,9 @@ const handleSubmit = async () => {
     setTimeout(() => {
       requestSent.value = true
       isLoading.value = false
-      
-      // Redirect to ResetPasswordAccepted after a short delay
+        // Redirect to ResetPasswordAccepted after a short delay
       setTimeout(() => {
-        router.push('/resetpasswordaccepted')
+        router.push('/admin/resetpasswordaccepted')
       }, 1500) // Give user time to see success message before redirecting
     }, 1000)
   } catch (error) {
@@ -37,7 +36,7 @@ const handleSubmit = async () => {
 }
 
 const goToLogin = () => {
-  router.push('/')
+  router.push('/admin')
 }
 </script>
 

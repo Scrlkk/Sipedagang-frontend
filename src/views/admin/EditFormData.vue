@@ -262,7 +262,7 @@ const handleSave = () => {
     // Navigate back to the data list using the router object
     // Note: We can't use router-link here since this is a JS function
     // but other component-based navigation should use router-link
-    router.push('/lihatdata');
+    router.push('/admin/lihatdata');
   })
 }
 
@@ -271,7 +271,7 @@ const handleCancel = () => {
   // Navigate back to the dashboard
   // Note: We keep this programmatic navigation since it's inside an event handler
   // But other component-based navigation should use router-link
-  router.push('/dashboard');
+  router.push('/admin/dashboard');
 }
 
 // Handler to clear form data
@@ -318,7 +318,7 @@ const handleClear = () => {
         <!-- Side Navigation (unchanged) -->
         <div class="fixed left-8 lg:left-1/6 top-1/3 flex flex-col space-y-4 z-20">
           <router-link 
-            to="/dashboard" 
+            to="/admin/dashboard" 
             class="bg-blue-500 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -326,7 +326,7 @@ const handleClear = () => {
             </svg>
           </router-link>
           <router-link 
-            to="/lihatdata" 
+            to="/admin/lihatdata" 
             class="bg-blue-500 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

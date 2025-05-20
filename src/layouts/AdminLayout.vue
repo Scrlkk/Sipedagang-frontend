@@ -93,8 +93,8 @@ onUnmounted(() => {
   >
     <div v-if="isProfileDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 origin-top-right">
   <RouterLink
-    to="/"
-    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+    to="/admin"
+    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center gap-2"
   >
     <svg width="18" height="18" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_410_6997)">
