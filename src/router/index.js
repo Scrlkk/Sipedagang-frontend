@@ -12,43 +12,43 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/superadmin/dashboard',
       name: 'superadmin dashboard',
       component: SuperAdminView,
     },
     {
-      path: '/input',
+      path: '/superadmin/input',
       name: 'formdata superadmin',
       component: FormDataView,
     },
     {
-      path: '/riwayat',
+      path: '/superadmin/riwayat',
       name: 'riwayat superadmin',
       component: RiwayatView,
     },
     {
-      path: '/riwayat-edit/:id',
+      path: '/superadmin/riwayat-edit/:id',
       name: 'edit riwayat',
       component: RiwayatEditView,
     },
     {
-      path: '/staff',
+      path: '/superadmin/staff',
       name: 'staff',
       component: Staff,
     },
     {
-      path: '/staff-add',
+      path: '/superadmin/staff-add',
       name: 'add staff',
       component: StaffAddEditView,
     },
     {
-      path: '/staff-edit/:id',
+      path: '/superadmin/staff-edit/:id',
       name: 'edit staff',
       component: StaffAddEditView,
       props: true,
     },
     {
-      path: '/rekapdata',
+      path: '/superadmin/rekapdata',
       name: 'rekap data',
       component: RekapDataView,
     },

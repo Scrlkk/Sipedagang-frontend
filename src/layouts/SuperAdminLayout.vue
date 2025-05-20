@@ -242,7 +242,7 @@
 
         <!-- LOGOUT -->
         <RouterLink
-          to="/login"
+          to="/"
           class="group flex bottom-0 h-fit gap-3 items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out"
           @mouseenter="isHovered.signout = true"
           @mouseleave="isHovered.signout = false"
