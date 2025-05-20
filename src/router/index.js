@@ -32,14 +32,14 @@ const router = createRouter({
       component: RiwayatView,
     },
     {
+      path: '/riwayat-edit/:id',
+      name: 'edit riwayat',
+      component: RiwayatEditView,
+    },
+    {
       path: '/staff',
       name: 'staff',
       component: Staff,
-    },
-    {
-      path: '/riwayat-edit',
-      name: 'edit riwayat',
-      component: RiwayatEditView,
     },
     {
       path: '/staff-add',

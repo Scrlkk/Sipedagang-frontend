@@ -1,13 +1,26 @@
 <script setup>
+  import { RouterLink, useRoute } from 'vue-router'
+  import { reactive, ref } from 'vue'
   import Bulog from '@/assets/images/bulog.png'
   import Kaisar from '@/assets/images/misc/kaisar.jpg'
   import InputIconElement from '@/components/InputIconElement.vue'
   import RiwayatIconElement from '@/components/RiwayatIconElement.vue'
-  import StaffIconElement from '../components/StaffIconElement.vue'
-  import RekapIconElement from '../components/RekapIconElement.vue'
-  import SignOutIconElement from '../components/SignOutIconElement.vue'
-  import NotifIconElement from '../components/NotifIconElement.vue'
-  import { RouterLink } from 'vue-router'
+  import StaffIconElement from '@/components/StaffIconElement.vue'
+  import RekapIconElement from '@/components/RekapIconElement.vue'
+  import SignOutIconElement from '@/components/SignOutIconElement.vue'
+  import NotifIconElement from '@/components/NotifIconElement.vue'
+  import DashboardIconElement from '@/components/DashboardIconElement.vue'
+
+  const isHovered = reactive({
+    dashboard: false,
+    input: false,
+    riwayat: false,
+    staff: false,
+    rekap: false,
+    signout: false,
+  })
+
+  const route = useRoute()
 </script>
 
 <template>
@@ -16,9 +29,9 @@
     <div
       class="flex w-72 h-screen py-14 px-5 justify-center shadow-xl outline-gray-200 outline-1"
     >
-      <!-- LOGO -->
       <div class="flex flex-col gap-4 items-center justify-between">
         <div class="flex flex-col items-center">
+          <!-- LOGO -->
           <img
             loading="lazy"
             :src="Bulog"
@@ -30,57 +43,158 @@
             <!-- DASHBOARD -->
             <RouterLink
               to="/"
-              class="flex px-7 bg-[#0099FF] w-55 h-12 mt-16 rounded-xl shadow-2xl"
+              class="group flex px-7 w-55 h-12 mt-16 rounded-xl transition-all duration-300 ease-in-out"
+              :class="[
+                isHovered.dashboard || route.path === '/'
+                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
+                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+              ]"
+              @mouseenter="isHovered.dashboard = true"
+              @mouseleave="isHovered.dashboard = false"
             >
               <div class="flex items-center gap-3">
-                <div>
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 26 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M7.53711 13.7639C9.33224 13.7639 10.7705 15.1332 10.7705 16.8372V20.928C10.7704 22.6199 9.33218 24.0002 7.53711 24.0002H3.2334C1.45123 24 9.07951e-05 22.6198 0 20.928V16.8372C0 15.1333 1.45117 13.7641 3.2334 13.7639H7.53711ZM22.2295 13.7639C24.0118 13.764 25.4629 15.1332 25.4629 16.8372V20.928C25.4628 22.6199 24.0118 24.0002 22.2295 24.0002H17.9258C16.1308 24.0001 14.6925 22.6198 14.6924 20.928V16.8372C14.6924 15.1333 16.1308 13.7641 17.9258 13.7639H22.2295ZM7.53711 0.000244141C9.33224 0.000264071 10.7705 1.3803 10.7705 3.07349V7.16431C10.7705 8.86827 9.33222 10.2366 7.53711 10.2366H3.2334C1.45119 10.2364 3.5468e-05 8.86815 0 7.16431V3.07349C0 1.38042 1.45117 0.000456838 3.2334 0.000244141H7.53711ZM22.2295 0.000244141C24.0118 0.000327217 25.4629 1.38034 25.4629 3.07349V7.16431C25.4629 8.86823 24.0118 10.2365 22.2295 10.2366H17.9258C16.1308 10.2364 14.6924 8.86819 14.6924 7.16431V3.07349C14.6924 1.38038 16.1308 0.00039278 17.9258 0.000244141H22.2295Z"
-                      fill="#FFFFFF"
-                    />
-                  </svg>
-                </div>
-                <div class="font-poppins font-medium text-white text-sm">
+                <DashboardIconElement
+                  :color="
+                    isHovered.dashboard || route.path === '/'
+                      ? '#ffff'
+                      : '#9BA1AA'
+                  "
+                />
+                <div
+                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
+                  :class="
+                    isHovered.dashboard || route.path === '/'
+                      ? 'text-white'
+                      : 'group-hover:text-white'
+                  "
+                >
                   Dashboard
                 </div>
               </div>
             </RouterLink>
 
             <!-- INPUT -->
-            <RouterLink to="/input" class="flex px-7 w-55 h-12 mt-1 rounded-xl">
+            <RouterLink
+              to="/input"
+              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
+              :class="[
+                isHovered.input || route.path === '/input'
+                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
+                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+              ]"
+              @mouseenter="isHovered.input = true"
+              @mouseleave="isHovered.input = false"
+            >
               <div class="flex items-center gap-3">
-                <InputIconElement />
-                <div class="font-poppins font-medium text-[#9BA1AA] text-sm">
+                <InputIconElement
+                  :color="
+                    isHovered.input || route.path === '/input'
+                      ? '#ffff'
+                      : '#9BA1AA'
+                  "
+                  :innerColor="
+                    isHovered.input || route.path === '/input'
+                      ? '#0099FF'
+                      : '#ffff'
+                  "
+                />
+                <div
+                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
+                  :class="
+                    isHovered.input || route.path === '/input'
+                      ? 'text-white'
+                      : 'group-hover:text-white'
+                  "
+                >
                   Input
                 </div>
               </div>
             </RouterLink>
 
-            <!-- Riwayat -->
+            <!-- RIWAYAT -->
             <RouterLink
               to="/riwayat"
-              class="flex px-7 w-55 h-12 mt-1 rounded-xl"
+              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
+              :class="[
+                isHovered.riwayat ||
+                route.path === '/riwayat' ||
+                route.path.startsWith('/riwayat-edit')
+                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
+                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+              ]"
+              @mouseenter="isHovered.riwayat = true"
+              @mouseleave="isHovered.riwayat = false"
             >
               <div class="flex items-center gap-3">
-                <RiwayatIconElement />
-                <div class="font-poppins font-medium text-[#9BA1AA] text-sm">
+                <RiwayatIconElement
+                  :color="
+                    isHovered.riwayat ||
+                    route.path === '/riwayat' ||
+                    route.path.startsWith('/riwayat-edit')
+                      ? '#ffff'
+                      : '#9BA1AA'
+                  "
+                />
+                <div
+                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
+                  :class="
+                    isHovered.riwayat ||
+                    route.path === '/riwayat' ||
+                    route.path.startsWith('/riwayat-edit')
+                      ? 'text-white'
+                      : 'group-hover:text-white'
+                  "
+                >
                   Riwayat
                 </div>
               </div>
             </RouterLink>
 
             <!-- STAFF -->
-            <RouterLink to="/staff" class="flex px-7 w-55 h-12 mt-1 rounded-xl">
+            <RouterLink
+              to="/staff"
+              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
+              :class="[
+                isHovered.staff ||
+                route.path === '/staff' ||
+                route.path === '/staff-add' ||
+                route.path.startsWith('/staff-edit')
+                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
+                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+              ]"
+              @mouseenter="isHovered.staff = true"
+              @mouseleave="isHovered.staff = false"
+            >
               <div class="flex items-center gap-3">
-                <StaffIconElement />
-                <div class="font-poppins font-medium text-[#9BA1AA] text-sm">
+                <StaffIconElement
+                  :color="
+                    isHovered.staff ||
+                    route.path === '/staff' ||
+                    route.path === '/staff-add' ||
+                    route.path.startsWith('/staff-edit')
+                      ? '#ffff'
+                      : '#9BA1AA'
+                  "
+                  :stroke="
+                    isHovered.staff ||
+                    route.path === '/staff' ||
+                    route.path === '/staff-add' ||
+                    route.path.startsWith('/staff-edit')
+                      ? '#0099FF'
+                      : '#ffff'
+                  "
+                />
+                <div
+                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
+                  :class="
+                    isHovered.staff ||
+                    route.path === '/staff' ||
+                    route.path === '/staff-add' ||
+                    route.path.startsWith('/staff-edit')
+                      ? 'text-white'
+                      : 'group-hover:text-white'
+                  "
+                >
                   Staff
                 </div>
               </div>
@@ -89,11 +203,36 @@
             <!-- REKAP DATA -->
             <RouterLink
               to="/rekapdata"
-              class="flex px-7 w-55 h-12 mt-1 rounded-xl"
+              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
+              :class="[
+                isHovered.rekap || route.path === '/rekapdata'
+                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
+                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+              ]"
+              @mouseenter="isHovered.rekap = true"
+              @mouseleave="isHovered.rekap = false"
             >
               <div class="flex items-center gap-3">
-                <RekapIconElement />
-                <div class="font-poppins font-medium text-[#9BA1AA] text-sm">
+                <RekapIconElement
+                  :color="
+                    isHovered.rekap || route.path === '/rekapdata'
+                      ? '#ffff'
+                      : '#9BA1AA'
+                  "
+                  :stroke="
+                    isHovered.rekap || route.path === '/rekapdata'
+                      ? '#0099FF'
+                      : '#ffff'
+                  "
+                />
+                <div
+                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
+                  :class="
+                    isHovered.rekap || route.path === '/rekapdata'
+                      ? 'text-white'
+                      : 'group-hover:text-white'
+                  "
+                >
                   Rekap Data
                 </div>
               </div>
@@ -102,10 +241,21 @@
         </div>
 
         <!-- LOGOUT -->
-        <div class="flex bottom-0 h-fit gap-3 items-center justify-center">
-          <div class="font-poppins font-medium text-[#9BA1AA]">Log out</div>
-          <SignOutIconElement />
-        </div>
+        <RouterLink
+          to="/login"
+          class="group flex bottom-0 h-fit gap-3 items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out"
+          @mouseenter="isHovered.signout = true"
+          @mouseleave="isHovered.signout = false"
+        >
+          <div
+            class="text-hover font-poppins font-medium text-[#9BA1AA] group-hover:text-[#0099FF]"
+          >
+            Log out
+          </div>
+          <SignOutIconElement
+            :color="isHovered.signout ? '#0099FF' : '#9BA1AA'"
+          />
+        </RouterLink>
       </div>
     </div>
 

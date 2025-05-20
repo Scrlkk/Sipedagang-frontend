@@ -5,20 +5,20 @@
 
   const data = ref([
     {
-      title: 'Total Pengadaan',
-      desc: '300 Ton',
+      title: '-',
+      desc: '-',
     },
     {
-      title: 'Total Anggaran',
-      desc: 'Rp.300.000.000',
+      title: '-',
+      desc: '-',
     },
     {
-      title: 'Kontrak Aktif',
-      desc: '12 Tersedia',
+      title: '-',
+      desc: '-',
     },
     {
-      title: 'Staff',
-      desc: '24 Orang',
+      title: '-',
+      desc: '-',
     },
   ])
 </script>
