@@ -153,7 +153,7 @@
                 <!-- Animated clear search button -->
                 <button
                   v-if="searchQuery"
-                  @click="searchQuery = ''"
+                  @click="$emit('update:searchQuery', '')"
                   class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 transition-colors duration-200"
                   aria-label="Clear search"
                 >
@@ -247,7 +247,7 @@
               >
                 <span>Pencarian: {{ searchQuery }}</span>
                 <button
-                  @click="searchQuery = ''"
+                  @click="$emit('update:searchQuery', '')"
                   class="ml-2 text-[#0099FF] hover:text-red-500 transition-colors duration-200"
                   aria-label="Clear search"
                 >
@@ -282,7 +282,7 @@
                   }}</span
                 >
                 <button
-                  @click="selectedMonth = ''"
+                  @click="$emit('update:selectedMonth', '')"
                   class="ml-2 text-purple-500 hover:text-red-500 transition-colors duration-200"
                   aria-label="Clear month filter"
                 >
@@ -1071,12 +1071,12 @@
                     $emit('update:pageInput', Number($event.target.value))
                   "
                   @keyup.enter="
-                    $emit('update:pageInput', Number($event.target.value))
-                    $emit('page-input-submit')
+                    ($emit('update:pageInput', Number($event.target.value)),
+                    $emit('page-input-submit'))
                   "
                   @blur="
-                    $emit('update:pageInput', Number($event.target.value))
-                    $emit('page-input-submit')
+                    ($emit('update:pageInput', Number($event.target.value)),
+                    $emit('page-input-submit'))
                   "
                   min="1"
                   :max="getTotalPages"
