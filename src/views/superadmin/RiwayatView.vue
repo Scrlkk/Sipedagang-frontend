@@ -113,7 +113,7 @@
 
           <!-- TABEL -->
           <section
-            class="relative mt-7 text-sm overflow-x-auto overflow-y-auto pr-1.5"
+            class="relative mt-6 text-sm overflow-x-auto overflow-y-auto pr-1.5 h-[62.1dvh]"
           >
             <table class="w-full overflow-hidden h-full">
               <thead class="sticky top-0">

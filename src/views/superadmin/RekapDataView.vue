@@ -106,9 +106,9 @@
 
           <!-- TABEL -->
           <section
-            class="relative mt-7 text-sm overflow-x-auto overflow-y-auto overflow-hidden h-[60dvh] pr-1.5"
+            class="relative mt-7 text-sm overflow-x-auto overflow-y-auto h-[60dvh] pr-1.5"
           >
-            <table class="w-full overflow-hidden">
+            <table class="w-full">
               <thead class="sticky top-0">
                 <tr class="bg-[#F1F4F9] text-gray-700 text-sm text-center">
                   <th class="px-5 py-3 rounded-tl-xl">Kode</th>

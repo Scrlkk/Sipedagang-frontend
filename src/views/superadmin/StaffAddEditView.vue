@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, defineProps, computed } from 'vue'
+  import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'

@@ -1,81 +1,99 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+  // Define pops with default values
+  const props = defineProps({
+    // Form data properties
+    namaSupplier: { type: String, default: '' },
+    namaPerusahaan: { type: String, default: '' },
+    jenisBank: { type: String, default: 'Mandiri' },
+    nomerRekening: { type: String, default: '' },
+    nomerPO: { type: String, default: '' },
+    tanggalPengadaan: { type: String, default: '' },
+    jenisPengadaan: { type: String, default: 'Beras' },
+    kuantum: { type: String, default: '' },
+    satuan: { type: String, default: 'KG' },
+    dataIN: {
+      type: Array,
+      default: () => [{ tanggal: '', kuantum: '', satuan: 'KG' }],
+    },
+    jumlahPembayaran: { type: String, default: '' },
+    jumlahSPP: { type: String, default: '' },
 
-// Define props with default values
-const props = defineProps({
-  // Form data properties
-  namaSupplier: { type: String, default: '' },
-  namaPerusahaan: { type: String, default: '' },
-  jenisBank: { type: String, default: 'Mandiri' },
-  nomerRekening: { type: String, default: '' },
-  nomerPO: { type: String, default: '' },
-  tanggalPengadaan: { type: String, default: '' },
-  jenisPengadaan: { type: String, default: 'Beras' },
-  kuantum: { type: String, default: '' },
-  satuan: { type: String, default: 'KG' },
-  dataIN: { type: Array, default: () => [{ tanggal: '', kuantum: '', satuan: 'KG' }] },
-  jumlahPembayaran: { type: String, default: '' },
-  jumlahSPP: { type: String, default: '' },
-  
-  // UI configuration
-  layoutType: { type: String, default: 'admin' },
-  showNavigation: { type: Boolean, default: true },
-  formattedPembayaran: { type: String, default: '' },
-  formattedSPP: { type: String, default: '' }
-})
+    // UI configuration
+    layoutType: { type: String, default: 'admin' },
+    showNavigation: { type: Boolean, default: true },
+    formattedPembayaran: { type: String, default: '' },
+    formattedSPP: { type: String, default: '' },
+  })
 
-// Define emits for all form interactions
-const emit = defineEmits([
-  'update:namaSupplier',
-  'update:namaPerusahaan',
-  'update:jenisBank',
-  'update:nomerRekening',
-  'update:nomerPO',
-  'update:tanggalPengadaan', 
-  'update:jenisPengadaan',
-  'update:kuantum',
-  'update:satuan',
-  'update:dataIN',
-  'update:jumlahPembayaran',
-  'update:jumlahSPP',
-  'add-data-row',
-  'remove-data-row',
-  'clear-form',
-  'save-form'
-])
+  // Define emits for all form interactions
+  const emit = defineEmits([
+    'update:namaSupplier',
+    'update:namaPerusahaan',
+    'update:jenisBank',
+    'update:nomerRekening',
+    'update:nomerPO',
+    'update:tanggalPengadaan',
+    'update:jenisPengadaan',
+    'update:kuantum',
+    'update:satuan',
+    'update:dataIN',
+    'update:jumlahPembayaran',
+    'update:jumlahSPP',
+    'add-data-row',
+    'remove-data-row',
+    'clear-form',
+    'save-form',
+  ])
 
-// Helper methods for UI formatting (these are UI-specific, so can stay in the component)
-const formatRupiah = (value) => {
-  if (!value) return '';
-  return 'Rp ' + value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
+  // Helper methods for UI formatting (these are UI-specific, so can stay in the component)
+  const formatRupiah = (value) => {
+    if (!value) return ''
+    return 'Rp ' + value.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  }
 
-// Create a safe method to update dataIN array without reactivity issues
-const updateDataIN = (index, field, value) => {
-  // Create a deep copy of the array to ensure Vue tracks the changes properly
-  const updatedDataIN = JSON.parse(JSON.stringify(props.dataIN));
-  // Update the specific field in the specific row
-  updatedDataIN[index][field] = value;
-  // Emit the updated array
-  emit('update:dataIN', updatedDataIN);
-}
+  // Create a safe method to update dataIN array without reactivity issues
+  const updateDataIN = (index, field, value) => {
+    // Create a deep copy of the array to ensure Vue tracks the changes properly
+    const updatedDataIN = JSON.parse(JSON.stringify(props.dataIN))
+    // Update the specific field in the specific row
+    updatedDataIN[index][field] = value
+    // Emit the updated array
+    emit('update:dataIN', updatedDataIN)
+  }
 </script>
 
-<template>  <div class="w-full max-w-5xl mx-auto px-4">
-    <div class="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col h-auto max-h-[80vh] border border-gray-100 form-card">
+<template>
+  <div class="w-full max-w-5xl mx-auto px-4">
+    <div
+      class="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col h-auto max-h-[80vh] border border-gray-100 form-card"
+    >
       <!-- Form Header -->
       <div class="text-center pb-2 bg-white z-10">
-        <h2 class="text-xl font-medium mt-10 mb-1 form-title" style="color: #0099FF;">Form Input Data</h2>
-        <div class="mx-auto form-divider" style="height: 3px; background-color: #0099FF; width: 100%; max-width: 200px; margin-bottom: 20px;"></div>
+        <h2
+          class="text-xl font-medium mt-10 mb-1 form-title"
+          style="color: #0099ff"
+        >
+          Form Input Data
+        </h2>
+        <div
+          class="mx-auto form-divider"
+          style="
+            height: 3px;
+            background-color: #0099ff;
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 20px;
+          "
+        ></div>
       </div>
-      
+
       <!-- Scrollable Form Content -->
       <div class="overflow-y-auto flex-grow">
         <div class="p-6">
           <!-- Data Pemohon Section -->
           <div class="mb-8 form-section">
             <h3 class="font-medium text-lg mb-4">Data Pemohon</h3>
-            
+
             <div class="space-y-3">
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Nama Supplier</label>
@@ -87,7 +105,7 @@ const updateDataIN = (index, field, value) => {
                   placeholder="Masukan Nama Supplier"
                 />
               </div>
-              
+
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Nama Perusahaan</label>
                 <input
@@ -98,7 +116,7 @@ const updateDataIN = (index, field, value) => {
                   placeholder="Masukan Nama Perusahaan"
                 />
               </div>
-              
+
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Jenis Bank</label>
                 <div class="relative w-3/4">
@@ -115,14 +133,27 @@ const updateDataIN = (index, field, value) => {
                     <option>BTN</option>
                     <option>Permata</option>
                   </select>
-                  <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  <div
+                    class="absolute right-3 top-3 text-gray-400 pointer-events-none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
               </div>
-              
+
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Nomer Rekening</label>
                 <input
@@ -139,7 +170,7 @@ const updateDataIN = (index, field, value) => {
           <!-- Detail Purchasing Order Section -->
           <div class="mb-8 form-section">
             <h3 class="font-medium text-lg mb-4">Detail Purchasing Order</h3>
-            
+
             <div class="space-y-3">
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Nomer PO</label>
@@ -151,19 +182,23 @@ const updateDataIN = (index, field, value) => {
                   placeholder="Masukan Nomer PO Contoh (1234/12/11C30/2024)"
                 />
               </div>
-              
+
               <div class="flex flex-row items-center">
-                <label class="block text-gray-700 w-1/4">Tanggal Pengadaan</label>
+                <label class="block text-gray-700 w-1/4"
+                  >Tanggal Pengadaan</label
+                >
                 <div class="relative w-3/4">
                   <input
                     type="date"
                     :value="tanggalPengadaan"
-                    @input="emit('update:tanggalPengadaan', $event.target.value)"
+                    @input="
+                      emit('update:tanggalPengadaan', $event.target.value)
+                    "
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#0099FF]"
                   />
                 </div>
               </div>
-              
+
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Jenis Pengadaan</label>
                 <div class="relative w-3/4">
@@ -176,14 +211,27 @@ const updateDataIN = (index, field, value) => {
                     <option>Jagung</option>
                     <option>Kedelai</option>
                   </select>
-                  <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  <div
+                    class="absolute right-3 top-3 text-gray-400 pointer-events-none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
               </div>
-              
+
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Kuantum</label>
                 <div class="relative w-3/4 flex">
@@ -211,10 +259,16 @@ const updateDataIN = (index, field, value) => {
           <!-- Data IN Section -->
           <div class="mb-8 mt-6 p-4 rounded-lg form-section">
             <h3 class="font-medium text-lg mb-4">Data IN</h3>
-            
+
             <!-- Dynamic rows -->
-            <div v-for="(item, index) in dataIN" :key="index" class="flex items-center mb-4 space-x-2">
-              <div class="flex-none w-10 h-10 bg-white rounded-md flex items-center justify-center border border-gray-300">
+            <div
+              v-for="(item, index) in dataIN"
+              :key="index"
+              class="flex items-center mb-4 space-x-2"
+            >
+              <div
+                class="flex-none w-10 h-10 bg-white rounded-md flex items-center justify-center border border-gray-300"
+              >
                 <span>{{ index + 1 }}</span>
               </div>
               <div class="flex-none w-44 sm:w-56">
@@ -222,12 +276,27 @@ const updateDataIN = (index, field, value) => {
                   <input
                     type="date"
                     :value="item.tanggal"
-                    @input="(e) => updateDataIN(index, 'tanggal', e.target.value)"
+                    @input="
+                      (e) => updateDataIN(index, 'tanggal', e.target.value)
+                    "
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#0099FF]"
                   />
-                  <div class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <div
+                    class="absolute right-3 top-2.5 text-gray-400 pointer-events-none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -237,7 +306,9 @@ const updateDataIN = (index, field, value) => {
                   <input
                     type="text"
                     :value="item.kuantum"
-                    @input="(e) => updateDataIN(index, 'kuantum', e.target.value)"
+                    @input="
+                      (e) => updateDataIN(index, 'kuantum', e.target.value)
+                    "
                     class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-[#0099FF]"
                     placeholder="Masukan Jumlah Kuantum"
                   />
@@ -250,29 +321,49 @@ const updateDataIN = (index, field, value) => {
                   </select>
                 </div>
               </div>
-              
+
               <!-- Delete button -->
-              <button 
+              <button
                 @click="emit('remove-data-row', index)"
                 class="text-red-500 hover:text-red-700"
                 type="button"
                 title="Hapus baris"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
               </button>
             </div>
-            
+
             <!-- Add Row button -->
             <div class="flex justify-center mt-2">
-              <button 
+              <button
                 @click="emit('add-data-row')"
                 type="button"
                 class="flex items-center px-4 py-2 bg-[#0099FF] text-white rounded-md hover:bg-[#0088EE] transition-colors text-sm"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-1"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
                 Tambah Baris
               </button>
@@ -282,10 +373,12 @@ const updateDataIN = (index, field, value) => {
           <!-- Informasi Pembayaran Section -->
           <div class="mb-8 form-section">
             <h3 class="font-medium text-lg mb-4">Informasi Pembayaran</h3>
-            
+
             <div class="space-y-3">
               <div class="flex flex-row items-center">
-                <label class="block text-gray-700 w-1/4">Jumlah Pembayaran</label>
+                <label class="block text-gray-700 w-1/4"
+                  >Jumlah Pembayaran</label
+                >
                 <input
                   type="text"
                   :value="formattedPembayaran"
@@ -294,7 +387,7 @@ const updateDataIN = (index, field, value) => {
                   placeholder="Masukan Jumlah Pembayaran"
                 />
               </div>
-              
+
               <div class="flex flex-row items-center">
                 <label class="block text-gray-700 w-1/4">Jumlah di-SPP</label>
                 <input
@@ -308,15 +401,16 @@ const updateDataIN = (index, field, value) => {
             </div>
           </div>
         </div>
-      </div>      <!-- Form Action Buttons -->
+      </div>
+      <!-- Form Action Buttons -->
       <div class="px-6 py-4 bg-white z-10 flex justify-end space-x-4">
-        <button 
+        <button
           @click="emit('clear-form')"
           class="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors form-button"
         >
           Clear
         </button>
-        <button 
+        <button
           @click="emit('save-form')"
           class="px-6 py-2 bg-[#0099FF] text-white rounded-md hover:bg-[#0088EE] transition-colors form-button"
         >
@@ -328,123 +422,125 @@ const updateDataIN = (index, field, value) => {
 </template>
 
 <style scoped>
-/* Page transition animations */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
+  /* Page transition animations */
+  .page-enter-active,
+  .page-leave-active {
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+  }
 
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-/* Remove dropdown arrow from select elements */
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: none !important;
-}
-
-select::-ms-expand {
-  display: none;
-}
-
-/* Form card animations */
-.form-card {
-  animation: shadowGrow 0.5s ease forwards;
-}
-
-/* Title animations */
-.form-title {
-  animation: fadeSlideDown 0.6s ease forwards;
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.form-divider {
-  animation: growFromCenter 0.8s ease forwards;
-  transform-origin: center;
-  transform: scaleX(0);
-  opacity: 0;
-}
-
-/* Form section staggered animations */
-.form-section {
-  animation: fadeIn 0.5s ease forwards;
-  opacity: 0;
-  transform: translateY(15px);
-}
-
-.form-section:nth-child(1) {
-  animation-delay: 0.3s;
-}
-
-.form-section:nth-child(2) {
-  animation-delay: 0.5s;
-}
-
-.form-section:nth-child(3) {
-  animation-delay: 0.7s;
-}
-
-.form-section:nth-child(4) {
-  animation-delay: 0.9s;
-}
-
-/* Button animations */
-.form-button {
-  animation: fadeIn 0.4s ease forwards;
-  animation-delay: 1.1s;
-  opacity: 0;
-}
-
-/* Keyframes */
-@keyframes fadeIn {
-  0% {
+  .page-enter-from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(20px);
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes shadowGrow {
-  from {
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+  .page-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  to {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-}
 
-@keyframes fadeSlideDown {
-  0% {
+  /* Remove dropdown arrow from select elements */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none !important;
+  }
+
+  select::-ms-expand {
+    display: none;
+  }
+
+  /* Form card animations */
+  .form-card {
+    animation: shadowGrow 0.5s ease forwards;
+  }
+
+  /* Title animations */
+  .form-title {
+    animation: fadeSlideDown 0.6s ease forwards;
     opacity: 0;
     transform: translateY(-10px);
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes growFromCenter {
-  0% {
+  .form-divider {
+    animation: growFromCenter 0.8s ease forwards;
+    transform-origin: center;
     transform: scaleX(0);
     opacity: 0;
   }
-  100% {
-    transform: scaleX(1);
-    opacity: 1;
+
+  /* Form section staggered animations */
+  .form-section {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+    transform: translateY(15px);
   }
-}
+
+  .form-section:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+
+  .form-section:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  .form-section:nth-child(3) {
+    animation-delay: 0.7s;
+  }
+
+  .form-section:nth-child(4) {
+    animation-delay: 0.9s;
+  }
+
+  /* Button animations */
+  .form-button {
+    animation: fadeIn 0.4s ease forwards;
+    animation-delay: 1.1s;
+    opacity: 0;
+  }
+
+  /* Keyframes */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shadowGrow {
+    from {
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+    }
+    to {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  @keyframes fadeSlideDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes growFromCenter {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
 </style>

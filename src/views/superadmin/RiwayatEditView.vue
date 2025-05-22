@@ -24,7 +24,8 @@
         <div
           class="flex gap-2 items-center text-[#9BA1AA] text-sm font-poppins font-medium"
         >
-          <div
+          <RouterLink
+            to="/superadmin/riwayat"
             @mouseenter="iconHover = true"
             @mouseleave="iconHover = false"
             class="flex gap-2 justify-center items-center cursor-pointer"
@@ -41,7 +42,7 @@
             >
               Riwayat
             </div>
-          </div>
+          </RouterLink>
           <div class="mt-0.5">
             <ArrowIconElement />
           </div>

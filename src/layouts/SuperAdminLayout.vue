@@ -120,7 +120,8 @@
               :class="[
                 isHovered.riwayat ||
                 route.path === '/superadmin/riwayat' ||
-                route.path.startsWith('/superadmin/riwayat-edit')
+                route.path.startsWith('/superadmin/riwayat-edit') ||
+                route.path.startsWith('/superadmin/riwayat-preview')
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
                   : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
               ]"
@@ -132,7 +133,8 @@
                   :color="
                     isHovered.riwayat ||
                     route.path === '/superadmin/riwayat' ||
-                    route.path.startsWith('/superadmin/riwayat-edit')
+                    route.path.startsWith('/superadmin/riwayat-edit') ||
+                    route.path.startsWith('/superadmin/riwayat-preview')
                       ? '#ffff'
                       : '#9BA1AA'
                   "
@@ -142,7 +144,8 @@
                   :class="
                     isHovered.riwayat ||
                     route.path === '/superadmin/riwayat' ||
-                    route.path.startsWith('/superadmin/riwayat-edit')
+                    route.path.startsWith('/superadmin/riwayat-edit') ||
+                    route.path.startsWith('/superadmin/riwayat-preview')
                       ? 'text-white'
                       : 'group-hover:text-white'
                   "

@@ -11,9 +11,6 @@
   const kuantum = ref('')
   const jumlahSPP = ref('')
 
-  const rawValue = ref(0)
-  const displayValue = ref('')
-
   function clearForm() {
     namaSupplier.value = ''
     namaPerusahaan.value = ''
@@ -23,7 +20,11 @@
     tanggalPengadaan.value = ''
     jenisPengadaan.value = ''
     kuantum.value = ''
-    displayValue.value = ''
+
+    rawJumlahPembayaran.value = 0
+    displayJumlahPembayaran.value = ''
+    rawJumlahSPP.value = 0
+    displayJumlahSPP.value = ''
     jumlahSPP.value = ''
     dataInList.value = [{ tanggal: '', jumlah: '' }]
   }
@@ -34,18 +35,35 @@
     if (isNaN(num)) {
       return ''
     }
-    rawValue.value = num
     return 'Rp ' + num.toLocaleString('id-ID')
   }
 
-  const handleInput = (e) => {
-    const formatted = formatCurrency(e.target.value)
-    displayValue.value = formatted
+  // Handler reusable
+  const useCurrencyInput = (rawRef, displayRef) => {
+    const handleInput = (e) => {
+      const num = parseInt(e.target.value.toString().replace(/[^\d]/g, ''), 10)
+      rawRef.value = isNaN(num) ? 0 : num
+      displayRef.value = num ? formatCurrency(num) : ''
+    }
+    const formatOnBlur = () => {
+      displayRef.value = formatCurrency(rawRef.value)
+    }
+    return { handleInput, formatOnBlur }
   }
 
-  const formatOnBlur = () => {
-    displayValue.value = formatCurrency(rawValue.value)
-  }
+  // Untuk Jumlah Pembayaran
+  const rawJumlahPembayaran = ref(0)
+  const displayJumlahPembayaran = ref('')
+  const {
+    handleInput: handleInputPembayaran,
+    formatOnBlur: formatOnBlurPembayaran,
+  } = useCurrencyInput(rawJumlahPembayaran, displayJumlahPembayaran)
+
+  // Untuk Jumlah SPP
+  const rawJumlahSPP = ref(0)
+  const displayJumlahSPP = ref('')
+  const { handleInput: handleInputSPP, formatOnBlur: formatOnBlurSPP } =
+    useCurrencyInput(rawJumlahSPP, displayJumlahSPP)
 
   // DATA IN
   const maxDataIn = 10
@@ -106,7 +124,7 @@
         <input
           type="text"
           id="nama-supplier"
-          placeholder="Punakawan"
+          placeholder="Masukkan nama supplier"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
           v-model="namaSupplier"
         />
@@ -120,7 +138,7 @@
         <input
           type="text"
           id="nama-perusahaan"
-          placeholder="UD. Ali Baba"
+          placeholder="Masukkan nama perusahaan"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
           v-model="namaPerusahaan"
         />
@@ -132,7 +150,7 @@
         <input
           type="text"
           id="jenis-bank"
-          placeholder="Mandiri"
+          placeholder="Masukkan jenis bank"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
           v-model="jenisBank"
         />
@@ -146,7 +164,7 @@
         <input
           type="number"
           id="nomor-rekening"
-          placeholder="1234567891011"
+          placeholder="Masukkan nomor rekening"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           v-model="nomorRekening"
         />
@@ -163,7 +181,7 @@
         <input
           type="text"
           id="nomor-po"
-          placeholder="1234/12/11C30/2024"
+          placeholder="Masukkan nomor purchasing order"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
           v-model="nomorPO"
         />
@@ -190,7 +208,7 @@
         <input
           type="text"
           id="jenis-pengadaan"
-          placeholder="Beras"
+          placeholder="Masukkan jenis pengadaan"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
           v-model="jenisPengadaan"
         />
@@ -203,15 +221,21 @@
           <input
             type="number"
             id="kuantum"
-            placeholder="2000"
+            placeholder="Masukkan kuantum"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             v-model="kuantum"
           />
-          <span
-            class="absolute inset-y-0 right-4 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-4"
+          <div
+            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
           >
-            KG
-          </span>
+            <select
+              class="text-center text-md px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
+            >
+              <option value="KG">KG</option>
+              <option value="TON">TON</option>
+              <option value="PCS">PCS</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -243,15 +267,21 @@
           <input
             type="number"
             v-model="row.jumlah"
-            placeholder="2000"
+            placeholder="Masukkan jumlah"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             @input="addDataInRow(idx)"
           />
-          <span
-            class="absolute inset-y-0 right-4 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-4"
+          <div
+            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
           >
-            KG
-          </span>
+            <select
+              class="text-center text-md px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
+            >
+              <option value="KG">KG</option>
+              <option value="TON">TON</option>
+              <option value="PCS">PCS</option>
+            </select>
+          </div>
         </div>
       </div>
       <div
@@ -274,11 +304,11 @@
         <input
           type="text"
           id="jumlah-pembayaran"
-          @input="handleInput"
-          @blur="formatCurrency"
-          placeholder="Rp 2.000.000"
+          @input="handleInputPembayaran"
+          @blur="formatOnBlurPembayaran"
+          placeholder="Masukkan jumlah pembayaran"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
-          v-model="displayValue"
+          v-model="displayJumlahPembayaran"
         />
       </div>
 
@@ -286,11 +316,13 @@
       <div class="flex items-center w-full">
         <label for="jumlah-spp" class="min-w-45 font-medium">Jumlah SPP</label>
         <input
-          type="number"
+          type="text"
           id="jumlah-spp"
-          placeholder="2000"
+          @input="handleInputSPP"
+          @blur="formatOnBlurSPP"
+          placeholder="Masukkan jumlah SPP"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          v-model="jumlahSPP"
+          v-model="displayJumlahSPP"
         />
       </div>
     </div>

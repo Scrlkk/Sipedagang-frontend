@@ -15,6 +15,8 @@ import Staff from '@/views/superadmin/StaffView.vue'
 import FormDataView from '@/views/superadmin/FormDataView.vue'
 import StaffAddEditView from '@/views/superadmin/StaffAddEditView.vue'
 import RekapDataView from '@/views/superadmin/RekapDataView.vue'
+import RiwayatPreviewView from '@/views/superadmin/RiwayatPreviewView.vue'
+import NotFound from '@/views/login/NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -88,6 +90,11 @@ const router = createRouter({
       component: RiwayatView,
     },
     {
+      path: '/superadmin/riwayat-preview/:id',
+      name: 'preview riwayat',
+      component: RiwayatPreviewView,
+    },
+    {
       path: '/superadmin/riwayat-edit/:id',
       name: 'edit riwayat',
       component: RiwayatEditView,
@@ -112,6 +119,13 @@ const router = createRouter({
       path: '/superadmin/rekapdata',
       name: 'rekap data',
       component: RekapDataView,
+    },
+
+    // Redirects [PALING BAWAH YACH]
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFound,
     },
   ],
 })

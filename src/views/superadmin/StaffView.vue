@@ -10,77 +10,77 @@
   const staff = ref([
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
   ])

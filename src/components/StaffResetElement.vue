@@ -14,32 +14,32 @@
   const staff = ref([
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
     {
       nama: 'Ahmad Kaisar',
-      tempat: 'Gudang Selatan',
+      tempat: 'shirooogenz',
       img: Kaisar,
     },
   ])
@@ -75,7 +75,7 @@
         <div
           class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8"
         >
-          Request Confirm Password
+          Request Password Reset
         </div>
 
         <!-- CARD -->

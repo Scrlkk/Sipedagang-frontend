@@ -1,4 +1,7 @@
 <script setup>
+  import { RouterLink } from 'vue-router'
+  import RiwayatPreviewElement from '@/components/RiwayatPreviewElement.vue'
+
   defineProps({
     item: {
       type: Object,
@@ -16,12 +19,20 @@
     <td class="px-4 py-4">{{ item.admin }}</td>
     <td class="px-4 py-4">{{ item.kuantum }}</td>
     <td class="px-4 py-4">{{ item.tanggal }}</td>
-    <td
-      class="px-4 py-3 flex flex-wrap space-x-3.5 gap-y-1 text-sm text-center underline-offset-3 justify-center items-center"
-    >
-      <button class="text-[#2B79EF] underline">Preview</button>
-      <button class="text-[#9BA1AA] underline">Edit</button>
-      <button class="text-[#F44336] underline">Delete</button>
+    <td class="px-4 py-3">
+      <div
+        class="flex flex-wrap space-x-4 gap-y-1 text-sm text-center underline-offset-3 justify-center items-center"
+      >
+        <RouterLink :to="`/superadmin/riwayat-preview/${item.id}`">
+          <button class="cursor-pointer text-[#2B79EF] underline">
+            Preview
+          </button>
+        </RouterLink>
+        <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
+          <button class="cursor-pointer text-[#9BA1AA] underline">Edit</button>
+        </RouterLink>
+        <button class="cursor-pointer text-[#F44336] underline">Delete</button>
+      </div>
     </td>
   </tr>
 </template>
