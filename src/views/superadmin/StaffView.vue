@@ -38,51 +38,6 @@
       tempat: 'shirooogenz',
       img: Kaisar,
     },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
-    {
-      nama: 'Ahmad Kaisar',
-      tempat: 'shirooogenz',
-      img: Kaisar,
-    },
   ])
 </script>
 
@@ -109,14 +64,14 @@
               class="border border-[#D9D9D9] rounded-md h-8 px-5 text-sm focus:outline-[#0099ff]"
             />
             <div
-              class="flex bg-[#164E8A] w-[9rem] h-9 font-bold text-white text-xs justify-center items-center rounded-md cursor-pointer"
+              class="flex bg-[#164E8A] w-[9rem] h-9 font-bold text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-200 ease-in-out"
               @click="showPopup = true"
             >
               Reset Password
             </div>
             <RouterLink
               to="/superadmin/staff-add"
-              class="flex bg-[#4CAF50] w-[9rem] h-9 font-bold text-white text-xs justify-center items-center rounded-md"
+              class="flex bg-[#4CAF50] w-[9rem] h-9 font-bold text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-200 ease-in-out"
             >
               Tambah Staff
             </RouterLink>

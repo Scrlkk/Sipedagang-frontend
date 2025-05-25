@@ -97,7 +97,7 @@
                 class="border border-[#D9D9D9] rounded-md h-8 px-5 text-sm focus:outline-[#0099ff]"
               />
               <div
-                class="flex bg-[#F0AB26] w-[9rem] h-8 font-bold text-white text-xs justify-center items-center rounded-md cursor-pointer"
+                class="flex bg-[#F0AB26] w-[9rem] h-8 font-bold text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 hover:shadow-lg transition-all duration-200 ease-in-out"
               >
                 Rekap Data
               </div>
@@ -106,7 +106,7 @@
 
           <!-- TABEL -->
           <section
-            class="relative mt-7 text-sm overflow-x-auto overflow-y-auto h-[60dvh] pr-1.5"
+            class="flex justify-center items-center relative mt-5.5 text-sm overflow-x-auto overflow-y-auto h-[66.5dvh] pr-1.5"
           >
             <table class="w-full">
               <thead class="sticky top-0">

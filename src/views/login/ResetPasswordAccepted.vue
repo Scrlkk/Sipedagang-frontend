@@ -75,14 +75,16 @@
       <!-- Reset Password Card -->
       <div class="bg-white rounded-lg w-full max-w-md shadow-2xl p-8">
         <!-- Logo and Title -->
-        <div class="text-center mb-6">
-          <h1 class="text-3xl font-bold">
-            <span class="text-[#F0AB26]">Si</span
-            ><span class="text-[#176BC7]">PEDAGANG</span>
+        <div class="text-center mb-8 font-poppins">
+          <h1
+            class="text-3xl font-bold flex justify-center items-center text-shadow-lg"
+          >
+            <div class="text-[#F0AB26]">Si</div>
+            <div class="text-[#176BC7]">PEDAGANG</div>
           </h1>
-          <p class="text-gray-600 mt-3 text-sm">
-            Buat kata sandi baru untuk akun Anda
-          </p>
+          <div class="text-gray-600 mt-2 text-sm">
+            Rubah kata sandi lama anda menggunakan kata sandi yang baru.
+          </div>
         </div>
 
         <!-- Reset Password Form -->
@@ -226,11 +228,11 @@
           <div class="mt-6">
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-blue-600 transition-colors"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors cursor-pointer"
               :disabled="isLoading"
             >
-              <span v-if="isLoading">Loading...</span>
-              <span v-else>Atur Ulang Kata Sandi</span>
+              <div v-if="isLoading">Loading...</div>
+              <div v-else>Atur Ulang Kata Sandi</div>
             </button>
           </div>
         </form>
@@ -258,7 +260,7 @@
 
           <button
             @click="goToLogin"
-            class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-blue-600 transition-colors"
+            class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors cursor-pointer"
           >
             Kembali ke Login
           </button>
@@ -271,7 +273,7 @@
         >
           <button
             @click="goToLogin"
-            class="text-[#176BC7] hover:underline bg-gray-100 w-full py-3 rounded-md"
+            class="text-[#176BC7] hover:underline bg-gray-100 w-full py-3 rounded-md cursor-pointer"
           >
             Kembali ke Halaman Login
           </button>

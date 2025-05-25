@@ -48,14 +48,16 @@
       <!-- Login Card -->
       <div class="bg-white rounded-lg w-full max-w-md shadow-2xl p-8">
         <!-- Logo and Title -->
-        <div class="text-center mb-8">
-          <h1 class="text-3xl font-bold">
-            <span class="text-[#F0AB26]">Si</span
-            ><span class="text-[#176BC7]">PEDAGANG</span>
+        <div class="text-center mb-8 font-poppins">
+          <h1
+            class="text-3xl font-bold flex justify-center items-center text-shadow-lg"
+          >
+            <div class="text-[#F0AB26]">Si</div>
+            <div class="text-[#176BC7]">PEDAGANG</div>
           </h1>
-          <p class="text-gray-600 mt-2 text-sm">
+          <div class="text-gray-600 mt-2 text-sm">
             Silahkan login terlebih dahulu
-          </p>
+          </div>
         </div>
 
         <!-- Login Form -->
@@ -70,7 +72,9 @@
 
           <!-- Username field -->
           <div>
-            <label for="username" class="block text-sm text-gray-700 mb-1"
+            <label
+              for="username"
+              class="font-poppins block text-sm text-gray-700 mb-1"
               >Nama Pengguna</label
             >
             <input
@@ -83,7 +87,9 @@
 
           <!-- Password field with toggle visibility -->
           <div>
-            <label for="password" class="block text-sm text-gray-700 mb-1"
+            <label
+              for="password"
+              class="font-poppins block text-sm text-gray-700 mb-1"
               >Kata Sandi</label
             >
             <div class="relative">
@@ -144,18 +150,18 @@
           <div>
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-blue-600 transition-colors"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors"
               :disabled="isLoading"
             >
-              <span v-if="isLoading">Loading...</span>
-              <span v-else>Login</span>
+              <div v-if="isLoading">Loading...</div>
+              <div v-else>Login</div>
             </button>
           </div>
 
           <!-- Forgot password link -->
           <div class="text-center">
             <router-link
-              to="/admin/resetrequest"
+              to="/resetpassword"
               class="text-sm text-blue-600 hover:underline"
             >
               Lupa kata sandi?

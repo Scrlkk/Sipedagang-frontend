@@ -32,16 +32,12 @@ const router = createRouter({
       name: 'ResetRequest',
     },
     {
-      path: '/resetpasswordaccepted',
+      path: '/resetpassword-accepted',
       component: ResetPasswordAccepted,
       name: 'ResetPasswordAccepted',
     },
 
     // Admin Routes
-    {
-      path: '/admin',
-      component: Login,
-    },
     {
       path: '/admin/dashboard',
       component: DashboardAdmin,
@@ -71,6 +67,10 @@ const router = createRouter({
       path: '/admin/cetakkwitansi',
       component: CetakKwitansi,
       name: 'PrintPage',
+    },
+    {
+      path: '/admin',
+      redirect: '/admin/dashboard',
     },
 
     // Super Admin Routes
@@ -119,6 +119,11 @@ const router = createRouter({
       path: '/superadmin/rekapdata',
       name: 'rekap data',
       component: RekapDataView,
+    },
+
+    {
+      path: '/superadmin',
+      redirect: '/superadmin/dashboard',
     },
 
     // Redirects [PALING BAWAH YACH]

@@ -12,7 +12,7 @@
 
 <template>
   <div
-    class="flex bg-[#F7F8FA] mt-1 mb-4 py-5 px-7 rounded-lg shadow-lg/25 h-27"
+    class="flex bg-[#F7F8FA] mt-1 mb-4 py-5 px-7 rounded-lg shadow-lg/25 h-27 hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out cursor-pointer"
   >
     <div class="w-full flex items-center gap-4">
       <img

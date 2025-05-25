@@ -26,7 +26,7 @@
         isLoading.value = false
         // Redirect to ResetPasswordAccepted after a short delay
         setTimeout(() => {
-          router.push('/admin/resetpasswordaccepted')
+          router.push('/resetpassword-accepted')
         }, 1500) // Give user time to see success message before redirecting
       }, 1000)
     } catch (error) {
@@ -45,16 +45,16 @@
     <div class="flex items-center justify-center min-h-screen px-4">
       <!-- Reset Password Card -->
       <div class="bg-white rounded-lg w-full max-w-md shadow-lg p-8">
-        <!-- Logo and Title -->
-        <div class="text-center mb-6">
-          <h1 class="text-3xl font-bold">
-            <span class="text-[#F0AB26]">Si</span
-            ><span class="text-[#0099FF]">PEDAGANG</span>
+        <div class="text-center mb-8 font-poppins">
+          <h1
+            class="text-3xl font-bold flex justify-center items-center text-shadow-lg"
+          >
+            <div class="text-[#F0AB26]">Si</div>
+            <div class="text-[#176BC7]">PEDAGANG</div>
           </h1>
-          <p class="text-gray-600 mt-3 text-sm px-4">
-            Masukkan email, kami akan mengirim Anda tautan untuk kembalikan akun
-            Anda.
-          </p>
+          <div class="text-gray-600 mt-2 text-sm">
+            Masukkan nama pengguna anda, kami akan memverifikasi akun anda
+          </div>
         </div>
 
         <!-- Request Form -->
@@ -73,7 +73,9 @@
 
           <!-- Username field -->
           <div>
-            <label for="username" class="block text-sm text-gray-700 mb-1"
+            <label
+              for="username"
+              class="font-poppins block text-sm text-gray-700 mb-1"
               >Nama Pengguna</label
             >
             <input
@@ -88,7 +90,7 @@
           <div>
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-blue-600 transition-colors"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium font-poppins hover:bg-[#0099FF] transition-colors cursor-pointer"
               :disabled="isLoading"
             >
               <span v-if="isLoading">Loading...</span>
@@ -97,7 +99,7 @@
           </div>
 
           <!-- Help text -->
-          <div class="text-center text-gray-500 text-sm">
+          <div class="font-poppins text-center text-gray-500 text-sm">
             Tidak bisa mengakses? hubungi admin
           </div>
         </form>
