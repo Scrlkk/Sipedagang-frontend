@@ -83,13 +83,17 @@ const handleForgotPassword = () => {
           
           <!-- Password field with toggle visibility -->
           <div>
-            <label for="password" class="block text-sm text-gray-700 mb-1">Kata Sandi</label>
+            <label
+              for="password"
+              class="font-poppins block text-sm text-gray-700 mb-1"
+              >Kata Sandi</label
+            >
             <div class="relative">
-              <input 
+              <input
                 id="password"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="password"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 password-input"
               />
               <button 
                 type="button"
@@ -131,7 +135,6 @@ const handleForgotPassword = () => {
   </router-link>
 </div>
         </form>
-      </div>
-    </div>
+      </div>    </div>
   </GuestLayout>
 </template>
