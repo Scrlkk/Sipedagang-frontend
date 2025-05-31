@@ -36,7 +36,7 @@
   }
 
   const goToLogin = () => {
-    router.push('/admin')
+    router.push('/')
   }
 </script>
 
@@ -93,14 +93,14 @@
               class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium font-poppins hover:bg-[#0099FF] transition-colors cursor-pointer"
               :disabled="isLoading"
             >
-              <span v-if="isLoading">Loading...</span>
-              <span v-else>Kirim Tautan Masuk</span>
+              <div v-if="isLoading">Loading...</div>
+              <div v-else>Kirim Tautan Reset</div>
             </button>
           </div>
 
           <!-- Help text -->
           <div class="font-poppins text-center text-gray-500 text-sm">
-            Tidak bisa mengakses? hubungi admin
+            Tidak bisa mengakses? hubungi SuperAdmin
           </div>
         </form>
         <!-- Success message after request sent -->
@@ -120,10 +120,10 @@
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h3 class="font-medium mb-1">Verifikasi Berhasil!</h3>
+            <h3 class="font-medium mb-1">Verifikasi Pengguna Berhasil!</h3>
             <p>
-              Tautan reset kata sandi telah dikirim. Anda akan dialihkan ke
-              halaman reset kata sandi.
+              Nama pengguna telah dikonfirmasi. Anda akan dialihkan ke halaman
+              reset kata sandi.
             </p>
             <div class="mt-2 text-sm">
               <div
@@ -143,7 +143,7 @@
         <div class="mt-8 pt-4 text-center border-t border-gray-200">
           <button
             @click="goToLogin"
-            class="text-[#0099FF] hover:underline bg-gray-100 w-full py-3 rounded-md"
+            class="text-[#0099FF] hover:underline bg-gray-100 w-full py-3 rounded-md cursor-pointer font-poppins"
           >
             Kembali ke Halaman Login
           </button>

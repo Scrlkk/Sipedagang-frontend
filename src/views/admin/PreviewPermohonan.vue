@@ -504,7 +504,7 @@
       padding: 0;
     }
     button {
-      display: none;
+      display: none !important;
     }
     .page {
       page-break-after: avoid;

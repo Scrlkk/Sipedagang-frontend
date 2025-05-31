@@ -1,5 +1,6 @@
 <script setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import RiwayatIconElement from '@/components/RiwayatIconElement.vue'
@@ -7,6 +8,15 @@
   import FormElement from '@/components/FormElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
   const iconHover = ref(false)
+
+  const router = useRouter()
+  function handleLeft() {
+    router.back()
+  }
+
+  function handleRight() {
+    // Handle the right button click
+  }
 </script>
 
 <template>
@@ -57,7 +67,11 @@
         <FormElement />
 
         <!-- BUTTON -->
-        <ButtonElement />
+        <ButtonElement
+          @onClickLeft="handleLeft"
+          @onClickRight="handleRight"
+          left-label="Back"
+        />
       </section>
     </MainElement>
   </SuperAdminLayout>

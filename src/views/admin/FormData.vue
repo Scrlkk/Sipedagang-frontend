@@ -240,23 +240,23 @@
   <AdminLayout class="h-screen overflow-hidden">
     <!-- Add transition wrapper -->
     <transition name="page" appear>
-      <div
-        class="flex items-center justify-center min-h-[calc(80vh-120px)] py-6"
-      >
-        <!-- Side Navigation (unchanged) -->
+      <div class="flex flex-col min-h-[calc(100vh-120px)]">
+        <!-- Mobile Navigation Bar (visible on small screens) -->
         <div
-          class="fixed left-8 lg:left-1/6 top-1/3 flex flex-col space-y-4 z-20"
+          class="lg:hidden flex justify-between items-center p-4 bg-white shadow-md z-30 border-b"
         >
           <router-link
             to="/admin/dashboard"
-            class="bg-[#0099FF] text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors"
+            class="bg-[#0099FF] text-white rounded-lg px-3 py-2 flex items-center space-x-2 hover:bg-[#0088EE] transition-colors text-sm"
+            aria-label="Kembali ke Dashboard"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8"
+              class="h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 stroke-linecap="round"
@@ -265,17 +265,20 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
+            <span>Dashboard</span>
           </router-link>
           <router-link
             to="/admin/lihatdata"
-            class="bg-[#0099FF] text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors"
+            class="bg-[#0099FF] text-white rounded-lg px-3 py-2 flex items-center space-x-2 hover:bg-[#0088EE] transition-colors text-sm"
+            aria-label="Lihat Data Permohonan"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8"
+              class="h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 stroke-linecap="round"
@@ -284,42 +287,109 @@
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
+            <span>Lihat Data</span>
           </router-link>
         </div>
 
-        <!-- Using our reusable component with v-model bindings -->
-        <FormComponent
-          :namaSupplier="namaSupplier"
-          @update:namaSupplier="namaSupplier = $event"
-          :namaPerusahaan="namaPerusahaan"
-          @update:namaPerusahaan="namaPerusahaan = $event"
-          :jenisBank="jenisBank"
-          @update:jenisBank="jenisBank = $event"
-          :nomerRekening="nomerRekening"
-          @update:nomerRekening="nomerRekening = $event"
-          :nomerPO="nomerPO"
-          @update:nomerPO="nomerPO = $event"
-          :tanggalPengadaan="tanggalPengadaan"
-          @update:tanggalPengadaan="tanggalPengadaan = $event"
-          :jenisPengadaan="jenisPengadaan"
-          @update:jenisPengadaan="jenisPengadaan = $event"
-          :kuantum="kuantum"
-          @update:kuantum="kuantum = $event"
-          :satuan="satuan"
-          @update:satuan="satuan = $event"
-          :dataIN="dataIN"
-          @update:dataIN="dataIN = $event"
-          :jumlahPembayaran="jumlahPembayaran"
-          @update:jumlahPembayaran="handlePembayaranInput($event)"
-          :jumlahSPP="jumlahSPP"
-          @update:jumlahSPP="handleSPPInput($event)"
-          :formattedPembayaran="formattedPembayaran"
-          :formattedSPP="formattedSPP"
-          @add-data-row="addDataInRow"
-          @remove-data-row="removeDataRow"
-          @clear-form="clearForm"
-          @save-form="saveForm"
-        />
+        <!-- Main Content Area -->
+        <div class="flex-1 flex justify-center py-4 px-4 lg:px-8 relative">
+          <!-- Side Navigation (hidden on small screens) -->
+          <div
+            class="hidden lg:flex fixed left-4 xl:left-8 top-1/2 transform -translate-y-1/2 flex-col space-y-4 z-20"
+          >
+            <router-link
+              to="/admin/dashboard"
+              class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
+              aria-label="Kembali ke Dashboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 xl:h-7 w-6 xl:w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <!-- Tooltip -->
+              <div
+                class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+              >
+                Dashboard
+              </div>
+            </router-link>
+            <router-link
+              to="/admin/lihatdata"
+              class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
+              aria-label="Lihat Data Permohonan"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 xl:h-7 w-6 xl:w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <!-- Tooltip -->
+              <div
+                class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+              >
+                Lihat Data
+              </div>
+            </router-link>
+          </div>
+
+          <!-- Form Container with responsive margins -->
+          <div class="w-full max-w-5xl lg:ml-20 xl:ml-24">
+            <!-- Using our reusable component with v-model bindings -->
+            <FormComponent
+              :namaSupplier="namaSupplier"
+              @update:namaSupplier="namaSupplier = $event"
+              :namaPerusahaan="namaPerusahaan"
+              @update:namaPerusahaan="namaPerusahaan = $event"
+              :jenisBank="jenisBank"
+              @update:jenisBank="jenisBank = $event"
+              :nomerRekening="nomerRekening"
+              @update:nomerRekening="nomerRekening = $event"
+              :nomerPO="nomerPO"
+              @update:nomerPO="nomerPO = $event"
+              :tanggalPengadaan="tanggalPengadaan"
+              @update:tanggalPengadaan="tanggalPengadaan = $event"
+              :jenisPengadaan="jenisPengadaan"
+              @update:jenisPengadaan="jenisPengadaan = $event"
+              :kuantum="kuantum"
+              @update:kuantum="kuantum = $event"
+              :satuan="satuan"
+              @update:satuan="satuan = $event"
+              :dataIN="dataIN"
+              @update:dataIN="dataIN = $event"
+              :jumlahPembayaran="jumlahPembayaran"
+              @update:jumlahPembayaran="handlePembayaranInput($event)"
+              :jumlahSPP="jumlahSPP"
+              @update:jumlahSPP="handleSPPInput($event)"
+              :formattedPembayaran="formattedPembayaran"
+              :formattedSPP="formattedSPP"
+              @add-data-row="addDataInRow"
+              @remove-data-row="removeDataRow"
+              @clear-form="clearForm"
+              @save-form="saveForm"
+            />
+          </div>
+        </div>
       </div>
     </transition>
   </AdminLayout>

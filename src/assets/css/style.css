@@ -7,5 +7,8 @@ body {
 @theme {
   --font-inter: 'Inter', 'sans-serif';
   --font-poppins: 'Poppins', 'sans-serif';
+  --font-times: 'Times New Roman', 'serif';
+  --font-arial: 'Arial', 'sans-serif';
+  --font-calibri: 'Calibri', sans-serif;
   --breakpoint-3xl: 120rem;
 }

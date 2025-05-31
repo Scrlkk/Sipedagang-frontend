@@ -13,59 +13,53 @@
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '002',
-      nama: 'Rekap Data 2',
-      tanggal: '2023-10-02',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '003',
-      nama: 'Rekap Data 3',
-      tanggal: '2023-10-03',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '004',
-      nama: 'Rekap Data 4',
-      tanggal: '2023-10-04',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '005',
-      nama: 'Rekap Data 5',
-      tanggal: '2023-10-05',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '006',
-      nama: 'Rekap Data 6',
-      tanggal: '2023-10-06',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '007',
-      nama: 'Rekap Data 7',
-      tanggal: '2023-10-07',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
     {
-      kode: '008',
-      nama: 'Rekap Data 8',
-      tanggal: '2023-10-08',
+      kode: '001',
+      nama: 'Rekap Data 1',
+      tanggal: '2023-10-01',
       waktu: '2023-10-01 - 2023-10-31',
     },
-    {
-      kode: '009',
-      nama: 'Rekap Data 9',
-      tanggal: '2023-10-09',
-      waktu: '2023-10-01 - 2023-10-31',
-    },
-    {
-      kode: '010',
-      nama: 'Rekap Data 10',
-      tanggal: '2023-10-10',
-      waktu: '2023-10-01 - 2023-10-31',
-    },
+      {
+        kode: '001',
+        nama: 'Rekap Data 1',
+        tanggal: '2023-10-01',
+        waktu: '2023-10-01 - 2023-10-31',
+      },
   ])
 </script>
 
@@ -106,7 +100,7 @@
 
           <!-- TABEL -->
           <section
-            class="flex justify-center items-center relative mt-5.5 text-sm overflow-x-auto overflow-y-auto h-[66.5dvh] pr-1.5"
+            class="relative mt-5.5 text-sm overflow-x-auto overflow-y-auto h-[66.5dvh] pr-1.5"
           >
             <table class="w-full">
               <thead class="sticky top-0">

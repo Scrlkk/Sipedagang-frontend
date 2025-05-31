@@ -4,76 +4,76 @@
   import { useRouter } from 'vue-router'
 
   const router = useRouter()
-  const password = ref('')
+  const newPassword = ref('')
   const confirmPassword = ref('')
   const isLoading = ref(false)
   const errorMessage = ref('')
-  const showPassword = ref(false)
+  const requestSent = ref(false)
+  const showNewPassword = ref(false)
   const showConfirmPassword = ref(false)
-  const resetSuccess = ref(false)
 
-  const togglePasswordVisibility = () => {
-    showPassword.value = !showPassword.value
+  const handleSubmit = async () => {
+    // Clear previous error messages
+    errorMessage.value = ''
+
+    // Validation
+    if (!newPassword.value) {
+      errorMessage.value = 'Password baru harus diisi'
+      return
+    }
+
+    if (newPassword.value.length < 6) {
+      errorMessage.value = 'Password baru minimal 6 karakter'
+      return
+    }
+
+    if (!confirmPassword.value) {
+      errorMessage.value = 'Konfirmasi password harus diisi'
+      return
+    }
+
+    if (newPassword.value !== confirmPassword.value) {
+      errorMessage.value = 'Password baru dan konfirmasi password tidak sama'
+      return
+    }
+
+    isLoading.value = true
+    try {
+      // Here you would add your actual password reset request logic
+      console.log('Reset password request')
+      console.log('New password:', newPassword.value)
+
+      // Simulate successful request
+      setTimeout(() => {
+        requestSent.value = true
+        isLoading.value = false
+        // Redirect to ResetPasswordAccepted after a short delay
+        // Give user time to see success message before redirecting
+      }, 1000)
+    } catch (error) {
+      errorMessage.value = 'Permintaan gagal, silakan coba lagi'
+      isLoading.value = false
+    }
+  }
+
+  const toggleNewPasswordVisibility = () => {
+    showNewPassword.value = !showNewPassword.value
   }
 
   const toggleConfirmPasswordVisibility = () => {
     showConfirmPassword.value = !showConfirmPassword.value
   }
 
-  const handleResetPassword = async () => {
-    // Clear previous error messages
-    errorMessage.value = ''
-
-    // Validate inputs
-    if (!password.value || !confirmPassword.value) {
-      errorMessage.value =
-        'Kata sandi baru dan konfirmasi kata sandi harus diisi'
-      return
-    }
-
-    if (password.value !== confirmPassword.value) {
-      errorMessage.value = 'Kata sandi dan konfirmasi kata sandi tidak cocok'
-      return
-    }
-
-    if (password.value.length < 8) {
-      errorMessage.value = 'Kata sandi harus minimal 8 karakter'
-      return
-    }
-
-    isLoading.value = true
-
-    try {
-      // Here you would add your actual password reset logic
-      console.log('Resetting password:', password.value)
-
-      // Simulate API call with timeout
-      setTimeout(() => {
-        resetSuccess.value = true
-        isLoading.value = false
-      }, 1000)
-    } catch (error) {
-      errorMessage.value = 'Reset kata sandi gagal, silakan coba lagi'
-      isLoading.value = false
-    }
-  }
-
   const goToLogin = () => {
-    router.push('/admin')
+    router.push('/')
   }
 </script>
-
-<style scoped>
-  * {
-    font-family: 'Poppins', sans-serif;
-  }
-</style>
 
 <template>
   <GuestLayout>
     <div class="flex items-center justify-center min-h-screen px-4">
       <!-- Reset Password Card -->
-      <div class="bg-white rounded-lg w-full max-w-md shadow-2xl p-8">
+      <div class="bg-white rounded-lg w-full max-w-md shadow-lg p-8">
         <!-- Logo and Title -->
         <div class="text-center mb-8 font-poppins">
           <h1
@@ -83,14 +83,14 @@
             <div class="text-[#176BC7]">PEDAGANG</div>
           </h1>
           <div class="text-gray-600 mt-2 text-sm">
-            Rubah kata sandi lama anda menggunakan kata sandi yang baru.
+            Masukkan password baru untuk akun Anda
           </div>
         </div>
 
-        <!-- Reset Password Form -->
+        <!-- Request Form -->
         <form
-          v-if="!resetSuccess"
-          @submit.prevent="handleResetPassword"
+          v-if="!requestSent"
+          @submit.prevent="handleSubmit"
           class="space-y-4"
         >
           <!-- Error message if any -->
@@ -101,26 +101,28 @@
             {{ errorMessage }}
           </div>
 
-          <!-- New Password field with toggle visibility -->
+          <!-- New Password field -->
           <div>
-            <label for="password" class="block text-sm text-gray-700 mb-1"
-              >Kata Sandi Baru</label
+            <label
+              for="newPassword"
+              class="font-poppins block text-sm text-gray-700 mb-1"
+              >Password Baru</label
             >
             <div class="relative">
               <input
-                id="password"
-                :type="showPassword ? 'text' : 'password'"
-                v-model="password"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                id="newPassword"
+                :type="showNewPassword ? 'text' : 'password'"
+                v-model="newPassword"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm font-inter"
+                placeholder="Masukkan password baru (min. 6 karakter)"
               />
               <button
                 type="button"
-                @click="togglePasswordVisibility"
+                @click="toggleNewPasswordVisibility"
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               >
-                <!-- Eye icon when password is hidden -->
                 <svg
-                  v-if="!showPassword"
+                  v-if="!showNewPassword"
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-5 w-5"
                   fill="none"
@@ -140,7 +142,6 @@
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
-                <!-- Crossed eye icon when password is visible -->
                 <svg
                   v-else
                   xmlns="http://www.w3.org/2000/svg"
@@ -158,31 +159,28 @@
                 </svg>
               </button>
             </div>
-            <p class="text-xs text-gray-500 mt-1">
-              Kata sandi minimal 8 karakter
-            </p>
           </div>
 
-          <!-- Confirm Password field with toggle visibility -->
+          <!-- Confirm Password field -->
           <div>
             <label
               for="confirmPassword"
-              class="block text-sm text-gray-700 mb-1"
-              >Konfirmasi Kata Sandi</label
+              class="font-poppins block text-sm text-gray-700 mb-1"
+              >Konfirmasi Password Baru</label
             >
             <div class="relative">
               <input
                 id="confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 v-model="confirmPassword"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm"
+                placeholder="Masukkan ulang password baru"
               />
               <button
                 type="button"
                 @click="toggleConfirmPasswordVisibility"
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               >
-                <!-- Eye icon when password is hidden -->
                 <svg
                   v-if="!showConfirmPassword"
                   xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +202,6 @@
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
-                <!-- Crossed eye icon when password is visible -->
                 <svg
                   v-else
                   xmlns="http://www.w3.org/2000/svg"
@@ -224,25 +221,30 @@
             </div>
           </div>
 
-          <!-- Reset Password Button -->
-          <div class="mt-6">
+          <!-- Submit button -->
+          <div>
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors cursor-pointer"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer font-poppins"
               :disabled="isLoading"
             >
-              <div v-if="isLoading">Loading...</div>
-              <div v-else>Atur Ulang Kata Sandi</div>
+              <div v-if="isLoading">Mengirim Permintaan...</div>
+              <div v-else>Kirim Permintaan Reset Password</div>
             </button>
+          </div>
+
+          <!-- Help text -->
+          <div class="font-poppins text-center text-gray-500 text-sm">
+            Permintaan akan diverifikasi oleh SuperAdmin
           </div>
         </form>
 
-        <!-- Success message after password reset -->
+        <!-- Success message after request sent -->
         <div v-else class="space-y-6 text-center">
-          <div class="p-4 bg-green-50 text-green-700 rounded-md">
+          <div class="p-4 bg-blue-50 text-blue-700 rounded-md">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-12 w-12 mx-auto text-green-500 mb-2"
+              class="h-10 w-10 mx-auto text-blue-500 mb-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -251,29 +253,22 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h3 class="text-lg font-medium mb-1">Kata Sandi Diperbarui!</h3>
-            <p class="text-sm">Kata sandi Anda telah berhasil diubah.</p>
+            <h3 class="font-medium mb-1">Permintaan Terkirim!</h3>
+            <p class="text-sm pb-2">
+              Permintaan reset password Anda telah dikirim ke SuperAdmin untuk
+              diverifikasi. Silakan tunggu persetujuan dari SuperAdmin.
+            </p>
           </div>
-
-          <button
-            @click="goToLogin"
-            class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors cursor-pointer"
-          >
-            Kembali ke Login
-          </button>
         </div>
 
-        <!-- Return to login link (only shown when form is displayed) -->
-        <div
-          v-if="!resetSuccess"
-          class="mt-6 pt-4 text-center border-t border-gray-200"
-        >
+        <!-- Return to login -->
+        <div class="mt-8 pt-4 text-center border-t border-gray-200">
           <button
             @click="goToLogin"
-            class="text-[#176BC7] hover:underline bg-gray-100 w-full py-3 rounded-md cursor-pointer"
+            class="text-[#0099FF] hover:underline bg-gray-100 w-full py-3 rounded-md cursor-pointer font-poppins"
           >
             Kembali ke Halaman Login
           </button>

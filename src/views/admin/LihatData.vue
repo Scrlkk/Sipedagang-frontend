@@ -298,6 +298,8 @@
   watch(currentPage, (newValue) => {
     pageInput.value = newValue
   })
+
+  
 </script>
 
 <template>

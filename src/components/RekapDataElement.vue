@@ -9,7 +9,7 @@
 
 <template>
   <tr
-    class="border-b border-[#E4E7EC] hover:bg-[#E4E7EC] text-gray-700 text-sm text-center"
+    class="border-b border-[#E4E7EC] hover:bg-[#E4E7EC] text-gray-700 text-sm text-center cursor-pointer"
   >
     <td class="py-4">{{ rekap.kode }}</td>
     <td class="py-4">{{ rekap.nama }}</td>

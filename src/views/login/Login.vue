@@ -150,7 +150,7 @@
           <div>
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer"
               :disabled="isLoading"
             >
               <div v-if="isLoading">Loading...</div>

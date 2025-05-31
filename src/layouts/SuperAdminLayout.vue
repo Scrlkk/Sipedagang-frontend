@@ -176,7 +176,7 @@
                     isHovered.staff ||
                     route.path === '/superadmin/staff' ||
                     route.path === '/superadmin/staff-add' ||
-                    route.path.startsWith('/staff-edit')
+                    route.path.startsWith('/superadmin/staff-edit')
                       ? '#ffff'
                       : '#9BA1AA'
                   "
@@ -184,7 +184,7 @@
                     isHovered.staff ||
                     route.path === '/superadmin/staff' ||
                     route.path === '/superadmin/staff-add' ||
-                    route.path.startsWith('/staff-edit')
+                    route.path.startsWith('/superadmin/staff-edit')
                       ? '#0099FF'
                       : '#ffff'
                   "

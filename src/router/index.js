@@ -90,11 +90,6 @@ const router = createRouter({
       component: RiwayatView,
     },
     {
-      path: '/superadmin/riwayat-preview/:id',
-      name: 'preview riwayat',
-      component: RiwayatPreviewView,
-    },
-    {
       path: '/superadmin/riwayat-edit/:id',
       name: 'edit riwayat',
       component: RiwayatEditView,

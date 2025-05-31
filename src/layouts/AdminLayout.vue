@@ -98,26 +98,6 @@
 
       <!-- User Profile -->
       <div class="flex items-center gap-3 sm:gap-5">
-        <!-- Notification Icon -->
-        <button
-          type="button"
-          aria-label="Notifications"
-          class="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F0AB26] transition-colors shadow-sm"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="sm:w-6 sm:h-6"
-          >
-            <path
-              d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"
-              fill="#F0AB26"
-            />
-          </svg>
-        </button>
         <!-- User Avatar and Name with Dropdown -->
         <div id="profile-dropdown-container" class="relative">
           <div
@@ -152,7 +132,7 @@
               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 origin-top-right"
             >
               <RouterLink
-                to="/admin"
+                to="/"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center gap-2"
               >
                 <svg

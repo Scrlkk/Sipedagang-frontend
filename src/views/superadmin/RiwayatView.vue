@@ -78,6 +78,24 @@
       kuantum: '500 Kg',
       tanggal: '12/01/2025',
     },
+    {
+      jenisPengadaan: 'Gabah',
+      noPreorder: '1234/12/C1130/2025',
+      supplier: 'Punakawan',
+      perusahaan: 'Bulog',
+      admin: 'Super Admin',
+      kuantum: '500 Kg',
+      tanggal: '12/01/2025',
+    },
+    {
+      jenisPengadaan: 'Gabah',
+      noPreorder: '1234/12/C1130/2025',
+      supplier: 'Punakawan',
+      perusahaan: 'Bulog',
+      admin: 'Super Admin',
+      kuantum: '500 Kg',
+      tanggal: '12/01/2025',
+    },
   ])
 </script>
 
@@ -113,9 +131,9 @@
 
           <!-- TABEL -->
           <section
-            class="relative mt-6 text-sm overflow-x-auto overflow-y-auto pr-1.5 h-[62.1dvh]"
+            class="relative mt-6 text-sm overflow-x-auto overflow-y-auto pr-1.5 h-[62.8dvh]"
           >
-            <table class="w-full overflow-hidden">
+            <table class="w-full">
               <thead class="sticky top-0">
                 <tr class="bg-gray-100 text-gray-700 text-sm text-center">
                   <th class="px-5 py-3 rounded-tl-xl">Jenis Pengadaan</th>
