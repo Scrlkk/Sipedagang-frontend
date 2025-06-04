@@ -487,7 +487,7 @@
                         class="inline-flex bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100/80 p-0.5"
                       >
                         <router-link
-                          to="/admin/previewpermohonan"
+                          to="/admin/previewdata"
                           @click.native="previewItem(item)"
                           class="relative group px-2 py-1 rounded-l-md hover:bg-blue-50 transition-all duration-200 flex items-center border-r border-gray-100"
                           role="button"

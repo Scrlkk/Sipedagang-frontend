@@ -121,6 +121,14 @@ const router = createRouter({
       redirect: '/superadmin/dashboard',
     },
 
+    // CETAK
+    {
+      path: '/surat-preview/:id',
+      name: 'cetak surat',
+      component: RiwayatPreviewView,
+      props: true,
+    },
+
     // Redirects [PALING BAWAH YACH]
     {
       path: '/:pathMatch(.*)*',

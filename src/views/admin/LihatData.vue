@@ -184,7 +184,9 @@
 
     return Array.from({ length: end - start + 1 }, (_, i) => start + i)
   })
-
+  const openPrintPreview = () => {
+    window.open(`/surat-preview/${props.item.id}`, '_blank')
+  }
   // Event handlers for storing data before navigation
   const handlePreview = (item) => {
     console.log('Preview:', item)
@@ -298,8 +300,6 @@
   watch(currentPage, (newValue) => {
     pageInput.value = newValue
   })
-
-  
 </script>
 
 <template>

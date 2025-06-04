@@ -8,8 +8,8 @@
 </script>
 
 <template>
-  <div>
-    <div class="grid grid-cols-2 gap-y-2 w-[80%]">
+  <div class="pt-1">
+    <div class="grid grid-cols-2 w-[89%]">
       <div class="grid grid-cols-3">
         <div>No. {{ datain.no }}</div>
         <div class="col-span-2">

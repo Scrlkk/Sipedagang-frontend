@@ -1,11 +1,16 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import DataIn from '@/components/SuratDataInElement.vue'
   const datain = ref([
     {
       no: '1',
-      tgl: '32/08/2445',
-      kuantum: '100000',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
+    },
+    {
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
     },
     {
       no: '1',
@@ -18,9 +23,34 @@
       kuantum: '18213999',
     },
     {
-      no: '3',
-      tgl: '30/01/2026',
-      kuantum: '999929',
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
+    },
+    {
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
+    },
+    {
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
+    },
+    {
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
+    },
+    {
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
+    },
+    {
+      no: '1',
+      tgl: '20/12/2025',
+      kuantum: '18213999',
     },
   ])
 
@@ -32,26 +62,24 @@
 <template>
   <section class="flex justify-center w-full">
     <!-- SURATE -->
-    <div
-      class="w-full max-w-[210mm] min-h-[297mm] font-arial text-black text-sm pt-[14.2mm] pb-[25.4mm] pr-[16mm] pl-[25.4mm]"
-    >
+    <div class="w-[210mm] font-arial text-black text-[13.5px] px-7 pl-12 pt-1">
       <!-- Header -->
-      <div class="grid grid-cols-2 gap-y-2 gap-x-15">
+      <div class="grid grid-cols-2 gap-y-1 gap-x-17">
         <div class="col-start-2">Surakarta, 19 September 2025</div>
         <div class="col-span-2">
-          <div class="grid grid-cols-2 w-[37%]">
+          <div class="grid grid-cols-2 w-[30%]">
             <div>No</div>
             <div>:</div>
             <div>Hal</div>
             <div class="whitespace-nowrap">
-              <div class="flex flex-col gap-y-2">
+              <div class="flex flex-col gap-y-1">
                 <span>: Permohonan Pembayaran</span>
                 <span class="ml-2">Pengadaan DN [Gabah]</span>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-start-2 flex flex-col gap-y-2">
+        <div class="col-start-2 flex flex-col gap-y-1">
           <span>Kepada</span>
           <span>Yth. Pemimpin / Wakil Pemimpin</span>
           <span>Perum BULOG Kantor Cabang Surakarta</span>
@@ -85,18 +113,18 @@
         </div>
 
         <!-- DATA IN -->
-        <div class="flex flex-col gap-y-2">
+        <div class="flex flex-col">
           <DataIn
             v-for="(datain, index) in datain"
             :key="index"
             :datain="datain"
           />
-          <div class="ml-[263px]">Jumlah : {{ jumlah }} KG</div>
+          <div class="ml-[294.9px] mt-2">Jumlah : {{ jumlah }} KG</div>
         </div>
 
         <!-- TERLAMPIR -->
         <div>Terlampir :</div>
-        <div class="grid grid-cols-2 gap-y-2 w-[40%]">
+        <div class="grid grid-cols-2 gap-y-1 w-[40%]">
           <div>PO</div>
           <div>: 1 Set</div>
           <div>Dokumen IN</div>
@@ -111,8 +139,8 @@
         </div>
 
         <!-- BOTTOM -->
-        <div class="grid grid-cols-2 gap-x-25 mt-2 font-calibri">
-          <div class="outline flex flex-col gap-y-3 pt-2 pl-4 pb-24">
+        <div class="grid grid-cols-2 gap-x-29 mt-3 font-calibri">
+          <div class="outline flex flex-col gap-y-3 pt-2 pl-4 pb-19">
             <div class="text-center underline font-bold tracking-tighter">
               DISPOSISI :
             </div>

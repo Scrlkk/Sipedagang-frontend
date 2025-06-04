@@ -1,43 +1,79 @@
 <script setup>
-  import { useRouter } from 'vue-router'
-  import SuperadminLayout from '@/layouts/SuperadminLayout.vue'
-  import MainElement from '@/components/MainElement.vue'
-  import ButtonElement from '@/components/ButtonElement.vue'
-  import RiwayatPreviewElement from '../../components/RiwayatPreviewElement.vue'
+  import SuratPermohonan from '@/components/SuratPermohonan.vue'
+  import SuratKwitansi from '@/components/SuratKwitansi.vue'
+  import SuratDetailPengadaan from '@/components/SuratDetailPengadaan.vue'
+  import ButtonPrintElement from '@/components/ButtonPrintElement.vue'
+  import { onMounted, ref } from 'vue'
 
-  const props = defineProps(['id'])
-  const router = useRouter()
+  const currentView = ref('surat')
 
-  function handleLeft() {
-    router.back()
-  }
-  function handleRight() {
-    // Handle the right button click
+  onMounted(() => {
+    window.print()
+  })
+
+  const handleToggleView = (view) => {
+    currentView.value = view
   }
 </script>
 
 <template>
-  <SuperadminLayout>
-    <MainElement>
-      <section class="flex flex-col h-full justify-between">
-        <!-- TITLE -->
-        <div
-          class="font-semibold text-center text-lg text-[#0099FF] underline underline-offset-8"
-        >
-          Preview Data Pengadaan - {{ id }}
-        </div>
-
-        <!-- PDF -->
-        <RiwayatPreviewElement />
-
-        <!-- BUTTON -->
-        <ButtonElement
-          left-label="Back"
-          right-label="Cetak"
-          @onClickLeft="handleLeft"
-          @onClickRight="handleRight"
-        />
-      </section>
-    </MainElement>
-  </SuperadminLayout>
+  <ButtonPrintElement @toggle-view="handleToggleView" />
+  <section class="m-[10mm]">
+    <div v-if="currentView === 'surat'">
+      <SuratPermohonan />
+      <div class="page-break">
+        <SuratDetailPengadaan />
+      </div>
+    </div>
+    <div v-if="currentView === 'kuitansi'">
+      <div class="kuitansi-container kuitansi-page">
+        <SuratKwitansi />
+      </div>
+    </div>
+  </section>
 </template>
+
+<style>
+  @media print {
+    /* Default page untuk surat-surat */
+    @page {
+      size: A4;
+      margin: 0mm;
+    }
+
+    /* Page khusus untuk kuitansi */
+    @page kuitansi {
+      size: A4 landscape;
+      margin: 0mm;
+      padding-top: 0mm;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+
+    .kuitansi-page {
+      page: kuitansi;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .kuitansi-container {
+      transform: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .kuitansi-page section {
+      margin: 0 !important;
+    }
+    .fixed {
+      display: none !important;
+    }
+  }
+  .kuitansi-container {
+    transform: scale(0.7);
+  }
+</style>
