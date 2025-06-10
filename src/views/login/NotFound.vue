@@ -1,11 +1,22 @@
 <script setup>
   import GuestLayout from '@/layouts/GuestLayout.vue'
-  import { RouterLink } from 'vue-router'
   import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/authStore'
+
   const router = useRouter()
+  const authStore = useAuthStore()
 
   const goBack = () => {
-    router.back()
+    if (authStore.isAuthenticated) {
+      const role = authStore.userRole
+      if (role === 'admin') {
+        router.push('/admin/dashboard')
+      } else if (role === 'superadmin') {
+        router.push('/superadmin/dashboard')
+      }
+    } else {
+      router.push('/login')
+    }
   }
 </script>
 

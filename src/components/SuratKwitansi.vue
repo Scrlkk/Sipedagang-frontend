@@ -1,5 +1,45 @@
 <script setup>
   import bulog from '@/assets/images/bulog.png'
+  import { computed } from 'vue'
+
+  const props = defineProps({
+    item: {
+      type: Object,
+      required: true,
+    },
+  })
+
+  const bulanIndo = [
+    '',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ]
+
+  const tanggalSurat = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return ''
+    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
+    return `${parseInt(tanggal)} ${bulanIndo[parseInt(bulan)]} ${tahun}`
+  })
+
+  const jenisPengadaanCapital = computed(() => {
+    const str = props.item.jenis_pengadaan_barang || ''
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  })
+
+  const tahunPengadaan = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return new Date().getFullYear()
+    return new Date(props.item.tanggal_pengadaan).getFullYear()
+  })
 </script>
 
 <template>
@@ -8,7 +48,7 @@
       <div class="flex w-full h-full px-2 py-1 font-calibri text-xl gap-x-4">
         <div class="relative outline w-[26%] h-[706px]">
           <div
-            class="absolute bottom-0 my-15 -translate-x-5 flex flex-col -rotate-90"
+            class="absolute bottom-0 my-15 -translate-x-3 flex flex-col -rotate-90"
           >
             <img :src="bulog" class="w-[78%] pb-1" />
             <div class="font-bold leading-6">
@@ -26,7 +66,7 @@
               <div>Telah terima dari</div>
               <div class="text-end">:</div>
             </div>
-            <div>[Perum BULOG Kantor Cabang Surakarta]</div>
+            <div>Perum BULOG Kantor Cabang Surakarta</div>
             <div class="flex justify-between pr-1">
               <div>Uang sejumlah</div>
               <div class="text-end">:</div>
@@ -40,15 +80,17 @@
               <div class="text-end">:</div>
             </div>
             <div>
-              [Pembelian Teh Celup Sariwangi 50 gr] sesuai dengan
-              [PO/1234/12/11C30/2024 Tahun 2024]
+              {{ jenisPengadaanCapital }} {{ item.kauntum }} sesuai dengan PO/{{
+                item.no_preorder
+              }}
+              Tahun {{ tahunPengadaan }}
             </div>
           </div>
           <div class="grid grid-cols-[1fr_2.6fr]">
             <div class="col-start-2">
               <div class="grid grid-cols-2 w-[96%]">
                 <div>Kuantum</div>
-                <div class="text-end">1.000</div>
+                <div class="text-end">{{ item.kuantum }}</div>
                 <div>Harga</div>
                 <div class="text-end">5.525</div>
                 <div class="font-bold">Harga Sebelum Pajak</div>
@@ -64,11 +106,11 @@
               </div>
               <div class="h-[70%] flex flex-col justify-between">
                 <div class="text-center text-xl mt-2">
-                  Surakarta, [18 Oktober 2025]
+                  Surakarta, {{ tanggalSurat }}
                 </div>
                 <div class="text-center">
-                  <div>[Punakawan]</div>
-                  <div>[Perum BULOG SURAKARTA CABANG JOGJA SURAKRTA ]</div>
+                  <div>{{ item.nama_suplier }}</div>
+                  <div>{{ item.nama_perusahaan }}</div>
                 </div>
               </div>
             </div>

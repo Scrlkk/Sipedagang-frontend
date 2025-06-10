@@ -1,239 +1,126 @@
 <script setup>
-  import { ref, watch } from 'vue'
+  import { ref, computed, onMounted, nextTick } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
   import AdminLayout from '@/layouts/AdminLayout.vue'
-  import FormComponent from '@/components/FormComponent.vue'
-  import { useRouter } from 'vue-router'
+  import MainElement from '@/components/MainElement.vue'
+  import FormElement from '@/components/FormElement.vue'
+  import ButtonElement from '@/components/ButtonElement.vue'
+  import { usePengadaanStore } from '@/stores/pengadaanStore'
   import Swal from 'sweetalert2'
 
+  const formRef = ref(null)
+  const isSubmitting = ref(false)
   const router = useRouter()
+  const route = useRoute()
+  const pengadaanStore = usePengadaanStore()
 
-  // Data Pemohon
-  const namaSupplier = ref('')
-  const namaPerusahaan = ref('')
-  const jenisBank = ref('Mandiri')
-  const nomerRekening = ref('')
+  // Check if this is edit mode based on route params
+  const editId = computed(() => route.params.id)
+  const isEditMode = computed(() => !!editId.value)
 
-  // Detail Purchasing Order
-  const nomerPO = ref('')
-  const tanggalPengadaan = ref('')
-  const jenisPengadaan = ref('Beras')
-  const kuantum = ref('')
-  const satuan = ref('KG')
+  onMounted(async () => {
+    if (isEditMode.value) {
+      try {
+        console.log('Loading data for edit, ID:', editId.value)
 
-  // Data IN
-  const dataIN = ref([{ tanggal: '', kuantum: '', satuan: 'KG' }])
+        // Fetch data by ID
+        await pengadaanStore.fetchPengadaanById(editId.value)
 
-  // Watch satuan changes and update all dataIN rows
-  watch(satuan, (newSatuan) => {
-    dataIN.value.forEach((row) => {
-      row.satuan = newSatuan
-    })
-  })
+        // Wait for next tick to ensure FormElement is mounted
+        await nextTick()
 
-  // Informasi Pembayaran
-  const jumlahPembayaran = ref('')
-  const jumlahSPP = ref('')
-
-  // Formatted values for Rupiah display
-  const formattedPembayaran = ref('')
-  const formattedSPP = ref('')
-
-  // Function to format value as Rupiah in input fields
-  const formatRupiahInput = (value) => {
-    if (!value) return ''
-
-    // Remove all non-numeric characters
-    let number = value.toString().replace(/[^\d]/g, '')
-
-    // Format the number with thousand separators
-    return 'Rp ' + number.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-  }
-
-  // Function to extract numeric value from formatted Rupiah string
-  const extractNumericValue = (rupiahString) => {
-    if (!rupiahString) return ''
-    return rupiahString.replace(/[^\d]/g, '')
-  }
-
-  // Update formatted values when raw values change
-  watch(jumlahPembayaran, (newValue) => {
-    formattedPembayaran.value = formatRupiahInput(newValue)
-  })
-
-  watch(jumlahSPP, (newValue) => {
-    formattedSPP.value = formatRupiahInput(newValue)
-  })
-
-  // Handle Rupiah input
-  const handlePembayaranInput = (value) => {
-    jumlahPembayaran.value = extractNumericValue(value)
-  }
-
-  const handleSPPInput = (value) => {
-    jumlahSPP.value = extractNumericValue(value)
-  }
-
-  // Form actions
-  const clearForm = () => {
-    namaSupplier.value = ''
-    namaPerusahaan.value = ''
-    jenisBank.value = 'Mandiri'
-    nomerRekening.value = ''
-    nomerPO.value = ''
-    tanggalPengadaan.value = ''
-    jenisPengadaan.value = 'Beras'
-    kuantum.value = ''
-    satuan.value = 'KG'
-
-    // Keep just one empty row when clearing with the default satuan
-    dataIN.value = [{ tanggal: '', kuantum: '', satuan: 'KG' }]
-
-    jumlahPembayaran.value = ''
-    jumlahSPP.value = ''
-    formattedPembayaran.value = ''
-    formattedSPP.value = ''
-  }
-
-  // Validation functions
-  const validateForm = () => {
-    // Check if any Data IN row has an empty tanggal (date) field
-    const emptyDateFound = dataIN.value.some((item) => !item.tanggal)
-
-    // Validate all essential fields including Data IN dates
-    if (
-      !namaSupplier.value ||
-      !namaPerusahaan.value ||
-      !nomerRekening.value ||
-      !nomerPO.value ||
-      !tanggalPengadaan.value ||
-      !kuantum.value ||
-      emptyDateFound
-    ) {
-      Swal.fire({
-        title: 'Data Tidak Lengkap',
-        text: 'Mohon lengkapi semua field yang diperlukan',
-        icon: 'warning',
-        confirmButtonColor: '#0099FF',
-        confirmButtonText: 'Ok',
-      })
-      return false
-    }
-
-    // Validate satuan consistency
-    let isDataINValid = true
-    dataIN.value.forEach((item) => {
-      if (item.kuantum && item.satuan !== satuan.value) {
-        isDataINValid = false
+        // Use populateForm method from FormElement
+        if (formRef.value && pengadaanStore.currentPengadaan) {
+          console.log(
+            'Populating form with data:',
+            pengadaanStore.currentPengadaan,
+          )
+          formRef.value.populateForm(pengadaanStore.currentPengadaan)
+        } else {
+          console.error('FormRef or currentPengadaan not available:', {
+            formRef: formRef.value,
+            currentPengadaan: pengadaanStore.currentPengadaan,
+          })
+        }
+      } catch (error) {
+        console.error('Error loading data for edit:', error)
+        Swal.fire({
+          title: 'Error!',
+          text: 'Gagal memuat data untuk edit',
+          icon: 'error',
+          confirmButtonColor: '#d33',
+        }).then(() => {
+          router.push('/admin/lihatdata')
+        })
       }
-    })
-
-    if (!isDataINValid) {
-      Swal.fire({
-        title: 'Satuan Tidak Konsisten',
-        text: 'Satuan pada Data IN harus sama dengan satuan pada Kuantum',
-        icon: 'warning',
-        confirmButtonColor: '#0099FF',
-        confirmButtonText: 'Ok',
-      })
-      return false
     }
+  })
 
-    return true
-  }
-
-  // Function to add a new row to dataIN
-  const addDataInRow = () => {
-    if (dataIN.value.length >= 10) {
-      // Show SweetAlert notification
-      Swal.fire({
-        title: 'Batas Maksimum',
-        text: `Maksimum Untuk Data IN hanya 10 baris`,
-        icon: 'warning',
-        confirmButtonColor: '#0099FF',
-        confirmButtonText: 'Oke',
-      })
-      return // Exit the function without adding a row
-    }
-
-    // If under the limit, add a new row with the current satuan value
-    dataIN.value.push({ tanggal: '', kuantum: '', satuan: satuan.value })
-  }
-
-  // Function to remove a row from dataIN
-  const removeDataRow = (index) => {
-    if (dataIN.value.length > 1) {
-      dataIN.value.splice(index, 1)
+  function handleClear() {
+    if (formRef.value && formRef.value.clearForm) {
+      formRef.value.clearForm()
     }
   }
 
-  // Save form data when the form emits save event
-  const saveForm = () => {
-    // First validate the form
-    if (!validateForm()) return
+  async function handleSubmit() {
+    if (!formRef.value) return
 
-    // Collect form data
-    const formData = {
-      namaSupplier: namaSupplier.value,
-      namaPerusahaan: namaPerusahaan.value,
-      jenisBank: jenisBank.value,
-      nomerRekening: nomerRekening.value,
-      nomerPO: nomerPO.value,
-      tanggalPengadaan: tanggalPengadaan.value,
-      jenisPengadaan: jenisPengadaan.value,
-      kuantum: kuantum.value,
-      satuan: satuan.value,
-      dataIN: dataIN.value,
-      jumlahPembayaran: jumlahPembayaran.value,
-      jumlahSPP: jumlahSPP.value,
-    }
+    isSubmitting.value = true
 
-    // Also save to the permohonanDataList for LihatData.vue
-    // First, check if there's an existing list
-    let dataList = []
-    const savedDataList = localStorage.getItem('permohonanDataList')
-    if (savedDataList) {
-      dataList = JSON.parse(savedDataList)
-    }
+    try {
+      if (isEditMode.value) {
+        // Update existing data using updateForm method
+        await formRef.value.updateForm(editId.value)
 
-    // Format tanggal for the table view
-    const date = new Date(tanggalPengadaan.value)
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear()
-    const tanggalFormatted = `${day}/${month}/${year}`
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Data pengadaan berhasil diperbarui',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        })
+      } else {
+        // Create new data using submitForm method
+        await formRef.value.submitForm()
 
-    // Create a table entry
-    const newEntry = {
-      jenisPengadaan: jenisPengadaan.value,
-      noProorder: nomerPO.value,
-      supplier: namaSupplier.value,
-      perusahaan: namaPerusahaan.value,
-      kuantum: `${kuantum.value} ${satuan.value}`,
-      tanggal: tanggalFormatted,
-      rawData: formData, // Store the complete form data for preview
-    }
-
-    // Add to the list and save
-    dataList.push(newEntry)
-    localStorage.setItem('permohonanDataList', JSON.stringify(dataList))
-    // Show success message
-    Swal.fire({
-      title: 'Berhasil!',
-      text: 'Data berhasil disimpan',
-      icon: 'success',
-      confirmButtonColor: '#0099FF',
-      confirmButtonText: 'Lihat Data',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Navigate to lihatdata page
-        // Note: We keep this programmatic navigation since it's inside an event handler
-        // But other component-based navigation should use router-link
-        router.push('/admin/lihatdata')
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Data pengadaan berhasil disimpan',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        })
       }
-    })
-  }
 
-  // Preview functionality has been removed
+      // Redirect ke halaman lihat data setelah sukses
+      router.push('/admin/lihatdata')
+    } catch (error) {
+      let errorMsg = 'Terjadi kesalahan saat menyimpan data'
+
+      // Handle validation errors or other errors
+      if (error.message) {
+        errorMsg = error.message
+      } else if (error.response && error.response.status === 422) {
+        const errors = error.response.data.errors
+        if (errors) {
+          errorMsg = Object.values(errors).flat().join('\n')
+        } else if (error.response.data.message) {
+          errorMsg = error.response.data.message
+        }
+      }
+
+      Swal.fire({
+        title: 'Error!',
+        text: errorMsg,
+        icon: 'error',
+        confirmButtonColor: '#d33',
+      })
+    } finally {
+      isSubmitting.value = false
+    }
+  }
 </script>
 
 <template>
@@ -292,103 +179,127 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex justify-center py-4 px-4 lg:px-8 relative">
-          <!-- Side Navigation (hidden on small screens) -->
+        <div
+          class="flex-1 flex justify-center items-center py-8 px-4 lg:px-8 relative min-h-0"
+        >
+          <!-- Loading state for edit mode -->
           <div
-            class="hidden lg:flex fixed left-4 xl:left-8 top-1/2 transform -translate-y-1/2 flex-col space-y-4 z-20"
+            v-if="pengadaanStore.isLoading && isEditMode"
+            class="flex justify-center items-center h-full"
           >
-            <router-link
-              to="/admin/dashboard"
-              class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
-              aria-label="Kembali ke Dashboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 xl:h-7 w-6 xl:w-7"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              <!-- Tooltip -->
-              <div
-                class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-              >
-                Dashboard
-              </div>
-            </router-link>
-            <router-link
-              to="/admin/lihatdata"
-              class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
-              aria-label="Lihat Data Permohonan"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 xl:h-7 w-6 xl:w-7"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              <!-- Tooltip -->
-              <div
-                class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-              >
-                Lihat Data
-              </div>
-            </router-link>
+            <div class="text-gray-500">Memuat data...</div>
           </div>
 
-          <!-- Form Container with responsive margins -->
-          <div class="w-full max-w-5xl lg:ml-20 xl:ml-24">
-            <!-- Using our reusable component with v-model bindings -->
-            <FormComponent
-              :namaSupplier="namaSupplier"
-              @update:namaSupplier="namaSupplier = $event"
-              :namaPerusahaan="namaPerusahaan"
-              @update:namaPerusahaan="namaPerusahaan = $event"
-              :jenisBank="jenisBank"
-              @update:jenisBank="jenisBank = $event"
-              :nomerRekening="nomerRekening"
-              @update:nomerRekening="nomerRekening = $event"
-              :nomerPO="nomerPO"
-              @update:nomerPO="nomerPO = $event"
-              :tanggalPengadaan="tanggalPengadaan"
-              @update:tanggalPengadaan="tanggalPengadaan = $event"
-              :jenisPengadaan="jenisPengadaan"
-              @update:jenisPengadaan="jenisPengadaan = $event"
-              :kuantum="kuantum"
-              @update:kuantum="kuantum = $event"
-              :satuan="satuan"
-              @update:satuan="satuan = $event"
-              :dataIN="dataIN"
-              @update:dataIN="dataIN = $event"
-              :jumlahPembayaran="jumlahPembayaran"
-              @update:jumlahPembayaran="handlePembayaranInput($event)"
-              :jumlahSPP="jumlahSPP"
-              @update:jumlahSPP="handleSPPInput($event)"
-              :formattedPembayaran="formattedPembayaran"
-              :formattedSPP="formattedSPP"
-              @add-data-row="addDataInRow"
-              @remove-data-row="removeDataRow"
-              @clear-form="clearForm"
-              @save-form="saveForm"
-            />
+          <!-- Error state -->
+          <div
+            v-else-if="pengadaanStore.hasError && isEditMode"
+            class="flex justify-center items-center h-full"
+          >
+            <div class="text-red-500 text-center">
+              <p>{{ pengadaanStore.error }}</p>
+              <button
+                @click="router.push('/admin/lihatdata')"
+                class="mt-2 px-4 py-2 bg-[#0099ff] text-white rounded hover:bg-blue-600"
+              >
+                Kembali ke Lihat Data
+              </button>
+            </div>
           </div>
+
+          <!-- Main content -->
+          <template v-else>
+            <!-- Side Navigation (hidden on small screens) -->
+            <div
+              class="hidden lg:flex fixed left-4 xl:left-8 top-1/2 transform -translate-y-1/2 flex-col space-y-4 z-20"
+            >
+              <router-link
+                to="/admin/dashboard"
+                class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
+                aria-label="Kembali ke Dashboard"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 xl:h-7 w-6 xl:w-7"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                <!-- Tooltip -->
+                <div
+                  class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                >
+                  Dashboard
+                </div>
+              </router-link>
+              <router-link
+                to="/admin/lihatdata"
+                class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
+                aria-label="Lihat Data Permohonan"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 xl:h-7 w-6 xl:w-7"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <!-- Tooltip -->
+                <div
+                  class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                >
+                  Lihat Data
+                </div>
+              </router-link>
+            </div>
+
+            <!-- Form Container dengan MainElement - Diperlebar dan dipusatkan -->
+            <div
+              class="w-full max-w-7xl mx-auto flex justify-center -mt-23 scale-85"
+            >
+              <div class="w-full max-w-6xl lg:ml-16 xl:ml-20">
+                <MainElement class="w-full">
+                  <section class="flex flex-col justify-between h-full">
+                    <!-- TITLE -->
+                    <div
+                      class="text-center font-semibold text-xl text-[#0099FF] underline underline-offset-8 mb-6"
+                    >
+                      {{
+                        isEditMode ? 'Edit Data Pengadaan' : 'Form Input Data'
+                      }}
+                    </div>
+
+                    <!-- FORM -->
+                    <FormElement ref="formRef" :isEditMode="isEditMode" />
+
+                    <!-- BUTTON -->
+                    <ButtonElement
+                      @onClickLeft="handleClear"
+                      @onClickRight="handleSubmit"
+                      :rightLoading="isSubmitting || pengadaanStore.isLoading"
+                      :rightLabel="isEditMode ? 'Update' : 'Simpan'"
+                      leftLabel="Clear"
+                    />
+                  </section>
+                </MainElement>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </transition>
@@ -412,17 +323,5 @@
   .page-leave-to {
     opacity: 0;
     transform: translateY(-20px);
-  }
-
-  /* Remove dropdown arrow from select elements */
-  select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: none !important;
-  }
-
-  select::-ms-expand {
-    display: none;
   }
 </style>

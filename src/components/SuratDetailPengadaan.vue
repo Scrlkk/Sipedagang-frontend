@@ -1,71 +1,77 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { computed } from 'vue'
   import DataIn from '@/components/SuratDataInElement.vue'
-  const datain = ref([
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-    {
-      no: '1',
-      tgl: '20/12/2025',
-      kuantum: '18213999',
-    },
-  ])
 
-  const jumlah = ref(
-    datain.value.reduce((acc, item) => acc + parseInt(item.kuantum), 0),
+  const props = defineProps({
+    item: {
+      type: Object,
+      required: true,
+    },
+  })
+
+  const dataInList = computed(() => {
+    if (!props.item || !props.item.in_data) return []
+    if (Array.isArray(props.item.in_data)) return props.item.in_data
+    try {
+      return JSON.parse(props.item.in_data)
+    } catch {
+      return []
+    }
+  })
+
+  const jumlah = computed(() =>
+    dataInList.value.reduce((acc, item) => {
+      const angka = parseInt(
+        (item.kuantum_in || '0').toString().replace(/\D/g, ''),
+      )
+      return acc + (isNaN(angka) ? 0 : angka)
+    }, 0),
   )
+
+  const bulanIndo = [
+    '',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ]
+
+  const tanggalSurat = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return ''
+    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
+    return `${parseInt(tanggal)} ${bulanIndo[parseInt(bulan)]} ${tahun}`
+  })
+
+  const tanggalFormatSurat = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return ''
+    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
+    return `Tanggal ${parseInt(tanggal)} Bulan ${bulanIndo[parseInt(bulan)]} Tahun ${tahun}`
+  })
+
+  const jenisPengadaanCapital = computed(() => {
+    const str = props.item.jenis_pengadaan_barang || ''
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  })
 </script>
 
 <template>
   <section class="flex justify-center w-full">
     <!-- SURATE -->
-    <div class="w-[210mm] font-arial text-black text-[13.5px] px-7 pl-12 pt-1">
+    <div
+      v-if="item"
+      class="w-[210mm] font-arial text-black text-[13.5px] px-7 pl-12 pt-1"
+    >
       <!-- Header -->
       <div class="grid grid-cols-2 gap-y-1 gap-x-17">
-        <div class="col-start-2">Surakarta, 19 September 2025</div>
+        <div class="col-start-2">Surakarta, {{ tanggalSurat }}</div>
         <div class="col-span-2">
           <div class="grid grid-cols-2 w-[30%]">
             <div>No</div>
@@ -74,7 +80,9 @@
             <div class="whitespace-nowrap">
               <div class="flex flex-col gap-y-1">
                 <span>: Permohonan Pembayaran</span>
-                <span class="ml-2">Pengadaan DN [Gabah]</span>
+                <span class="ml-2"
+                  >Pengadaan DN {{ jenisPengadaanCapital }}</span
+                >
               </div>
             </div>
           </div>
@@ -91,8 +99,8 @@
       <div class="mt-1 flex flex-col text-justify gap-y-2">
         <div>Dengan Hormat,</div>
         <div>
-          Menunjuk kontrak Purchashing Order (PO) No [1234/12/11C30/ 2024]
-          Tanggal [19] Bulan [September] Tahun [2025]
+          Menunjuk kontrak Purchashing Order (PO) No
+          {{ item.no_preorder }} {{ tanggalFormatSurat }}
         </div>
         <div
           class="grid grid-flow-col grid-rows-3 gap-y-2 gap-x-2 w-[40%] text-left whitespace-nowrap"
@@ -103,9 +111,15 @@
           <div>Telah di-SPP-kan</div>
 
           <!-- KIRI -->
-          <div>: <span>10 KG</span></div>
-          <div>: <span>10 KG</span></div>
-          <div>: <span>10000 KG</span></div>
+          <div>
+            : <span>{{ item.kuantum }}</span>
+          </div>
+          <div>
+            : <span>{{ item.jumlah_pembayaran }}</span>
+          </div>
+          <div>
+            : <span>{{ item.spp }}</span>
+          </div>
         </div>
         <div>
           Dengan ini kami mengajukan permohonan pembayaran pengadaan Gabah
@@ -115,11 +129,20 @@
         <!-- DATA IN -->
         <div class="flex flex-col">
           <DataIn
-            v-for="(datain, index) in datain"
+            v-for="(datain, index) in dataInList"
             :key="index"
             :datain="datain"
           />
-          <div class="ml-[294.9px] mt-2">Jumlah : {{ jumlah }} KG</div>
+          <div class="ml-[294.9px] mt-2">
+            Jumlah : {{ jumlah }}
+            {{
+              (() => {
+                const first = dataInList[0]?.kuantum_in || ''
+                const match = first.match(/[a-zA-Z]+$/)
+                return match ? ' ' + match[0] : ''
+              })()
+            }}
+          </div>
         </div>
 
         <!-- TERLAMPIR -->
@@ -158,8 +181,8 @@
           <div class="flex flex-col gap-y-25 items-center mr-12">
             <div>Pemohon</div>
             <div class="text-center">
-              <div>[Punakawan]</div>
-              <div>([UD. Ali Baba])</div>
+              <div>{{ item.nama_suplier }}</div>
+              <div>{{ item.nama_perusahaan }}</div>
             </div>
           </div>
         </div>

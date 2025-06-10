@@ -1,8 +1,10 @@
 <script setup>
-  import { RouterLink, useRoute } from 'vue-router'
+  import { RouterLink, useRoute, useRouter } from 'vue-router'
   import { reactive, ref } from 'vue'
+  import { useAuthStore } from '@/stores/authStore'
+  import { computed } from 'vue'
+  import { config } from '@/config/env'
   import Bulog from '@/assets/images/bulog.png'
-  import Kaisar from '@/assets/images/misc/kaisar.jpg'
   import InputIconElement from '@/components/InputIconElement.vue'
   import RiwayatIconElement from '@/components/RiwayatIconElement.vue'
   import StaffIconElement from '@/components/StaffIconElement.vue'
@@ -10,6 +12,10 @@
   import SignOutIconElement from '@/components/SignOutIconElement.vue'
   import NotifIconElement from '@/components/NotifIconElement.vue'
   import DashboardIconElement from '@/components/DashboardIconElement.vue'
+
+  const auth = useAuthStore()
+  const router = useRouter()
+  const userName = computed(() => auth.user?.name || 'Pengguna')
 
   const isHovered = reactive({
     dashboard: false,
@@ -21,13 +27,42 @@
   })
 
   const route = useRoute()
+  // ✅ Tambahkan fungsi logout
+  const handleLogout = async () => {
+    try {
+      await auth.logout()
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Force logout even if API call fails
+      auth.clearAuth()
+      router.push('/login')
+    }
+  }
+
+  // ✅ Gunakan env.js untuk konsistensi foto profil
+  const profilePhoto = computed(() => {
+    const foto =
+      auth.user?.profile_photo ||
+      auth.user?.foto ||
+      auth.user?.img ||
+      auth.user?.gambar ||
+      auth.user?.photo
+
+    if (foto) {
+      return config.getStorageUrl(foto)
+    }
+
+    // Fallback ke UI-Avatars seperti komponen lainnya
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'Pengguna')}&background=0099FF&color=fff&size=128`
+  })
 </script>
 
 <template>
   <div class="flex">
     <!-- SIDEBAR -->
     <div
-      class="flex w-72 h-screen py-14 px-5 justify-center shadow-xl outline-gray-200 outline-1"
+      class="flex h-screen w-72 py-14 px-5 justify-center shadow-xl outline-gray-200 outline-1"
     >
       <div class="flex flex-col gap-4 items-center justify-between">
         <div class="flex flex-col items-center">
@@ -208,7 +243,7 @@
             <!-- REKAP DATA -->
             <RouterLink
               to="/superadmin/rekapdata"
-              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
+              class="group hidden flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
               :class="[
                 isHovered.rekap || route.path === '/superadmin/rekapdata'
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
@@ -246,9 +281,9 @@
         </div>
 
         <!-- LOGOUT -->
-        <RouterLink
-          to="/"
-          class="group flex bottom-0 h-fit gap-3 items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out"
+        <button
+          @click="handleLogout"
+          class="group flex bottom-0 h-fit gap-3 items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out cursor-pointer"
           @mouseenter="isHovered.signout = true"
           @mouseleave="isHovered.signout = false"
         >
@@ -260,7 +295,7 @@
           <SignOutIconElement
             :color="isHovered.signout ? '#0099FF' : '#9BA1AA'"
           />
-        </RouterLink>
+        </button>
       </div>
     </div>
 
@@ -270,16 +305,24 @@
         <div
           class="flex bg-[#0099FF] h-18 w-full items-center px-12 justify-end gap-5"
         >
-          <NotifIconElement />
+          <!-- <NotifIconElement /> -->
           <div class="-mr-2">
             <img
               loading="lazy"
-              :src="Kaisar"
-              alt="Profile Picture"
-              class="w-11 h-11 rounded-full"
+              :src="profilePhoto"
+              :alt="userName"
+              class="w-11 h-11 rounded-full object-cover outline outline-white"
+              @error="
+                (e) => {
+                  // Fallback ke UI-Avatars jika gambar gagal dimuat
+                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
+                }
+              "
             />
           </div>
-          <div class="font-poppins font-medium text-white">SuperAdmin</div>
+          <div class="font-poppins font-medium text-white">
+            {{ userName }}
+          </div>
         </div>
       </div>
 

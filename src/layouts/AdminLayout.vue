@@ -1,10 +1,38 @@
 <script setup>
-  import { ref, onMounted, onUnmounted } from 'vue'
+  import { ref, onMounted, onUnmounted, computed } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/authStore'
+  import { config } from '@/config/env'
+
+  const router = useRouter()
+  const auth = useAuthStore()
+
+  // User info dari auth store
+  const userName = computed(
+    () => auth.user?.name || auth.user?.nama_pengguna || 'Admin',
+  )
+
+  // ✅ Gunakan env.js untuk konsistensi foto profil
+  const profilePhoto = computed(() => {
+    const foto =
+      auth.user?.profile_photo ||
+      auth.user?.foto ||
+      auth.user?.img ||
+      auth.user?.gambar ||
+      auth.user?.photo
+
+    if (foto) {
+      return config.getStorageUrl(foto)
+    }
+
+    // Fallback ke UI-Avatars seperti komponen lainnya
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || auth.user?.nama_pengguna || 'Admin')}&background=0099FF&color=fff&size=128`
+  })
 
   // Track dropdown visibility
   const isProfileDropdownOpen = ref(false)
 
-  // Toggle dropdown
+  // ✅ Perbaiki typo di toggle dropdown - ganti isProfileDropdown dengan isProfileDropdownOpen
   const toggleProfileDropdown = () => {
     isProfileDropdownOpen.value = !isProfileDropdownOpen.value
   }
@@ -14,6 +42,25 @@
     const profileElement = document.getElementById('profile-dropdown-container')
     if (profileElement && !profileElement.contains(event.target)) {
       isProfileDropdownOpen.value = false
+    }
+  }
+
+  // ✅ Update fungsi logout untuk mengirim API logout
+  const handleLogout = async () => {
+    try {
+      // Tutup dropdown terlebih dahulu
+      isProfileDropdownOpen.value = false
+
+      // Panggil API logout melalui authStore
+      await auth.logout()
+
+      // Redirect ke login
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Force logout even if API call fails
+      auth.clearAuth()
+      router.push('/login')
     }
   }
 
@@ -104,17 +151,23 @@
             @click="toggleProfileDropdown"
             class="flex items-center gap-2 sm:gap-3 cursor-pointer transition-opacity hover:opacity-90"
           >
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden">
+            <div class="w-12.5 h-12.5 rounded-full overflow-hidden">
               <img
-                src="../assets/images/kaisar.jpg"
-                alt="User Avatar"
+                :src="profilePhoto"
+                :alt="userName"
                 class="w-full h-full object-cover"
+                @error="
+                  (e) => {
+                    // Fallback ke UI-Avatars jika gambar gagal dimuat
+                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
+                  }
+                "
               />
             </div>
             <div
               class="text-white text-[16px] sm:text-[20px] font-medium font-poppins"
             >
-              Ahmad Kaisar
+              {{ userName }}
             </div>
           </div>
 
@@ -131,9 +184,9 @@
               v-if="isProfileDropdownOpen"
               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 origin-top-right"
             >
-              <RouterLink
-                to="/"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center gap-2"
+              <button
+                @click="handleLogout"
+                class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 gap-3"
               >
                 <svg
                   width="18"
@@ -141,10 +194,11 @@
                   viewBox="0 0 20 21"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
+                  class="flex-shrink-0"
                 >
                   <g clip-path="url(#clip0_410_6997)">
                     <path
-                      d="M19.0241 8.1427L15.7916 4.9102C15.6344 4.7584 15.4239 4.6744 15.2054 4.6763C14.9869 4.6782 14.7779 4.76584 14.6234 4.92035C14.4689 5.07485 14.3812 5.28386 14.3793 5.50236C14.3774 5.72086 14.4614 5.93136 14.6132 6.08853L17.8457 9.32103C17.9418 9.41897 18.0257 9.52808 18.0957 9.64603C18.0832 9.64603 18.0732 9.63936 18.0607 9.63936L4.99074 9.66603C4.76973 9.66603 4.55777 9.75383 4.40149 9.91011C4.24521 10.0664 4.15741 10.2783 4.15741 10.4994C4.15741 10.7204 4.24521 10.9323 4.40149 11.0886C4.55777 11.2449 4.76973 11.3327 4.99074 11.3327L18.0557 11.306C18.0791 11.306 18.0982 11.2944 18.1207 11.2927C18.0468 11.4337 17.9531 11.5633 17.8424 11.6777L14.6099 14.9102C14.5303 14.9871 14.4668 15.079 14.4232 15.1807C14.3795 15.2824 14.3565 15.3917 14.3555 15.5024C14.3546 15.613 14.3757 15.7227 14.4176 15.8252C14.4595 15.9276 14.5213 16.0206 14.5996 16.0989C14.6778 16.1771 14.7709 16.239 14.8733 16.2809C14.9757 16.3228 15.0854 16.3439 15.1961 16.3429C15.3067 16.3419 15.4161 16.319 15.5177 16.2753C15.6194 16.2316 15.7114 16.1681 15.7882 16.0885L19.0207 12.856C19.6456 12.2309 19.9967 11.3832 19.9967 10.4994C19.9967 9.61548 19.6456 8.76779 19.0207 8.1427H19.0241Z"
+                      d="M19.0241 8.1427L15.7916 4.9102C15.6344 4.7584 15.4239 4.6744 15.2054 4.6763C14.9869 4.6782 14.7779 4.76584 14.6234 4.92035C14.4689 5.07485 14.3812 5.28386 14.3793 5.50236C14.3774 5.72086 14.4614 5.93136 14.6132 6.08853L17.8457 9.32103C17.9418 9.41897 18.0257 9.52808 18.0957 9.64603C18.0832 9.64603 18.0732 9.63936 18.0607 9.63936L4.99074 9.66603C4.76973 9.66603 4.55777 9.75383 4.40149 9.91011C4.24521 10.0664 4.15741 10.2783 4.15741 10.4994C4.15741 10.7204 4.24521 10.9323 4.40149 11.0886C4.55777 11.2449 4.76973 11.3327 4.99074 11.3327L18.0557 11.306C18.0791 11.306 18.0982 11.2944 18.1207 11.2927C18.0468 11.4337 17.9531 11.5633 17.8424 11.6777L14.6099 14.9102C14.5303 14.9871 14.4668 15.079 14.4232 15.1807C14.3795 15.2824 14.3565 15.3917 14.3555 15.5024C14.3546 15.613 14.3757 15.7227 14.4176 15.8252C14.4595 15.9276 14.5213 16.0206 14.5996 16.0989C14.6778 16.1771 14.7709 16.239 14.8733 16.2809C14.9757 16.3228 15.0854 16.3439 15.1961 16.3429C14.3067 16.3419 15.4161 16.319 15.5177 16.2753C15.6194 16.2316 15.7114 16.1681 15.7882 16.0885L19.0207 12.856C19.6456 12.2309 19.9967 11.3832 19.9967 10.4994C19.9967 9.61548 19.6456 8.76779 19.0207 8.1427H19.0241Z"
                       fill="#9BA1AA"
                     />
                     <path
@@ -164,7 +218,7 @@
                   </defs>
                 </svg>
                 <span>Keluar Akun</span>
-              </RouterLink>
+              </button>
             </div>
           </Transition>
         </div>

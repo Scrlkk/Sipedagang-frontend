@@ -1,8 +1,13 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref,computed } from 'vue'
+  import { useAuthStore } from '@/stores/authStore'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import IndexElement from '@/components/IndexElement.vue'
-  import IndexIcon from '../../components/IndexIcon.vue'
+
+  const auth = useAuthStore()
+  const userName = computed(
+    () => auth.user?.name || auth.user?.nama_pengguna || 'Admin',
+  )
 
   const data = ref([
     {
@@ -29,7 +34,7 @@
     <!-- TITLE -->
     <section class="w-full h-full">
       <div class="font-bold text-3xl text-[#575757] text-center py-16">
-        Halo, Selamat Datang SuperAdmin
+        Halo, Selamat Datang {{ userName }}
       </div>
 
       <!-- WIDGET -->

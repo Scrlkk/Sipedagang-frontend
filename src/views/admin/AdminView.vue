@@ -1,6 +1,18 @@
 <script setup>
   import AdminLayout from '@/layouts/AdminLayout.vue'
   import { RouterLink } from 'vue-router'
+  import { computed } from 'vue'
+  import { useAuthStore } from '@/stores/authStore'
+
+  const authStore = useAuthStore()
+
+  const person = computed(() => ({
+    nama:
+      authStore.user?.name ||
+      authStore.user?.nama ||
+      authStore.user?.nama_pengguna ||
+      'Admin',
+  }))
 </script>
 
 <template>
@@ -13,7 +25,7 @@
         <h1
           class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-700 mb-20 text-center font-inter"
         >
-          Halo, Selamat Datang Ahmad Kaisar
+          Halo, Selamat Datang {{ person.nama }}
         </h1>
 
         <!-- Dashboard Cards - with fixed dimensions -->
@@ -56,7 +68,7 @@
                 <h3
                   class="text-xl md:text-2xl font-bold text-center font-inter"
                 >
-                  Rekap Data
+                  Lihat Data
                 </h3>
               </div>
             </div>

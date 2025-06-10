@@ -1,42 +1,52 @@
 <script setup>
   import GuestLayout from '@/layouts/GuestLayout.vue'
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
+  import { useResetPasswordStore } from '@/stores/resetStore'
 
   const router = useRouter()
+  const resetPasswordStore = useResetPasswordStore()
+
   const username = ref('')
-  const isLoading = ref(false)
-  const errorMessage = ref('')
-  const requestSent = ref(false)
+
+  // Computed properties dari store
+  const isLoading = computed(() => resetPasswordStore.isLoading)
+  const errorMessage = computed(() => resetPasswordStore.error)
+  const successMessage = computed(() => resetPasswordStore.successMessage)
+  const requestSent = computed(() => resetPasswordStore.isRequestSent)
+  const hasError = computed(() => resetPasswordStore.hasError)
 
   const handleSubmit = async () => {
-    if (!username.value) {
-      errorMessage.value = 'Nama pengguna harus diisi'
+    if (!username.value.trim()) {
+      resetPasswordStore.error = 'Nama pengguna harus diisi'
+      resetPasswordStore.requestSent = true
       return
     }
 
-    isLoading.value = true
-    try {
-      // Here you would add your actual password reset request logic
-      console.log('Reset password for:', username.value)
+    resetPasswordStore.clearMessages()
 
-      // Simulate successful request
+    const result = await resetPasswordStore.requestReset(username.value.trim())
+
+    if (result.success) {
       setTimeout(() => {
-        requestSent.value = true
-        isLoading.value = false
-        // Redirect to ResetPasswordAccepted after a short delay
-        setTimeout(() => {
-          router.push('/resetpassword-accepted')
-        }, 1500) // Give user time to see success message before redirecting
-      }, 1000)
-    } catch (error) {
-      errorMessage.value = 'Permintaan gagal, silakan coba lagi'
-      isLoading.value = false
+        router.push('/resetpassword-accepted')
+      }, 3000)
+    }
+  }
+
+  const handleUsernameInput = () => {
+    if (resetPasswordStore.hasError) {
+      resetPasswordStore.clearMessages()
     }
   }
 
   const goToLogin = () => {
+    resetPasswordStore.resetState()
     router.push('/')
+  }
+
+  const tryAgain = () => {
+    resetPasswordStore.resetState()
   }
 </script>
 
@@ -63,14 +73,6 @@
           @submit.prevent="handleSubmit"
           class="space-y-4"
         >
-          <!-- Error message if any -->
-          <div
-            v-if="errorMessage"
-            class="text-center bg-red-100 text-red-700 p-3 rounded text-sm"
-          >
-            {{ errorMessage }}
-          </div>
-
           <!-- Username field -->
           <div>
             <label
@@ -82,7 +84,10 @@
               id="username"
               type="text"
               v-model="username"
+              @input="handleUsernameInput"
               class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              :disabled="isLoading"
+              placeholder="Masukkan nama pengguna"
             />
           </div>
 
@@ -90,10 +95,32 @@
           <div>
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium font-poppins hover:bg-[#0099FF] transition-colors cursor-pointer"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium font-poppins hover:bg-[#0099FF] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="isLoading"
             >
-              <div v-if="isLoading">Loading...</div>
+              <div v-if="isLoading" class="flex items-center justify-center">
+                <svg
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Memproses...
+              </div>
               <div v-else>Kirim Tautan Reset</div>
             </button>
           </div>
@@ -103,9 +130,14 @@
             Tidak bisa mengakses? hubungi SuperAdmin
           </div>
         </form>
-        <!-- Success message after request sent -->
+
+        <!-- Success or Error message after request sent -->
         <div v-else class="space-y-6 text-center">
-          <div class="p-4 bg-green-50 text-green-700 rounded-md">
+          <!-- Success State -->
+          <div
+            v-if="!hasError"
+            class="p-4 bg-green-50 text-green-700 rounded-md"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-10 w-10 mx-auto text-green-500 mb-2"
@@ -122,8 +154,10 @@
             </svg>
             <h3 class="font-medium mb-1">Verifikasi Pengguna Berhasil!</h3>
             <p>
-              Nama pengguna telah dikonfirmasi. Anda akan dialihkan ke halaman
-              reset kata sandi.
+              {{
+                successMessage ||
+                'Nama pengguna telah dikonfirmasi. Anda akan dialihkan ke halaman reset kata sandi.'
+              }}
             </p>
             <div class="mt-2 text-sm">
               <div
@@ -135,6 +169,41 @@
               <div
                 class="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500"
               ></div>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div v-else class="p-4 bg-red-50 text-red-700 rounded-md">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 mx-auto text-red-500 mb-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+            <h3 class="font-medium mb-1">Verifikasi Pengguna Gagal!</h3>
+            <p>
+              {{
+                errorMessage ||
+                'Terjadi kesalahan saat memverifikasi nama pengguna.'
+              }}
+            </p>
+
+            <!-- Try Again Button -->
+            <div class="mt-4">
+              <button
+                @click="tryAgain"
+                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors font-poppins text-sm"
+              >
+                Coba Lagi
+              </button>
             </div>
           </div>
         </div>

@@ -1,5 +1,8 @@
 <script setup>
   import { RouterLink, useRouter } from 'vue-router'
+  import { usePengadaanStore } from '@/stores/pengadaanStore'
+  import { computed } from 'vue'
+  import Swal from 'sweetalert2'
 
   const props = defineProps({
     item: {
@@ -7,39 +10,185 @@
       required: true,
     },
   })
+
+  const pengadaanStore = usePengadaanStore()
+
   const openPrintPreview = () => {
     window.open(`/surat-preview/${props.item.id}`, '_blank')
   }
+
+  const handleDelete = async () => {
+    const result = await Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Data yang dihapus tidak dapat dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal',
+    })
+
+    if (result.isConfirmed) {
+      try {
+        await pengadaanStore.deletePengadaan(props.item.id)
+
+        Swal.fire({
+          title: 'Berhasil!',
+          text: 'Data berhasil dihapus',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        })
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: error.message || 'Terjadi kesalahan saat menghapus data',
+          icon: 'error',
+          confirmButtonColor: '#d33',
+        })
+      }
+    }
+  }
+
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '-'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  }
+
+  // Helper function to convert to proper Title Case
+  const toTitleCase = (str) => {
+    if (!str) return '-'
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  }
+
+  // Computed properties untuk format Title Case seperti di SuratPermohonan.vue
+  const jenisPengadaanFormatted = computed(() => {
+    const str =
+      props.item.jenis_pengadaan_barang || props.item.jenisPengadaan || ''
+    return toTitleCase(str)
+  })
+
+  const supplierFormatted = computed(() => {
+    const str = props.item.nama_suplier || props.item.supplier || ''
+    return toTitleCase(str)
+  })
+
+  const perusahaanFormatted = computed(() => {
+    const str = props.item.nama_perusahaan || props.item.perusahaan || ''
+    return toTitleCase(str)
+  })
+
+  const userFormatted = computed(() => {
+    const str = props.item.user?.name || ''
+    if (!str) return 'Unknown'
+    return toTitleCase(str)
+  })
 </script>
 
 <template>
   <tr
     class="border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out"
   >
-    <td class="px-4 py-4">{{ item.jenisPengadaan }}</td>
-    <td class="px-4 py-4">{{ item.noPreorder }}</td>
-    <td class="px-4 py-4">{{ item.supplier }}</td>
-
-    <td class="px-4 py-4">{{ item.perusahaan }}</td>
-    <td class="px-4 py-4">{{ item.admin }}</td>
-    <td class="px-4 py-4">{{ item.kuantum }}</td>
-    <td class="px-4 py-4">{{ item.tanggal }}</td>
+    <!-- Jenis Pengadaan -->
+    <td class="px-4 py-4">
+      {{ jenisPengadaanFormatted }}
+    </td>
+    <!-- No Preorder -->
+    <td class="px-4 py-4">
+      {{ item.no_preorder || item.noPreorder || '-' }}
+    </td>
+    <!-- Supplier -->
+    <td class="px-4 py-4">
+      {{ supplierFormatted }}
+    </td>
+    <!-- Perusahaan -->
+    <td class="px-4 py-4">
+      {{ perusahaanFormatted }}
+    </td>
+    <!-- Admin/User -->
+    <td class="px-4 py-4">
+      {{ userFormatted }}
+    </td>
+    <!-- Kuantum -->
+    <td class="px-4 py-4">
+      {{ item.kuantum || '-' }}
+    </td>
+    <!-- Tanggal -->
+    <td class="px-4 py-4">
+      {{ formatDate(item.tanggal_pengadaan || item.tanggal) }}
+    </td>
+    <!-- Action Buttons -->
     <td class="px-4 py-3">
-      <div
-        class="flex flex-wrap space-x-4 gap-y-1 text-sm text-center underline-offset-3 justify-center items-center"
-      >
+      <div class="flex space-x-2 justify-center items-center">
+        <!-- Print Button -->
         <button
           @click="openPrintPreview"
-          class="cursor-pointer text-[#2B79EF] underline"
+          class="cursor-pointer text-[#2B79EF] hover:text-[#1E5FCC] transition-all duration-200 p-2 rounded-full hover:bg-blue-50"
+          title="Cetak Dokumen"
         >
-          Cetak
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"
+            />
+          </svg>
         </button>
 
+        <!-- Edit Button -->
         <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
-          <button class="cursor-pointer text-[#9BA1AA] underline">Edit</button>
+          <button
+            class="cursor-pointer text-[#9BA1AA] hover:text-[#6B7280] transition-all duration-200 p-2 rounded-full hover:bg-gray-50"
+            title="Edit Data"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+              />
+            </svg>
+          </button>
         </RouterLink>
 
-        <button class="cursor-pointer text-[#F44336] underline">Delete</button>
+        <!-- Delete Button -->
+        <button
+          @click="handleDelete"
+          class="cursor-pointer text-[#F44336] hover:text-[#D32F2F] transition-all duration-200 p-2 rounded-full hover:bg-red-50"
+          title="Hapus Data"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+            />
+          </svg>
+        </button>
       </div>
     </td>
   </tr>

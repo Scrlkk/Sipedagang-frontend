@@ -1,9 +1,49 @@
 <script setup>
-  defineProps({
+  import { computed } from 'vue'
+
+  const props = defineProps({
     item: {
       type: Object,
       required: true,
     },
+  })
+
+  const bulanIndo = [
+    '',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ]
+
+  const tanggalFormatSurat = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return ''
+    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
+    return `Tanggal ${parseInt(tanggal)} Bulan ${bulanIndo[parseInt(bulan)]} Tahun ${tahun}`
+  })
+
+  const tanggalSurat = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return ''
+    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
+    return `${parseInt(tanggal)} ${bulanIndo[parseInt(bulan)]} ${tahun}`
+  })
+
+  const tahunPengadaan = computed(() => {
+    if (!props.item?.tanggal_pengadaan) return new Date().getFullYear()
+    return new Date(props.item.tanggal_pengadaan).getFullYear()
+  })
+
+  const jenisPengadaanCapital = computed(() => {
+    const str = props.item.jenis_pengadaan_barang || ''
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
   })
 </script>
 
@@ -17,7 +57,7 @@
           SURAT PERMOHONAN PEMBAYARAN
         </div>
         <div class="m-0 font-bold uppercase text-[18px]">
-          PENGADAAN GABAH/BERAS DALAM NEGERI TAHUN 2025
+          PENGADAAN GABAH/BERAS DALAM NEGERI TAHUN {{ tahunPengadaan }}
         </div>
       </div>
 
@@ -35,18 +75,27 @@
       <div class="text-justify font-arial text-[13.5px]">
         <!-- 1 -->
         <div class="mt-14">
-          Bersama ini kami [UD. Ali Baba] menyampaikan permohonan pembayaran
-          [Gabah]
-          <span class="font-bold">Pengadaan Dalam Negeri Tahun 2025</span>
-          sebanyak [100.000] Kg dengan bukti dokumen terlampir.
+          Bersama ini kami {{ item.nama_perusahaan }} menyampaikan permohonan
+          pembayaran
+          <span>
+            {{ jenisPengadaanCapital }}
+          </span>
+          <span class="font-bold">
+            Pengadaan Dalam Negeri Tahun {{ tahunPengadaan }}</span
+          >
+          sebanyak {{ item.kuantum }} dengan bukti dokumen terlampir.
         </div>
 
         <!-- 2 -->
         <div class="mt-2.5">
-          Mohon kiranya harga [Gabah] tersebut di atas dapat dibayar /
-          dipindahbukukan ke rekening Kami Bank [BRI] sebagaimana No Rekening
-          [1234567891011] Sesuai PO No [1234/12/11C30/2024] Tanggal [19] Bulan
-          [September] Tahun [2025]
+          Mohon kiranya harga
+          <span>
+            {{ jenisPengadaanCapital }}
+          </span>
+          tersebut di atas dapat dibayar / dipindahbukukan ke rekening Kami Bank
+          {{ item.jenis_bank }}
+          sebagaimana No Rekening {{ item.no_rekening }} Sesuai PO No
+          {{ item.no_preorder }} {{ tanggalFormatSurat }}
         </div>
 
         <!-- 3 -->
@@ -59,11 +108,11 @@
       <div
         class="flex flex-col mt-22 font-arial text-[13.5px] w-[37%] text-center mx-[63%]"
       >
-        <div>Surakarta, 31 September 2025</div>
+        <div>Surakarta, {{ tanggalSurat }}</div>
         <div>
           <div>Pemohon</div>
-          <div class="mt-17">[Punakawan]</div>
-          <div>[UD. Ali Baba]</div>
+          <div class="mt-17">{{ item.nama_suplier }}</div>
+          <div>{{ item.nama_perusahaan }}</div>
         </div>
       </div>
     </div>

@@ -1,34 +1,63 @@
 <script setup>
   import GuestLayout from '@/layouts/GuestLayout.vue'
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/authStore'
 
   const router = useRouter()
-  const username = ref('')
+  const auth = useAuthStore()
+  const nama_pengguna = ref('')
   const password = ref('')
   const isLoading = ref(false)
   const errorMessage = ref('')
-  const showPassword = ref(false) // Add this to track password visibility
+  const showPassword = ref(false)
+
+  const validateInput = () => {
+    const errors = []
+
+    if (!nama_pengguna.value.trim()) {
+      errors.push('Nama pengguna harus diisi')
+    } else if (nama_pengguna.value.trim().length < 3) {
+      errors.push('Nama pengguna minimal 3 karakter')
+    }
+
+    if (!password.value) {
+      errors.push('Kata sandi harus diisi')
+    } else if (password.value.length < 6) {
+      errors.push('Kata sandi minimal 6 karakter')
+    }
+
+    return errors
+  }
 
   const handleLogin = async () => {
-    if (!username.value || !password.value) {
-      errorMessage.value = 'Nama pengguna dan kata sandi harus diisi'
+    // Clear previous errors
+    errorMessage.value = ''
+
+    // Validate input
+    const validationErrors = validateInput()
+    if (validationErrors.length > 0) {
+      errorMessage.value = validationErrors[0]
       return
     }
 
     isLoading.value = true
 
     try {
-      // Here you would add your actual login logic
-      console.log('Login with:', username.value, password.value)
+      await auth.login(nama_pengguna.value.trim(), password.value)
 
-      // Simulate successful login
-      setTimeout(() => {
+      // Redirect based on role
+      const role = auth.user?.role
+      if (role === 'admin') {
         router.push('/admin/dashboard')
-        isLoading.value = false
-      }, 1000)
+      } else if (role === 'superadmin') {
+        router.push('/superadmin/dashboard')
+      } else {
+        errorMessage.value = 'Role tidak dikenal'
+      }
     } catch (error) {
-      errorMessage.value = 'Login gagal, silakan coba lagi'
+      errorMessage.value = auth.error || 'Login gagal, silakan coba lagi'
+    } finally {
       isLoading.value = false
     }
   }
@@ -37,11 +66,19 @@
     showPassword.value = !showPassword.value
   }
 
-  const handleForgotPassword = () => {
-    // Handle forgot password
-    console.log('Forgot password clicked')
-  }
+  // Check if already authenticated
+  onMounted(() => {
+    if (auth.isAuthenticated) {
+      const role = auth.userRole
+      if (role === 'admin') {
+        router.push('/admin/dashboard')
+      } else if (role === 'superadmin') {
+        router.push('/superadmin/dashboard')
+      }
+    }
+  })
 </script>
+
 <template>
   <GuestLayout>
     <div class="flex items-center justify-center min-h-screen px-4">
@@ -73,14 +110,14 @@
           <!-- Username field -->
           <div>
             <label
-              for="username"
+              for="nama_pengguna"
               class="font-poppins block text-sm text-gray-700 mb-1"
               >Nama Pengguna</label
             >
             <input
-              id="username"
+              id="nama_pengguna"
               type="text"
-              v-model="username"
+              v-model="nama_pengguna"
               class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
