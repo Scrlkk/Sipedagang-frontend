@@ -14,8 +14,8 @@
   const greeting = computed(() => {
     const hour = currentTime.value.getHours()
     if (hour < 12) return 'Selamat Pagi'
-    if (hour < 17) return 'Selamat Siang'
-    if (hour < 19) return 'Selamat Sore'
+    if (hour < 16) return 'Selamat Siang'
+    if (hour < 18) return 'Selamat Sore'
     return 'Selamat Malam'
   })
 
