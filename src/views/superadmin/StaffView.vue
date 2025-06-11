@@ -104,20 +104,19 @@
             class="font-semibold text-sm sm:text-base lg:text-lg text-[#0099FF] underline underline-offset-4 flex-shrink-0"
           >
             Staff - {{ showInactive ? 'Inactive' : 'Active' }}
-          </div>
-
-          <!-- NAV -->
+          </div>          <!-- NAV -->
           <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2">
-            <!-- Search Input -->
-            <input
-              v-model="search"
-              type="text"
-              placeholder="Search"
-              class="border border-[#D9D9D9] rounded-md h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm w-full xs:w-auto xs:min-w-[140px] focus:outline-[#0099ff] focus:border-[#0099ff] transition-all duration-200"
-            />
-            
             <!-- Button Container -->
-            <div class="flex gap-1 sm:gap-2">              <!-- Reset Password Button -->
+            <div class="flex gap-1 sm:gap-2 items-center">
+              <!-- Search Input -->
+              <input
+                v-model="search"
+                type="text"
+                placeholder="Search"
+                class="border border-[#D9D9D9] rounded-md h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm w-full xs:w-auto xs:min-w-[140px] focus:outline-[#0099ff] focus:border-[#0099ff] transition-all duration-200"
+              />
+              
+              <!-- Reset Password Button -->
               <button
                 class="flex bg-[#164E8A] hover:bg-[#0d3660] px-2 sm:px-3 h-7 sm:h-8 font-medium text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out whitespace-nowrap"
                 @click="showPopup = true"
@@ -137,7 +136,8 @@
               <button
                 :class="[
                   'flex px-2 sm:px-3 h-7 sm:h-8 font-medium text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out whitespace-nowrap',
-                  buttonClass,                ]"
+                  buttonClass,
+                ]"
                 @click="toggleInactiveView"
               >
                 {{ showInactive ? 'Active' : 'Inactive' }}
