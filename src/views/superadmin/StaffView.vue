@@ -121,7 +121,7 @@
                 class="flex bg-[#164E8A] hover:bg-[#0d3660] px-2 sm:px-3 h-7 sm:h-8 font-medium text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out whitespace-nowrap"
                 @click="showPopup = true"
               >
-                Reset
+                Reset Password
               </button>
               
               <!-- Add Staff Button -->
@@ -129,7 +129,7 @@
                 to="/superadmin/staff-add"
                 class="flex bg-[#4CAF50] hover:bg-[#45a049] px-2 sm:px-3 h-7 sm:h-8 font-medium text-white text-xs justify-center items-center rounded-md cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out whitespace-nowrap"
               >
-                + Staff
+                Tambah Staff
               </RouterLink>
               
               <!-- Toggle Status Button -->
