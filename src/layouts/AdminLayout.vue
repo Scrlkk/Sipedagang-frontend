@@ -74,17 +74,17 @@
   })
 </script>
 
-<template>
-  <div class="min-h-screen w-full relative overflow-x-hidden">
+<template>  <div class="min-h-screen w-full relative overflow-hidden">
     <!-- Top SVG Wave -->
     <div class="absolute top-0 left-0 right-0 z-0">
       <svg
         width="100%"
-        height="173"
+        height="120"
         preserveAspectRatio="none"
         viewBox="0 0 1514 173"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        class="sm:h-[140px] md:h-[160px] lg:h-[173px]"
       >
         <path
           fill-rule="evenodd"
@@ -96,14 +96,15 @@
     </div>
 
     <!-- Bottom Left SVG Wave -->
-    <div class="absolute bottom-0 left-0 z-0 w-1/3 md:w-auto">
+    <div class="absolute bottom-0 left-0 z-0 w-1/2 sm:w-1/3 md:w-auto">
       <svg
         width="100%"
-        height="105"
+        height="60"
         preserveAspectRatio="none"
         viewBox="0 0 548 105"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        class="sm:h-[80px] md:h-[90px] lg:h-[105px]"
       >
         <path
           fill-rule="evenodd"
@@ -118,40 +119,39 @@
     <div class="absolute bottom-0 right-0 z-0 w-2/3 md:w-auto">
       <svg
         width="100%"
-        height="157"
+        height="90"
         preserveAspectRatio="none"
         viewBox="0 0 1051 157"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        class="sm:h-[120px] md:h-[140px] lg:h-[157px]"
       >
         <path
           d="M1051 157H0.602539C29.1097 153.456 59.8947 149.303 90.6797 144.537C170.706 132.148 250.733 115.63 330.76 103.241C410.786 90.8523 490.813 82.5923 570.84 90.8516C650.866 99.1108 730.893 123.889 810.92 111.5C890.947 99.1111 970.973 49.5551 1010.99 24.7773L1051 0V157Z"
           fill="#1B4F88"
         />
       </svg>
-    </div>
-
-    <!-- Header -->
+    </div>    <!-- Header -->
     <header
-      class="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 md:px-10 py-5 relative z-10"
+      class="flex flex-col sm:flex-row justify-between items-center px-3 sm:px-4 md:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 relative z-10"
     >
       <!-- Logo -->
       <div
-        class="flex text-[32px] sm:text-[48px] font-bold font-poppins mb-4 sm:mb-0"
+        class="flex text-[24px] sm:text-[32px] lg:text-[40px] xl:text-[48px] font-bold font-poppins mb-2 sm:mb-0"
       >
         <div class="text-[#F0AB26]">Si</div>
         <div class="text-[#176BC7]">PEDAGANG</div>
       </div>
 
       <!-- User Profile -->
-      <div class="flex items-center gap-3 sm:gap-5">
+      <div class="flex items-center gap-2 sm:gap-3 lg:gap-5">
         <!-- User Avatar and Name with Dropdown -->
         <div id="profile-dropdown-container" class="relative">
           <div
             @click="toggleProfileDropdown"
-            class="flex items-center gap-2 sm:gap-3 cursor-pointer transition-opacity hover:opacity-90"
+            class="flex items-center gap-2 sm:gap-3 cursor-pointer transition-opacity hover:opacity-90 p-1 rounded-lg hover:bg-white/10"
           >
-            <div class="w-12.5 h-12.5 rounded-full overflow-hidden">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full overflow-hidden flex-shrink-0">
               <img
                 :src="profilePhoto"
                 :alt="userName"
@@ -165,13 +165,21 @@
               />
             </div>
             <div
-              class="text-white text-[16px] sm:text-[20px] font-medium font-poppins"
+              class="text-white text-[12px] sm:text-[14px] lg:text-[16px] xl:text-[18px] font-medium font-poppins hidden xs:block"
             >
               {{ userName }}
             </div>
-          </div>
-
-          <!-- Animated Dropdown Menu -->
+            <!-- Dropdown Arrow -->
+            <svg 
+              class="w-4 h-4 text-white transition-transform duration-200 hidden sm:block"
+              :class="{ 'rotate-180': isProfileDropdownOpen }"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>          <!-- Animated Dropdown Menu -->
           <Transition
             enter-active-class="transition ease-out duration-200"
             enter-from-class="transform opacity-0 scale-95"
@@ -182,19 +190,19 @@
           >
             <div
               v-if="isProfileDropdownOpen"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 origin-top-right"
+              class="absolute right-0 mt-2 w-40 sm:w-48 bg-white/95 backdrop-blur-sm rounded-xl shadow-xl py-2 z-50 origin-top-right border border-gray-100"
             >
               <button
                 @click="handleLogout"
-                class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 gap-3"
+                class="flex items-center w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 gap-2 sm:gap-3"
               >
                 <svg
-                  width="18"
-                  height="18"
+                  width="16"
+                  height="16"
                   viewBox="0 0 20 21"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  class="flex-shrink-0"
+                  class="flex-shrink-0 sm:w-[18px] sm:h-[18px]"
                 >
                   <g clip-path="url(#clip0_410_6997)">
                     <path
@@ -217,17 +225,51 @@
                     </clipPath>
                   </defs>
                 </svg>
-                <span>Keluar Akun</span>
+                <span class="font-medium">Keluar Akun</span>
               </button>
             </div>
           </Transition>
         </div>
       </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="px-4 sm:px-6 md:px-10 relative z-10 pb-24">
+    </header>    <!-- Main Content -->
+    <main class="px-3 sm:px-4 md:px-6 lg:px-10 relative z-10 pb-16 sm:pb-20 md:pb-24">
       <slot></slot>
     </main>
   </div>
 </template>
+
+<style scoped>
+/* Extra small screen utilities */
+@media (min-width: 475px) {
+  .xs\:block {
+    display: block;
+  }
+}
+
+/* Prevent horizontal scrolling */
+* {
+  box-sizing: border-box;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Better visibility for small screens */
+@media (max-width: 475px) {
+  .text-white {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Dropdown positioning adjustments */
+@media (max-width: 640px) {
+  .absolute.right-0 {
+    right: -0.5rem;
+  }
+}
+</style>
