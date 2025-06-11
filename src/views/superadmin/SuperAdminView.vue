@@ -9,27 +9,31 @@
     () => auth.user?.name || auth.user?.nama_pengguna || 'Admin',
   )
 
-  // Add time-based greeting
+  // Unified time system for both greeting and clock
   const currentTime = ref(new Date())
-  const greeting = computed(() => {
+  
+  const timeBasedGreeting = computed(() => {
     const hour = currentTime.value.getHours()
-    if (hour < 12) return 'Selamat Pagi'
-    if (hour < 16) return 'Selamat Siang'
-    if (hour < 18) return 'Selamat Sore'
-    return 'Selamat Malam'
-  })
-
-  // Add real-time clock
-  const currentClock = computed(() => {
-    return currentTime.value.toLocaleTimeString('id-ID', {
+    const clock = currentTime.value.toLocaleTimeString('id-ID', {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
       hour12: false,
     }).replace(/\./g, ':')
+    
+    let greeting = ''
+    if (hour < 12) greeting = 'Selamat Pagi'
+    else if (hour < 16) greeting = 'Selamat Siang'
+    else if (hour < 18) greeting = 'Selamat Sore'
+    else greeting = 'Selamat Malam'
+    
+    return {
+      greeting,
+      clock
+    }
   })
 
-  // Update time every second for real-time clock
+  // Update time every second for synchronized greeting and clock
   onMounted(() => {
     setInterval(() => {
       currentTime.value = new Date()
@@ -86,12 +90,12 @@
               </div>
               
               <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-                {{ greeting }}, {{ userName }}! 
+                {{ timeBasedGreeting.greeting }}, {{ userName }}! 
                 <span class="inline-block animate-bounce">👋</span>
               </h1>
               
               <p class="text-xl sm:text-2xl text-blue-100 font-light max-w-3xl mx-auto leading-relaxed">
-                <span class="font-mono font-semibold text-white">{{ currentClock }}</span>
+                <span class="font-mono font-semibold text-white">{{ timeBasedGreeting.clock }}</span>
               </p>
               
               <div class="flex items-center justify-center space-x-6 mt-8 text-blue-100">
