@@ -19,11 +19,21 @@
     return 'Selamat Malam'
   })
 
-  // Update time every minute
+  // Add real-time clock
+  const currentClock = computed(() => {
+    return currentTime.value.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+  })
+
+  // Update time every second for real-time clock
   onMounted(() => {
     setInterval(() => {
       currentTime.value = new Date()
-    }, 60000)
+    }, 1000)
   })
 
   const data = ref([
@@ -81,7 +91,7 @@
               </h1>
               
               <p class="text-xl sm:text-2xl text-blue-100 font-light max-w-3xl mx-auto leading-relaxed">
-                Selamat datang kembali di <span class="font-semibold text-white">Dashboard Super Admin</span>
+                <span class="font-mono font-semibold text-white">{{ currentClock }}</span>
               </p>
               
               <div class="flex items-center justify-center space-x-6 mt-8 text-blue-100">
