@@ -97,50 +97,64 @@
   })
 </script>
 
-<template>
-  <tr
-    class="border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out"
+<template>  <tr
+    class="border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50"
   >
     <!-- Jenis Pengadaan -->
-    <td class="px-4 py-4">
-      {{ jenisPengadaanFormatted }}
+    <td class="px-3 xl:px-4 py-3 xl:py-4 text-left">
+      <div class="max-w-[120px] xl:max-w-[200px] truncate" :title="jenisPengadaanFormatted">
+        {{ jenisPengadaanFormatted }}
+      </div>
     </td>
     <!-- No Preorder -->
-    <td class="px-4 py-4">
-      {{ item.no_preorder || item.noPreorder || '-' }}
+    <td class="px-2 xl:px-4 py-3 xl:py-4">
+      <div class="max-w-[100px] xl:max-w-[150px] truncate" :title="item.no_preorder || item.noPreorder || '-'">
+        {{ item.no_preorder || item.noPreorder || '-' }}
+      </div>
     </td>
     <!-- Supplier -->
-    <td class="px-4 py-4">
-      {{ supplierFormatted }}
+    <td class="px-2 xl:px-4 py-3 xl:py-4">
+      <div class="max-w-[100px] xl:max-w-[150px] truncate" :title="supplierFormatted">
+        {{ supplierFormatted }}
+      </div>
     </td>
     <!-- Perusahaan -->
-    <td class="px-4 py-4">
-      {{ perusahaanFormatted }}
+    <td class="px-2 xl:px-4 py-3 xl:py-4">
+      <div class="max-w-[100px] xl:max-w-[150px] truncate" :title="perusahaanFormatted">
+        {{ perusahaanFormatted }}
+      </div>
     </td>
     <!-- Admin/User -->
-    <td class="px-4 py-4">
-      {{ userFormatted }}
+    <td class="px-2 xl:px-4 py-3 xl:py-4">
+      <div class="max-w-[80px] xl:max-w-[120px] truncate" :title="userFormatted">
+        {{ userFormatted }}
+      </div>
     </td>
     <!-- Kuantum -->
-    <td class="px-4 py-4">
-      {{ item.kuantum || '-' }}
+    <td class="px-2 xl:px-4 py-3 xl:py-4">
+      <div class="max-w-[60px] xl:max-w-[80px] truncate" :title="item.kuantum || '-'">
+        {{ item.kuantum || '-' }}
+      </div>
     </td>
     <!-- Tanggal -->
-    <td class="px-4 py-4">
-      {{ formatDate(item.tanggal_pengadaan || item.tanggal) }}
+    <td class="px-2 xl:px-4 py-3 xl:py-4">
+      <div class="max-w-[80px] xl:max-w-[100px] truncate" :title="formatDate(item.tanggal_pengadaan || item.tanggal)">
+        {{ formatDate(item.tanggal_pengadaan || item.tanggal) }}
+      </div>
     </td>
     <!-- Action Buttons -->
-    <td class="px-4 py-3">
-      <div class="flex space-x-2 justify-center items-center">
+    <td class="px-2 xl:px-4 py-3">
+      <div class="flex space-x-1 xl:space-x-2 justify-center items-center">
         <!-- Print Button -->
         <button
           @click="openPrintPreview"
-          class="cursor-pointer text-[#2B79EF] hover:text-[#1E5FCC] transition-all duration-200 p-2 rounded-full hover:bg-blue-50"
+          class="cursor-pointer text-[#2B79EF] hover:text-[#1E5FCC] transition-all duration-200 p-1.5 xl:p-2 rounded-full hover:bg-blue-50"
           title="Cetak Dokumen"
         >
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
+            class="xl:w-[18px] xl:h-[18px]"
             viewBox="0 0 24 24"
             fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"
@@ -154,12 +168,13 @@
         <!-- Edit Button -->
         <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
           <button
-            class="cursor-pointer text-[#9BA1AA] hover:text-[#6B7280] transition-all duration-200 p-2 rounded-full hover:bg-gray-50"
+            class="cursor-pointer text-[#9BA1AA] hover:text-[#6B7280] transition-all duration-200 p-1.5 xl:p-2 rounded-full hover:bg-gray-50"
             title="Edit Data"
           >
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
+              class="xl:w-[18px] xl:h-[18px]"
               viewBox="0 0 24 24"
               fill="currentColor"
               xmlns="http://www.w3.org/2000/svg"
@@ -174,12 +189,13 @@
         <!-- Delete Button -->
         <button
           @click="handleDelete"
-          class="cursor-pointer text-[#F44336] hover:text-[#D32F2F] transition-all duration-200 p-2 rounded-full hover:bg-red-50"
+          class="cursor-pointer text-[#F44336] hover:text-[#D32F2F] transition-all duration-200 p-1.5 xl:p-2 rounded-full hover:bg-red-50"
           title="Hapus Data"
         >
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
+            class="xl:w-[18px] xl:h-[18px]"
             viewBox="0 0 24 24"
             fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"

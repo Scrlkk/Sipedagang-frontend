@@ -166,11 +166,10 @@
 
 <template>
   <SuperAdminLayout>
-    <MainElement>
-      <section class="flex flex-col justify-between h-full">
+    <MainElement>      <section class="flex flex-col justify-between h-full">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8 relative"
+          class="text-center font-semibold text-sm sm:text-base lg:text-lg text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 relative"
         >
           Edit Riwayat Data
           <!-- ✅ Indikator unsaved changes -->
@@ -183,13 +182,13 @@
 
         <!-- NAV -->
         <div
-          class="flex gap-2 items-center text-[#9BA1AA] text-sm font-poppins font-medium"
+          class="flex flex-col sm:flex-row gap-2 sm:gap-2 items-center justify-center sm:justify-start text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium mt-2 lg:mt-0"
         >
           <RouterLink
             to="/superadmin/riwayat"
             @mouseenter="iconHover = true"
             @mouseleave="iconHover = false"
-            class="flex gap-2 justify-center items-center cursor-pointer"
+            class="flex gap-1 sm:gap-2 justify-center items-center cursor-pointer hover:text-[#0099FF] transition-colors"
           >
             <RiwayatIconElement
               :color="iconHover ? '#0099FF' : '#9BA1AA'"
@@ -197,46 +196,50 @@
             />
             <div
               :class="[
-                'text-sm font-poppins font-medium',
+                'text-xs sm:text-sm font-poppins font-medium',
                 iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
               ]"
             >
               Riwayat
             </div>
           </RouterLink>
-          <div class="mt-0.5">
+          <div class="hidden sm:block mt-0.5">
             <ArrowIconElement />
           </div>
-          <div class="text-sm hover:text-[#0099FF] cursor-pointer">
+          <div class="text-xs sm:text-sm hover:text-[#0099FF] cursor-pointer transition-colors text-center sm:text-left">
             {{ noPreorder }}
           </div>
-          <div class="mt-0.5">
+          <div class="hidden sm:block mt-0.5">
             <ArrowIconElement />
           </div>
-          <div>Edit Data</div>
-        </div>
-
-        <!-- Loading State -->
-        <div v-if="isLoading" class="flex justify-center items-center flex-1">
-          <div class="text-gray-500">Memuat data...</div>
+          <div class="text-xs sm:text-sm">Edit Data</div>
+        </div>        <!-- Loading State -->
+        <div v-if="isLoading" class="flex justify-center items-center flex-1 py-8 lg:py-12">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-8 w-8 lg:h-12 lg:w-12 border-b-2 border-blue-500 mx-auto mb-3 lg:mb-4"></div>
+            <div class="text-gray-500 text-sm lg:text-base">Memuat data...</div>
+          </div>
         </div>
 
         <!-- FORM -->
-        <FormElement
-          v-else
-          ref="formRef"
-          :is-edit-mode="true"
-          @form-changed="handleFormChanged"
-        />
+        <div v-else class="flex-1 py-2 lg:py-4">
+          <FormElement
+            ref="formRef"
+            :is-edit-mode="true"
+            @form-changed="handleFormChanged"
+          />
+        </div>
 
         <!-- BUTTON -->
-        <ButtonElement
-          @onClickLeft="handleLeft"
-          @onClickRight="handleRight"
-          :rightLoading="isSubmitting || pengadaanStore.isLoading"
-          rightLabel="Update"
-          leftLabel="Back"
-        />
+        <div class="mt-4 lg:mt-6">
+          <ButtonElement
+            @onClickLeft="handleLeft"
+            @onClickRight="handleRight"
+            :rightLoading="isSubmitting || pengadaanStore.isLoading"
+            rightLabel="Update"
+            leftLabel="Back"
+          />
+        </div>
       </section>
     </MainElement>
   </SuperAdminLayout>

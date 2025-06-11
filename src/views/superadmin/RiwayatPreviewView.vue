@@ -54,26 +54,30 @@
   }
 </script>
 
-<template>
-  <!-- Loading indicator -->
+<template>  <!-- Loading indicator -->
   <div
     v-if="isLoading"
-    class="fixed inset-0 bg-white z-50 flex items-center justify-center"
+    class="fixed inset-0 bg-white z-50 flex items-center justify-center px-4"
   >
-    <div class="text-center">
+    <div class="text-center max-w-sm mx-auto">
       <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"
+        class="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-blue-500 mx-auto mb-3 sm:mb-4"
       ></div>
-      <div class="text-lg font-medium text-gray-700">
+      <div class="text-sm sm:text-base lg:text-lg font-medium text-gray-700">
         Memuat data dokumen...
+      </div>
+      <div class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2">
+        Mohon tunggu sebentar
       </div>
     </div>
   </div>
 
-  <div v-else>
-    <ButtonPrintElement @toggle-view="handleToggleView" />
-    <section class="m-[10mm]">
-      <div v-if="currentView === 'surat' && pengadaan">
+  <div v-else class="min-h-screen">
+    <div class="print:hidden">
+      <ButtonPrintElement @toggle-view="handleToggleView" />
+    </div>
+    <section class="m-[5mm] sm:m-[8mm] lg:m-[10mm] print:m-[10mm]">
+      <div v-if="currentView === 'surat' && pengadaan" class="space-y-4 lg:space-y-0">
         <SuratPermohonan :item="pengadaan" />
         <div class="page-break">
           <SuratDetailPengadaan :item="pengadaan" />
