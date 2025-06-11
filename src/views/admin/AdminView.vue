@@ -25,14 +25,8 @@
         </div>
 
         <!-- Content Container -->
-        <div class="relative max-w-6xl mx-auto flex flex-col h-full justify-between">
-          <!-- Welcome Section -->
+        <div class="relative max-w-6xl mx-auto flex flex-col h-full justify-between">          <!-- Welcome Section -->
           <div class="text-center mb-4 flex-shrink-0">
-            <div class="inline-block p-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 mb-2">
-              <div class="bg-white rounded-full px-4 py-1">
-                <span class="text-xs font-medium text-gray-600">Dashboard Admin</span>
-              </div>
-            </div>
             <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-2 font-inter">
               Halo, Selamat Datang
               <span class="block sm:inline text-blue-600">{{ person.nama }}</span>
@@ -40,7 +34,7 @@
             <p class="text-xs sm:text-sm text-gray-600 max-w-xl mx-auto">
               Kelola data pengadaan dengan mudah
             </p>
-          </div>          <!-- Dashboard Cards Grid -->
+          </div><!-- Dashboard Cards Grid -->
           <div class="flex-1 flex items-center justify-center min-h-0">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-4xl">
               <!-- Form Input Data Card -->
