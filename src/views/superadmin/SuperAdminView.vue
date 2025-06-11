@@ -26,7 +26,7 @@
       minute: '2-digit',
       second: '2-digit',
       hour12: false,
-    })
+    }).replace(/\./g, ':')
   })
 
   // Update time every second for real-time clock
