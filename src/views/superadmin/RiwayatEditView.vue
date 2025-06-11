@@ -25,6 +25,9 @@
   // ✅ Tambahkan state untuk tracking perubahan
   const hasUnsavedChanges = ref(false)
 
+  // ✅ Tambahkan flag bypass
+  const bypassConfirmation = ref(false)
+
   // Computed untuk menampilkan no preorder
   const noPreorder = computed(() => {
     return currentData.value?.no_preorder || 'Loading...'
@@ -51,10 +54,17 @@
 
   // ✅ Guard untuk navigasi Vue Router
   onBeforeRouteLeave(async (to, from) => {
+    // ✅ Jika ada bypass flag, langsung allow
+    if (bypassConfirmation.value) {
+      bypassConfirmation.value = false // Reset flag
+      return true
+    }
+
     const canLeave = await confirmLeave()
     if (!canLeave) {
       return false // Batalkan navigasi
     }
+    return true
   })
 
   // ✅ Guard untuk browser navigation
@@ -122,7 +132,9 @@
   async function handleLeft() {
     const canLeave = await confirmLeave()
     if (canLeave) {
-      router.back()
+      // ✅ Set flag untuk bypass konfirmasi di onBeforeRouteLeave
+      bypassConfirmation.value = true
+      router.push('/superadmin/riwayat') // atau router.back()
     }
   }
 
@@ -138,6 +150,9 @@
 
       // ✅ Reset unsaved changes setelah berhasil update
       hasUnsavedChanges.value = false
+
+      // ✅ Set bypass flag sebelum navigate
+      bypassConfirmation.value = true
 
       Swal.fire({
         title: 'Berhasil!',
