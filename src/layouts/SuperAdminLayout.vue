@@ -66,24 +66,16 @@
 
 <template>
   <div class="flex h-screen overflow-hidden">
-    <!-- Mobile Overlay -->
-    <div
-      v-if="sidebarOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-      @click="sidebarOpen = false"
-    ></div>
-
     <!-- SIDEBAR -->
     <div
       class="fixed lg:relative inset-y-0 left-0 z-50 flex h-full transition-transform duration-300 ease-in-out lg:translate-x-0"
       :class="
         [
           'w-64 sm:w-72',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-        ]
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',      ]
       "
     >
-      <div class="flex w-full py-8 lg:py-14 px-3 sm:px-5 justify-center shadow-xl outline-gray-200 outline-1 bg-white h-full overflow-y-auto">
+      <div class="flex w-full py-8 lg:py-14 px-3 sm:px-5 justify-center shadow-xl outline-gray-200 outline-1 bg-white/80 backdrop-blur-sm h-full overflow-y-auto">
         <div class="flex flex-col gap-4 items-center justify-between w-full">
           <div class="flex flex-col items-center w-full">
             <!-- LOGO -->
@@ -95,14 +87,13 @@
             />
 
             <div class="flex flex-col gap-3 sm:gap-4 w-full">
-              <!-- DASHBOARD -->
-              <RouterLink
+              <!-- DASHBOARD -->              <RouterLink
                 to="/superadmin/dashboard"
-                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 mt-8 sm:mt-16 rounded-xl transition-all duration-300 ease-in-out"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 mt-8 sm:mt-16 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
                   isHovered.dashboard || route.path === '/superadmin/dashboard'
-                    ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                    : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
                 ]"
                 @mouseenter="isHovered.dashboard = true"
                 @mouseleave="isHovered.dashboard = false"
@@ -131,14 +122,13 @@
                 </div>
               </RouterLink>
 
-              <!-- INPUT -->
-              <RouterLink
+              <!-- INPUT -->              <RouterLink
                 to="/superadmin/input"
-                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
                   isHovered.input || route.path === '/superadmin/input'
-                    ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                    : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
                 ]"
                 @mouseenter="isHovered.input = true"
                 @mouseleave="isHovered.input = false"
@@ -168,19 +158,17 @@
                     Input
                   </div>
                 </div>
-              </RouterLink>
-
-              <!-- RIWAYAT -->
+              </RouterLink>              <!-- RIWAYAT -->
               <RouterLink
                 to="/superadmin/riwayat"
-                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
                   isHovered.riwayat ||
                   route.path === '/superadmin/riwayat' ||
                   route.path.startsWith('/superadmin/riwayat-edit') ||
                   route.path.startsWith('/superadmin/riwayat-preview')
-                    ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                    : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
                 ]"
                 @mouseenter="isHovered.riwayat = true"
                 @mouseleave="isHovered.riwayat = false"
@@ -211,19 +199,17 @@
                     Riwayat
                   </div>
                 </div>
-              </RouterLink>
-
-              <!-- STAFF -->
+              </RouterLink>              <!-- STAFF -->
               <RouterLink
                 to="/superadmin/staff"
-                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
                   isHovered.staff ||
                   route.path === '/superadmin/staff' ||
                   route.path === '/superadmin/staff-add' ||
                   route.path.startsWith('/superadmin/staff-edit')
-                    ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                    : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
                 ]"
                 @mouseenter="isHovered.staff = true"
                 @mouseleave="isHovered.staff = false"

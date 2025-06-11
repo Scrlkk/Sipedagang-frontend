@@ -148,8 +148,8 @@
                   </div>
                 </div>
               </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Tim Super Admin</h3>
-              <p class="text-gray-600">Mengelola sistem pengadaan dengan efisien dan terpercaya</p>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Super Admin</h3>
+              <p class="text-gray-600">Mengelola sistem pengadaan secara efisien</p>
             </div>
           </div>
         </div>
@@ -179,6 +179,7 @@
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
