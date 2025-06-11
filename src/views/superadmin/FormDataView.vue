@@ -62,12 +62,11 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
-    <MainElement>
-      <section class="flex flex-col justify-between h-full">
+  <SuperAdminLayout>    <MainElement>
+      <section class="flex flex-col justify-between h-full px-2 sm:px-0">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8"
+          class="text-center font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-8"
         >
           Form Input Data
         </div>
@@ -85,7 +84,7 @@
             />
             <div
               :class="[
-                'text-sm font-poppins font-medium',
+                'text-xs sm:text-sm font-poppins font-medium',
                 iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
               ]"
             >
@@ -96,7 +95,7 @@
           <div class="mt-0.5">
             <ArrowIconElement />
           </div>
-          <div class="text-[#9BA1AA] text-sm font-poppins font-medium">
+          <div class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium">
             Input Data
           </div>
         </div>
