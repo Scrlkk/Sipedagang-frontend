@@ -1,6 +1,6 @@
 <script setup>
-  import { ref, onMounted, computed, watch } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
+  import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
+  import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import RiwayatIconElement from '@/components/RiwayatIconElement.vue'
@@ -22,13 +22,61 @@
   const pengadaanId = route.params.id
   const currentData = ref(null)
 
+  // ✅ Tambahkan state untuk tracking perubahan
+  const hasUnsavedChanges = ref(false)
+
   // Computed untuk menampilkan no preorder
   const noPreorder = computed(() => {
     return currentData.value?.no_preorder || 'Loading...'
   })
 
+  // ✅ Fungsi konfirmasi sebelum meninggalkan halaman
+  const confirmLeave = async () => {
+    if (!hasUnsavedChanges.value) return true
+
+    const result = await Swal.fire({
+      title: 'Perubahan Belum Disimpan!',
+      text: 'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman ini?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Tinggalkan',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+    })
+
+    return result.isConfirmed
+  }
+
+  // ✅ Guard untuk navigasi Vue Router
+  onBeforeRouteLeave(async (to, from) => {
+    const canLeave = await confirmLeave()
+    if (!canLeave) {
+      return false // Batalkan navigasi
+    }
+  })
+
+  // ✅ Guard untuk browser navigation
+  const handleBeforeUnload = (event) => {
+    if (hasUnsavedChanges.value) {
+      event.preventDefault()
+      event.returnValue =
+        'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
+      return event.returnValue
+    }
+  }
+
+  // ✅ Handler untuk form changes dari FormElement
+  const handleFormChanged = (hasChanges) => {
+    hasUnsavedChanges.value = hasChanges
+  }
+
   // Fetch data saat component dimount
   onMounted(async () => {
+    // Add beforeunload listener
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
     try {
       isLoading.value = true
 
@@ -59,6 +107,11 @@
     }
   })
 
+  onBeforeUnmount(() => {
+    // Remove beforeunload listener
+    window.removeEventListener('beforeunload', handleBeforeUnload)
+  })
+
   // Watcher untuk populate form setelah FormElement siap
   watch([isLoading, formRef, currentData], ([loading, form, data]) => {
     if (!loading && form && form.populateForm && data) {
@@ -66,8 +119,11 @@
     }
   })
 
-  function handleLeft() {
-    router.back()
+  async function handleLeft() {
+    const canLeave = await confirmLeave()
+    if (canLeave) {
+      router.back()
+    }
   }
 
   async function handleRight() {
@@ -79,6 +135,9 @@
       isSubmitting.value = true
 
       await formRef.value.updateForm(pengadaanId)
+
+      // ✅ Reset unsaved changes setelah berhasil update
+      hasUnsavedChanges.value = false
 
       Swal.fire({
         title: 'Berhasil!',
@@ -111,9 +170,15 @@
       <section class="flex flex-col justify-between h-full">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8"
+          class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8 relative"
         >
           Edit Riwayat Data
+          <!-- ✅ Indikator unsaved changes -->
+          <span
+            v-if="hasUnsavedChanges"
+            class="absolute -top-1 -right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"
+            title="Ada perubahan yang belum disimpan"
+          ></span>
         </div>
 
         <!-- NAV -->
@@ -157,7 +222,12 @@
         </div>
 
         <!-- FORM -->
-        <FormElement v-else ref="formRef" :is-edit-mode="true" />
+        <FormElement
+          v-else
+          ref="formRef"
+          :is-edit-mode="true"
+          @form-changed="handleFormChanged"
+        />
 
         <!-- BUTTON -->
         <ButtonElement

@@ -98,7 +98,7 @@
 
     /* Page khusus untuk kuitansi */
     @page kuitansi {
-      size: A4 landscape;
+      size: A4 Landscape;
       margin: 0mm;
       padding-top: 0mm;
     }
@@ -118,6 +118,7 @@
     .kuitansi-container {
       transform: none !important;
       margin: 0 !important;
+      margin-top: -17px !important;
       padding: 0 !important;
     }
 

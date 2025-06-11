@@ -37,17 +37,19 @@
 <template>
   <div
     @click="keHalamanStaff"
-    class="w-full cursor-pointer flex bg-[#F7F8FA] py-5 px-7 rounded-lg shadow-lg/25 h-[6.2rem] hover:scale-95 hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
+    class="w-full cursor-pointer flex bg-[#F7F8FA] py-5 px-7 rounded-lg shadow-lg/25 h-[98%] hover:scale-95 hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
   >
     <!-- Gambar Profil -->
     <div class="relative flex-shrink-0">
-      <div class="profile-image-container">
+      <div
+        class="w-16 h-16 sm:w-12 sm:h-12 lg:w-[4.5rem] lg:h-[4.5rem] rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0"
+      >
         <img
           :src="fotoStaff"
           :alt="person.nama"
           loading="lazy"
           :class="[
-            'profile-image',
+            'w-full h-full object-cover object-center',
             person.status === 'inactive' ? 'grayscale opacity-60' : '',
           ]"
           @error="
@@ -62,7 +64,7 @@
       <!-- Indikator status -->
       <div
         :class="[
-          'absolute -bottom-2 right-0 w-4 h-4 rounded-full border-2 border-white',
+          'absolute bottom-1 right-0 w-4 h-4 rounded-full border-2 border-white',
           person.status === 'active' ? 'bg-green-500' : 'bg-red-500',
         ]"
         :title="person.status === 'active' ? 'Aktif' : 'Tidak Aktif'"
@@ -119,39 +121,3 @@
     </div>
   </div>
 </template>
-
-<style scoped>
-  .profile-image-container {
-    width: 4rem; /* 64px */
-    height: 4rem; /* 64px */
-    border-radius: 50%;
-    overflow: hidden;
-    background-color: #f3f4f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  /* Ukuran responsif */
-  @media (max-width: 640px) {
-    .profile-image-container {
-      width: 3rem;
-      height: 3rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .profile-image-container {
-      width: 4.5rem;
-      height: 4.5rem;
-    }
-  }
-</style>

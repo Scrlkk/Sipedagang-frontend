@@ -4,7 +4,7 @@ export const createPengadaan = (data) => {
   return api.post('/pengadaan', data)
 }
 
-// ✅ Update untuk backend pagination
+// ✅ Perbaiki parameter bulan
 export const getPengadaan = (
   page = 1,
   perPage = 10,
@@ -13,10 +13,22 @@ export const getPengadaan = (
 ) => {
   const params = new URLSearchParams()
   params.append('page', page)
-  params.append('per_page', perPage) // ✅ Tambah per_page
-  if (search) params.append('search', search)
-  if (bulan) params.append('bulan', bulan)
-  return api.get(`/pengadaan?${params.toString()}`)
+  params.append('per_page', perPage)
+
+  // ✅ Hanya tambah parameter jika ada nilainya
+  if (search && search.trim()) {
+    params.append('search', search.trim())
+  }
+
+  if (bulan && bulan.trim()) {
+    params.append('bulan', bulan.trim())
+    console.log('Sending bulan parameter:', bulan.trim()) // Debug log
+  }
+
+  const url = `/pengadaan?${params.toString()}`
+  console.log('Final API URL:', url) // Debug log
+
+  return api.get(url)
 }
 
 export const getPengadaanById = (id) => {

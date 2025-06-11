@@ -14,14 +14,20 @@
   const totalPages = ref(1)
 
   async function fetchData(page = 1) {
-    const res = await pengadaanStore.fetchPengadaan(
-      page,
-      searchText.value,
-      searchMonth.value,
-    )
-    data.value = pengadaanStore.pengadaanList
-    totalPages.value = res.last_page
-    currentPage.value = res.current_page
+    try {
+      const res = await pengadaanStore.fetchPengadaan(
+        page,
+        10, // perPage
+        searchText.value,
+        searchMonth.value,
+      )
+
+      data.value = pengadaanStore.pengadaanList
+      totalPages.value = res.last_page || 1
+      currentPage.value = res.current_page || page
+    } catch (error) {
+      console.error('Error in fetchData:', error)
+    }
   }
 
   onMounted(() => {
@@ -32,8 +38,18 @@
     fetchData(page)
   }
 
+  let searchTimeout = null
   watch([searchText, searchMonth], () => {
-    fetchData(1)
+    // Clear previous timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout)
+    }
+
+    // Set new timeout
+    searchTimeout = setTimeout(() => {
+      currentPage.value = 1 // Reset to first page
+      fetchData(1)
+    }, 500) // 500ms delay
   })
 </script>
 
@@ -60,6 +76,7 @@
                 type="month"
                 v-model="searchMonth"
                 class="border border-[#D9D9D9] rounded-md h-8 px-5 text-sm focus:outline-[#0099ff]"
+                title="Filter berdasarkan bulan"
               />
             </div>
           </section>
@@ -108,7 +125,11 @@
                       colspan="8"
                       class="py-8 text-center text-[16px] text-gray-400"
                     >
-                      Tidak ada data yang sesuai
+                      {{
+                        pengadaanStore.isLoading
+                          ? 'Memuat data...'
+                          : 'Tidak ada data yang sesuai'
+                      }}
                     </td>
                   </tr>
                 </template>
