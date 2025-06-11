@@ -51,15 +51,11 @@
   const showDeleteButton = computed(() => !!props.id)
 
   const deleteButtonLabel = computed(() => {
-    console.log('Current userStatus.value:', userStatus.value)
-    console.log('props.id:', props.id)
-
     if (!props.id) return 'Hapus'
 
     const isActive = userStatus.value === 'active'
     const label = isActive ? 'Nonaktifkan' : 'Aktifkan'
 
-    console.log('isActive:', isActive, 'label:', label)
     return label
   })
 
@@ -172,14 +168,11 @@
     return config.getStorageUrl(photoPath)
   }
 
-  // ✅ TAMBAHKAN variable bypassConfirmation yang hilang
   const bypassConfirmation = ref(false)
 
-  // ✅ Tambahkan state untuk tracking perubahan
   const hasUnsavedChanges = ref(false)
   const initialFormData = ref({})
 
-  // ✅ Fungsi untuk menyimpan data awal
   const saveInitialData = () => {
     initialFormData.value = {
       nama: nama.value,
@@ -191,7 +184,6 @@
     hasUnsavedChanges.value = false
   }
 
-  // ✅ Fungsi untuk cek apakah ada perubahan
   const checkForChanges = () => {
     const currentData = {
       nama: nama.value,
@@ -205,7 +197,6 @@
       JSON.stringify(currentData) !== JSON.stringify(initialFormData.value)
   }
 
-  // ✅ Watch untuk perubahan form
   watch(
     [nama, namaPengguna, noTelp, password, photoUrl],
     () => {
@@ -214,7 +205,6 @@
     { deep: true },
   )
 
-  // ✅ Fungsi konfirmasi sebelum meninggalkan halaman
   const confirmLeave = async () => {
     if (!hasUnsavedChanges.value) return true
 
@@ -233,26 +223,22 @@
     return result.isConfirmed
   }
 
-  // ✅ Guard untuk navigasi Vue Router
   onBeforeRouteLeave(async (to, from) => {
-    // ✅ Jika ada bypass flag, langsung allow
     if (bypassConfirmation.value) {
-      bypassConfirmation.value = false // Reset flag
+      bypassConfirmation.value = false
       return true
     }
 
-    // Jika navigasi normal dan ada unsaved changes
     if (hasUnsavedChanges.value) {
       const canLeave = await confirmLeave()
       if (!canLeave) {
-        return false // Batalkan navigasi
+        return false
       }
     }
 
-    return true // Allow navigation
+    return true
   })
 
-  // ✅ Guard untuk browser navigation (refresh, close tab, etc.)
   const handleBeforeUnload = (event) => {
     if (hasUnsavedChanges.value) {
       event.preventDefault()
@@ -262,9 +248,7 @@
     }
   }
 
-  // ✅ Lifecycle hooks
   onMounted(async () => {
-    // Add beforeunload listener
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     if (props.id) {
@@ -277,9 +261,6 @@
         namaPengguna.value = data.nama_pengguna || ''
         noTelp.value = data.phone_number || ''
         photoUrl.value = getPhotoUrl(data.profile_photo)
-
-        console.log('Original status from API:', data.status)
-        console.log('Available status values:', Object.keys(data))
 
         const statusValue = data.status || data.user_status || data.is_active
 
@@ -299,24 +280,14 @@
           userStatus.value = 'active'
         }
 
-        console.log('Final userStatus.value:', userStatus.value)
-
         const currentPassword = data.plain_password || data.password || ''
         password.value = currentPassword
         originalPassword.value = currentPassword
         passwordConfirmation.value = currentPassword
         originalPasswordExists.value = !!currentPassword
 
-        console.log('Loaded admin data:', {
-          name: data.name,
-          username: data.nama_pengguna,
-          phone: data.phone_number,
-          photoPath: data.profile_photo,
-          photoUrl: photoUrl.value,
-          hasPassword: !!password.value,
-        })
+        saveInitialData()
       } catch (e) {
-        console.error('Error loading admin data:', e)
         nama.value = ''
         namaPengguna.value = ''
         noTelp.value = ''
@@ -333,7 +304,6 @@
         })
       }
     } else {
-      // ✅ Untuk mode create, simpan data kosong sebagai initial
       setTimeout(() => {
         saveInitialData()
       }, 100)
@@ -341,7 +311,6 @@
   })
 
   onBeforeUnmount(() => {
-    // Remove beforeunload listener
     window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
@@ -354,22 +323,17 @@
   }
 
   const formatPhoneNumber = (event) => {
-    // ✅ Allow numbers, +, and - for international phone numbers
     let value = event.target.value.replace(/[^0-9+\-]/g, '')
 
-    // ✅ Ensure + only appears at the beginning
     if (value.includes('+')) {
       const parts = value.split('+')
       if (parts[0] === '') {
-        // + is at the beginning, keep only the first +
         value = '+' + parts.slice(1).join('').replace(/\+/g, '')
       } else {
-        // + is not at the beginning, remove all +
         value = value.replace(/\+/g, '')
       }
     }
 
-    // ✅ Limit total length (including + and -)
     if (value.length > 20) {
       value = value.slice(0, 20)
     }
@@ -473,17 +437,14 @@
         })
       }
 
-      // ✅ Reset unsaved changes setelah berhasil save
       hasUnsavedChanges.value = false
 
-      // ✅ Set bypass flag sebelum navigate
       bypassConfirmation.value = true
 
       setTimeout(() => {
         router.push('/superadmin/staff')
       }, 2000)
     } catch (e) {
-      console.error('Error:', e)
       Swal.fire({
         title: 'Error!',
         text: e.response?.data?.message || 'Gagal menyimpan data staff!',
@@ -493,32 +454,22 @@
     }
   }
 
-  // ✅ Update handleLeft - hilangkan duplikasi konfirmasi
   async function handleLeft() {
-    // Cek apakah ada perubahan yang belum disimpan
     const canLeave = await confirmLeave()
 
     if (canLeave) {
-      // ✅ Set flag untuk bypass konfirmasi di onBeforeRouteLeave
       bypassConfirmation.value = true
       router.push('/superadmin/staff')
     }
   }
 
-  // ✅ Update handleDelete untuk reset unsaved changes
   async function handleDelete() {
-    console.log('=== handleDelete Debug ===')
-    console.log('props.id:', props.id)
-    console.log('userStatus.value:', userStatus.value)
-    console.log('hasUnsavedChanges.value:', hasUnsavedChanges.value)
-
     if (!props.id) return
 
     const isActive = userStatus.value === 'active'
     const actionText = isActive ? 'nonaktifkan' : 'aktifkan'
     const confirmText = isActive ? 'Ya, Nonaktifkan!' : 'Ya, Aktifkan!'
 
-    // ✅ Satu konfirmasi saja - gabung save + status change
     let confirmTitle = `Konfirmasi ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`
     let confirmMessage = `Yakin ingin ${actionText} staff ini?`
 
@@ -539,7 +490,6 @@
 
     if (result.isConfirmed) {
       try {
-        // ✅ Satu loading message untuk semua proses
         Swal.fire({
           title: hasUnsavedChanges.value
             ? `Menyimpan dan ${actionText} staff...`
@@ -553,9 +503,7 @@
           },
         })
 
-        // ✅ Jika ada perubahan yang belum disimpan, simpan dulu
         if (hasUnsavedChanges.value) {
-          // Validasi input sebelum save
           if (
             !nama.value ||
             !namaPengguna.value ||
@@ -583,7 +531,6 @@
             return
           }
 
-          // Lakukan save data
           let updateData = new FormData()
           updateData.append('name', nama.value)
           updateData.append('nama_pengguna', namaPengguna.value)
@@ -608,19 +555,16 @@
 
           await updateAdmin(props.id, updateData)
 
-          // Reset unsaved changes setelah berhasil save
           hasUnsavedChanges.value = false
           saveInitialData()
         }
 
-        // Lakukan perubahan status
         if (isActive) {
           await setAdminInactive(props.id)
         } else {
           await setAdminActive(props.id)
         }
 
-        // ✅ Satu pesan sukses untuk semua operasi
         const successMessage = hasUnsavedChanges.value
           ? `Data berhasil disimpan dan staff berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
           : `Staff berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
@@ -634,16 +578,12 @@
           timerProgressBar: true,
         })
 
-        // ✅ Set bypass flag sebelum navigate
         bypassConfirmation.value = true
 
         setTimeout(() => {
           router.push('/superadmin/staff')
         }, 2500)
       } catch (e) {
-        console.error('handleDelete error:', e)
-
-        // ✅ Satu pesan error
         Swal.fire({
           title: 'Error!',
           text: e.response?.data?.message || `Gagal ${actionText} staff!`,
@@ -665,7 +605,7 @@
             class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8 relative"
           >
             {{ pageTitle }}
-            <!-- ✅ Indikator unsaved changes -->
+            <!-- DOT -->
             <span
               v-if="hasUnsavedChanges"
               class="absolute -top-1 -right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"

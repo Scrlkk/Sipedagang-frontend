@@ -3,12 +3,12 @@
   import { useAdminStore } from '@/stores/adminStore'
   import { useResetPasswordStore } from '@/stores/resetStore'
   import { RouterLink } from 'vue-router'
+  import { config } from '@/config/env'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import StaffElement from '@/components/StaffElement.vue'
   import MainElement from '../../components/MainElement.vue'
   import StaffResetElement from '@/components/StaffResetElement.vue'
   import defaultProfile from '@/assets/images/misc/default-profile.png'
-  import { config } from '@/config/env'
 
   const showPopup = ref(false)
   const adminStore = useAdminStore()
@@ -16,28 +16,23 @@
   const search = ref('')
   const showInactive = ref(false)
 
-  // ✅ Helper function menggunakan config environment
   const getPhotoUrl = (photoPath) => {
     return config.getStorageUrl(photoPath) || defaultProfile
   }
 
   onMounted(() => {
-    // Load semua data dari backend
-    adminStore.getAdmins('', '') // Parameter kosong untuk mendapat semua data
+    adminStore.getAdmins('', '')
   })
 
-  // Watch untuk load reset requests ketika popup dibuka
   watch(showPopup, (newValue) => {
     if (newValue) {
       resetStore.fetchResetRequests()
     }
   })
 
-  // Filtrasi manual di frontend
   const filteredAdmins = computed(() => {
     let filtered = adminStore.admins || []
 
-    // Filter berdasarkan status active/inactive
     if (showInactive.value) {
       filtered = filtered.filter((admin) => admin.status === 'inactive')
     } else {
@@ -46,7 +41,6 @@
       )
     }
 
-    // Filter berdasarkan search term
     if (search.value && search.value.trim()) {
       const searchTerm = search.value.toLowerCase()
       filtered = filtered.filter(
@@ -56,15 +50,13 @@
       )
     }
 
-    // ✅ Urutkan berdasarkan nama secara alfabetis dengan sorting numerik yang benar
     filtered.sort((a, b) => {
       const nameA = (a.name || '').toLowerCase()
       const nameB = (b.name || '').toLowerCase()
 
-      // Jika kedua nama mengandung angka, gunakan natural sort
       return nameA.localeCompare(nameB, 'id', {
         sensitivity: 'base',
-        numeric: true, // ✅ Tambahkan ini untuk sorting numerik yang benar
+        numeric: true,
         caseFirst: 'lower',
       })
     })
@@ -98,16 +90,13 @@
       <MainElement
         :class="showPopup ? 'blur-[3px] pointer-events-none select-none' : ''"
       >
-        <!-- ATAS -->
         <section class="flex justify-between">
-          <!-- TITLE -->
           <div
             class="font-semibold text-lg text-[#0099FF] underline underline-offset-8"
           >
             Management Staff - {{ showInactive ? 'Inactive' : 'Active' }}
           </div>
 
-          <!-- NAV -->
           <div class="flex items-center mt-1 gap-4">
             <input
               v-model="search"
@@ -139,7 +128,6 @@
           </div>
         </section>
 
-        <!-- STAFF -->
         <section
           class="mt-6 px-4 h-[67dvh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
         >
@@ -181,7 +169,6 @@
                 id: person.id,
                 nama: person.name,
                 nama_pengguna: person.nama_pengguna,
-                // ✅ Format URL foto dengan benar
                 img: getPhotoUrl(person.profile_photo),
                 status: person.status || 'active',
               }"
@@ -190,7 +177,6 @@
         </section>
       </MainElement>
 
-      <!-- STAFF RESET POPUP -->
       <StaffResetElement :show="showPopup" @close="closeResetPopup" />
     </section>
   </SuperAdminLayout>

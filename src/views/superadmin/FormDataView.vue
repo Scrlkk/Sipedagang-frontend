@@ -13,13 +13,10 @@
   const formRef = ref(null)
   const isSubmitting = ref(false)
   const router = useRouter()
-
-  // ✅ Tambahkan state untuk tracking perubahan
   const hasUnsavedChanges = ref(false)
 
   const pengadaanStore = computed(() => formRef.value?.pengadaanStore)
 
-  // ✅ Fungsi konfirmasi sebelum meninggalkan halaman
   const confirmLeave = async () => {
     if (!hasUnsavedChanges.value) return true
 
@@ -38,15 +35,13 @@
     return result.isConfirmed
   }
 
-  // ✅ Guard untuk navigasi Vue Router
   onBeforeRouteLeave(async (to, from) => {
     const canLeave = await confirmLeave()
     if (!canLeave) {
-      return false // Batalkan navigasi
+      return false
     }
   })
 
-  // ✅ Guard untuk browser navigation
   const handleBeforeUnload = (event) => {
     if (hasUnsavedChanges.value) {
       event.preventDefault()
@@ -56,31 +51,26 @@
     }
   }
 
-  // ✅ Handler untuk form changes dari FormElement
   const handleFormChanged = (hasChanges) => {
     hasUnsavedChanges.value = hasChanges
   }
 
   onMounted(() => {
-    // Add beforeunload listener
     window.addEventListener('beforeunload', handleBeforeUnload)
   })
 
   onBeforeUnmount(() => {
-    // Remove beforeunload listener
     window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
   async function handleClear() {
     if (!hasUnsavedChanges.value) {
-      // Jika tidak ada perubahan, langsung clear
       if (formRef.value && formRef.value.clearForm) {
         formRef.value.clearForm()
       }
       return
     }
 
-    // Jika ada perubahan, minta konfirmasi
     const result = await Swal.fire({
       title: 'Konfirmasi Clear Form',
       text: 'Yakin ingin menghapus semua data yang sudah diisi?',
@@ -96,7 +86,6 @@
     if (result.isConfirmed) {
       if (formRef.value && formRef.value.clearForm) {
         formRef.value.clearForm()
-        // ✅ Reset unsaved changes setelah clear
         hasUnsavedChanges.value = false
       }
     }
@@ -110,7 +99,6 @@
     try {
       await formRef.value.submitForm()
 
-      // ✅ Reset unsaved changes setelah berhasil submit
       hasUnsavedChanges.value = false
 
       Swal.fire({

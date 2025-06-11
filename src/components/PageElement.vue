@@ -1,9 +1,11 @@
 <script setup>
   import { computed, ref, watch } from 'vue'
+
   const props = defineProps({
     currentPage: { type: Number, default: 1 },
     totalPages: { type: Number, default: 1 },
   })
+
   const emit = defineEmits(['change'])
 
   function goToPage(page) {
@@ -22,32 +24,53 @@
     return [current - 2, current - 1, current, current + 1, current + 2]
   })
 
-  // ✅ Computed untuk kondisi tombol prev/next
   const canGoPrevious = computed(() => props.currentPage > 1)
   const canGoNext = computed(() => props.currentPage < props.totalPages)
 
-  // Untuk input manual page
-  const inputPage = ref(props.currentPage)
-  watch(
-    () => props.currentPage,
-    (val) => {
-      inputPage.value = val
-    },
-  )
+  // Ref untuk input manual page
+  const inputPage = ref('')
+  const inputRef = ref(null)
 
+  // Fungsi untuk handle input page - DIPERBAIKI
   function handleInputPage(e) {
-    let page = parseInt(e.target.value)
-    if (isNaN(page)) page = 1
-    if (page < 1) page = 1
-    if (page > props.totalPages) page = props.totalPages
-    goToPage(page)
-    e.target.value = '' // kosongkan input setelah submit
+    const value = e.target.value.trim()
+
+    // Jika input kosong, abaikan
+    if (!value) {
+      e.target.value = ''
+      return
+    }
+
+    let page = parseInt(value)
+
+    // Validasi input
+    if (isNaN(page) || page < 1) {
+      page = 1
+    } else if (page > props.totalPages) {
+      page = props.totalPages
+    }
+
+    // Clear input setelah submit
+    e.target.value = ''
+    inputPage.value = ''
+
+    // Emit perubahan page
+    if (page !== props.currentPage) {
+      goToPage(page)
+    }
+  }
+
+  // Handle Enter key
+  function handleKeyUp(e) {
+    if (e.key === 'Enter') {
+      handleInputPage(e)
+    }
   }
 </script>
 
 <template>
   <section class="flex justify-center items-center gap-2">
-    <!-- ✅ Prev Button dengan kondisi styling -->
+    <!-- Prev Button -->
     <button
       :class="[
         'font-poppins rounded-sm w-8 h-8 transition-all duration-200',
@@ -76,7 +99,7 @@
       {{ page }}
     </div>
 
-    <!-- ✅ Next Button dengan kondisi styling -->
+    <!-- Next Button -->
     <button
       :class="[
         'font-poppins rounded-sm w-8 h-8 transition-all duration-200',
@@ -90,16 +113,17 @@
       &gt;
     </button>
 
-    <!-- SEARCH PAGE -->
+    <!-- SEARCH PAGE INPUT -->
     <div class="flex text-sm gap-3 items-center ml-2">
       <input
+        ref="inputRef"
         type="number"
         min="1"
         :max="props.totalPages"
-        :placeholder="props.currentPage.toString()"
-        :value="''"
+        :placeholder="`${props.currentPage}`"
+        v-model="inputPage"
         @change="handleInputPage"
-        @keyup.enter="handleInputPage"
+        @keyup="handleKeyUp"
         class="border border-[#CED4DA] rounded-sm w-16 h-8 px-2 text-center focus:outline-[#0099FF] focus:text-[#0099FF] focus:border-[#0099FF] transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <div class="text-[#6C757D]">/Page</div>
