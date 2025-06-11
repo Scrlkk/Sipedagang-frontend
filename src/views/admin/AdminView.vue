@@ -25,7 +25,8 @@
         </div>
 
         <!-- Content Container -->
-        <div class="relative max-w-6xl mx-auto flex flex-col h-full justify-between">          <!-- Welcome Section -->
+        <div class="relative max-w-6xl mx-auto flex flex-col h-full justify-between">        
+         <!-- Welcome Section -->
           <div class="text-center mb-4 flex-shrink-0">
             <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-2 font-inter">
               Halo, Selamat Datang
@@ -51,17 +52,8 @@
                     <div class="absolute inset-0 bg-black/40"></div>
                     <!-- Gradient overlay on hover -->
                     <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-
-                  <!-- Content Overlay -->
+                  </div>                  <!-- Content Overlay -->
                   <div class="relative h-full flex flex-col justify-center items-center text-center p-4">
-                    <!-- Status Badge -->
-                    <div class="absolute top-3 right-3 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-md">
-                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                      </svg>
-                    </div>
-
                     <!-- Text Content -->
                     <div class="space-y-2">
                       <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-white font-inter drop-shadow-lg">
@@ -83,7 +75,8 @@
                     </div>
                   </div>
                 </div>
-              </RouterLink>              <!-- Lihat Data Card -->
+              </RouterLink>              
+              <!-- Lihat Data Card -->
               <RouterLink to="/admin/lihatdata" class="group block transform transition-all duration-300 hover:scale-[1.02]">
                 <div class="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 h-48 sm:h-56 md:h-64">
                   <!-- Background Image -->
@@ -97,17 +90,8 @@
                     <div class="absolute inset-0 bg-black/40"></div>
                     <!-- Gradient overlay on hover -->
                     <div class="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-teal-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-
-                  <!-- Content Overlay -->
+                  </div>                  <!-- Content Overlay -->
                   <div class="relative h-full flex flex-col justify-center items-center text-center p-4">
-                    <!-- Status Badge -->
-                    <div class="absolute top-3 right-3 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-md">
-                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </div>
-
                     <!-- Text Content -->
                     <div class="space-y-2">
                       <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-white font-inter drop-shadow-lg">
