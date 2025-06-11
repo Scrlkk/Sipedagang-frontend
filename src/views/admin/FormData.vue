@@ -1,6 +1,13 @@
 <script setup>
-  import { ref, computed, onMounted, nextTick } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
+  import {
+    ref,
+    computed,
+    onMounted,
+    nextTick,
+    onBeforeUnmount,
+    watch,
+  } from 'vue'
+  import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
   import AdminLayout from '@/layouts/AdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormElement from '@/components/FormElement.vue'
@@ -14,11 +21,58 @@
   const route = useRoute()
   const pengadaanStore = usePengadaanStore()
 
-  // Check if this is edit mode based on route params
+  // ✅ Tambahkan state untuk tracking perubahan
+  const hasUnsavedChanges = ref(false)
+
   const editId = computed(() => route.params.id)
   const isEditMode = computed(() => !!editId.value)
 
+  // ✅ Handler untuk form changes dari FormElement
+  const handleFormChanged = (hasChanges) => {
+    hasUnsavedChanges.value = hasChanges
+  }
+
+  // ✅ Fungsi konfirmasi sebelum meninggalkan halaman
+  const confirmLeave = async () => {
+    if (!hasUnsavedChanges.value) return true
+
+    const result = await Swal.fire({
+      title: 'Perubahan Belum Disimpan!',
+      text: 'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman ini?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Tinggalkan',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+    })
+
+    return result.isConfirmed
+  }
+
+  // ✅ Guard untuk navigasi Vue Router
+  onBeforeRouteLeave(async (to, from) => {
+    const canLeave = await confirmLeave()
+    if (!canLeave) {
+      return false // Batalkan navigasi
+    }
+  })
+
+  // ✅ Guard untuk browser navigation
+  const handleBeforeUnload = (event) => {
+    if (hasUnsavedChanges.value) {
+      event.preventDefault()
+      event.returnValue =
+        'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
+      return event.returnValue
+    }
+  }
+
   onMounted(async () => {
+    // Add beforeunload listener
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
     if (isEditMode.value) {
       try {
         console.log('Loading data for edit, ID:', editId.value)
@@ -56,9 +110,39 @@
     }
   })
 
-  function handleClear() {
-    if (formRef.value && formRef.value.clearForm) {
-      formRef.value.clearForm()
+  onBeforeUnmount(() => {
+    // Remove beforeunload listener
+    window.removeEventListener('beforeunload', handleBeforeUnload)
+  })
+
+  async function handleClear() {
+    if (!hasUnsavedChanges.value) {
+      // Jika tidak ada perubahan, langsung clear
+      if (formRef.value && formRef.value.clearForm) {
+        formRef.value.clearForm()
+      }
+      return
+    }
+
+    // Jika ada perubahan, minta konfirmasi
+    const result = await Swal.fire({
+      title: 'Konfirmasi Clear Form',
+      text: 'Yakin ingin menghapus semua data yang sudah diisi?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+    })
+
+    if (result.isConfirmed) {
+      if (formRef.value && formRef.value.clearForm) {
+        formRef.value.clearForm()
+        // ✅ Reset unsaved changes setelah clear
+        hasUnsavedChanges.value = false
+      }
     }
   }
 
@@ -72,6 +156,9 @@
         // Update existing data using updateForm method
         await formRef.value.updateForm(editId.value)
 
+        // ✅ Reset unsaved changes setelah berhasil update
+        hasUnsavedChanges.value = false
+
         await Swal.fire({
           title: 'Berhasil!',
           text: 'Data pengadaan berhasil diperbarui',
@@ -83,6 +170,9 @@
       } else {
         // Create new data using submitForm method
         await formRef.value.submitForm()
+
+        // ✅ Reset unsaved changes setelah berhasil submit
+        hasUnsavedChanges.value = false
 
         await Swal.fire({
           title: 'Berhasil!',
@@ -277,15 +367,25 @@
                   <section class="flex flex-col justify-between h-full">
                     <!-- TITLE -->
                     <div
-                      class="text-center font-semibold text-xl text-[#0099FF] underline underline-offset-8 mb-6"
+                      class="text-center font-semibold text-xl text-[#0099FF] underline underline-offset-8 mb-6 relative"
                     >
                       {{
                         isEditMode ? 'Edit Data Pengadaan' : 'Form Input Data'
                       }}
+                      <!-- ✅ Indikator unsaved changes -->
+                      <span
+                        v-if="hasUnsavedChanges"
+                        class="absolute -top-1 -right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"
+                        title="Ada perubahan yang belum disimpan"
+                      ></span>
                     </div>
 
                     <!-- FORM -->
-                    <FormElement ref="formRef" :isEditMode="isEditMode" />
+                    <FormElement
+                      ref="formRef"
+                      :isEditMode="isEditMode"
+                      @form-changed="handleFormChanged"
+                    />
 
                     <!-- BUTTON -->
                     <ButtonElement

@@ -768,32 +768,6 @@
                         class="inline-flex bg-white/80 backdrop-blur-sm rounded-md sm:rounded-lg shadow-sm border border-gray-100/80 p-0.5"
                       >
                         <button
-                          @click="previewItem(item)"
-                          class="relative group px-1 py-1 sm:px-2 hover:bg-blue-50 transition-all duration-200 flex items-center border-r border-gray-100"
-                          title="Preview"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-3 w-3 sm:h-4 sm:w-4 text-blue-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                            />
-                          </svg>
-                        </button>
-                        <button
                           @click="printItem(item)"
                           class="relative group px-1 py-1 sm:px-2 hover:bg-green-50 transition-all duration-200 flex items-center border-r border-gray-100"
                           title="Cetak"

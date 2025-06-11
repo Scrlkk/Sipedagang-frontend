@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch } from 'vue'
+  import { ref, watch, onMounted } from 'vue'
   import { usePengadaanStore } from '@/stores/pengadaanStore'
 
   const props = defineProps({
@@ -8,6 +8,9 @@
       default: false,
     },
   })
+
+  // ✅ Emit untuk komunikasi dengan parent
+  const emit = defineEmits(['form-changed'])
 
   const namaSupplier = ref('')
   const namaPerusahaan = ref('')
@@ -24,6 +27,94 @@
 
   const pengadaanStore = usePengadaanStore()
 
+  // ✅ State untuk tracking perubahan
+  const hasChanges = ref(false)
+  const initialFormData = ref({})
+  const isTrackingEnabled = ref(false)
+
+  // ✅ Fungsi untuk menyimpan data awal
+  const saveInitialData = () => {
+    initialFormData.value = {
+      namaSupplier: namaSupplier.value,
+      namaPerusahaan: namaPerusahaan.value,
+      jenisBank: jenisBank.value,
+      nomorRekening: nomorRekening.value,
+      nomorPO: nomorPO.value,
+      tanggalPengadaan: tanggalPengadaan.value,
+      jenisPengadaan: jenisPengadaan.value,
+      kuantum: kuantum.value,
+      satuanKuantum: satuanKuantum.value,
+      jumlahPembayaran: jumlahPembayaran.value,
+      satuanJumlahPembayaran: satuanJumlahPembayaran.value,
+      jumlahSPP: jumlahSPP.value,
+      dataInList: JSON.parse(JSON.stringify(dataInList.value)),
+    }
+    hasChanges.value = false
+  }
+
+  // ✅ Fungsi untuk cek apakah ada perubahan
+  const checkForChanges = () => {
+    if (!isTrackingEnabled.value) return
+
+    const currentData = {
+      namaSupplier: namaSupplier.value,
+      namaPerusahaan: namaPerusahaan.value,
+      jenisBank: jenisBank.value,
+      nomorRekening: nomorRekening.value,
+      nomorPO: nomorPO.value,
+      tanggalPengadaan: tanggalPengadaan.value,
+      jenisPengadaan: jenisPengadaan.value,
+      kuantum: kuantum.value,
+      satuanKuantum: satuanKuantum.value,
+      jumlahPembayaran: jumlahPembayaran.value,
+      satuanJumlahPembayaran: satuanJumlahPembayaran.value,
+      jumlahSPP: jumlahSPP.value,
+      dataInList: JSON.parse(JSON.stringify(dataInList.value)),
+    }
+
+    const hasFormChanges =
+      JSON.stringify(currentData) !== JSON.stringify(initialFormData.value)
+
+    if (hasFormChanges !== hasChanges.value) {
+      hasChanges.value = hasFormChanges
+      emit('form-changed', hasFormChanges)
+    }
+  }
+
+  // ✅ Setup change tracking
+  const setupChangeTracking = () => {
+    isTrackingEnabled.value = true
+    saveInitialData()
+  }
+
+  // ✅ Function untuk cek apakah ada unsaved changes (dipanggil dari parent)
+  const hasUnsavedChanges = () => {
+    checkForChanges()
+    return hasChanges.value
+  }
+
+  // ✅ Watch untuk semua field form
+  watch(
+    [
+      namaSupplier,
+      namaPerusahaan,
+      jenisBank,
+      nomorRekening,
+      nomorPO,
+      tanggalPengadaan,
+      jenisPengadaan,
+      kuantum,
+      satuanKuantum,
+      jumlahPembayaran,
+      satuanJumlahPembayaran,
+      jumlahSPP,
+    ],
+    () => {
+      checkForChanges()
+    },
+    { deep: true },
+  )
+
   function clearForm() {
     namaSupplier.value = ''
     namaPerusahaan.value = ''
@@ -39,10 +130,18 @@
     jumlahSPP.value = ''
     dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }]
     pengadaanStore.clearMessages()
+
+    // ✅ Reset tracking setelah clear
+    if (isTrackingEnabled.value) {
+      saveInitialData()
+    }
   }
 
   // Function untuk populate form dengan data API
   function populateForm(data) {
+    // ✅ Disable tracking sementara saat populate
+    isTrackingEnabled.value = false
+
     namaSupplier.value = data.nama_suplier || ''
     namaPerusahaan.value = data.nama_perusahaan || ''
     jenisBank.value = data.jenis_bank || ''
@@ -99,6 +198,11 @@
         satuan: 'KG',
       })
     }
+
+    // ✅ Enable tracking dan save initial data setelah populate
+    setTimeout(() => {
+      setupChangeTracking()
+    }, 100)
   }
 
   function clearFormWithDelay(delay = 1000) {
@@ -169,6 +273,9 @@
 
     if (result) {
       clearFormWithDelay(1000)
+      // ✅ Reset changes setelah berhasil submit
+      hasChanges.value = false
+      emit('form-changed', false)
     }
 
     return result
@@ -184,8 +291,22 @@
     const formData = getFormData()
     const result = await pengadaanStore.updatePengadaan(id, formData)
 
+    // ✅ Reset changes setelah berhasil update
+    if (result) {
+      hasChanges.value = false
+      emit('form-changed', false)
+      saveInitialData() // Update initial data dengan data yang baru disimpan
+    }
+
     return result
   }
+
+  // ✅ Setup tracking untuk mode create saat component mounted
+  onMounted(() => {
+    if (!props.isEditMode) {
+      setupChangeTracking()
+    }
+  })
 
   defineExpose({
     clearForm,
@@ -195,12 +316,23 @@
     submitForm,
     updateForm,
     populateForm,
+    setupChangeTracking,
+    hasUnsavedChanges,
     pengadaanStore,
   })
 
   // DATA IN
   const maxDataIn = 10
   const dataInList = ref([{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }])
+
+  // ✅ Watch untuk dataInList changes
+  watch(
+    dataInList,
+    () => {
+      checkForChanges()
+    },
+    { deep: true },
+  )
 
   function addDataInRow() {
     if (dataInList.value.length < maxDataIn) {
@@ -351,7 +483,7 @@
         <input
           type="text"
           id="nomor-po"
-          placeholder="Masukkan nomor purchasing order"
+          placeholder="Masukkan nomor PO (contoh: XXXX/XX/11C30/202X)"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-11.5 px-7 w-full"
           v-model="nomorPO"
           required

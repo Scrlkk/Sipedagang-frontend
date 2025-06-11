@@ -6,8 +6,6 @@ import ResetPasswordAccepted from '../views/login/ResetPasswordAccepted.vue'
 import DashboardAdmin from '../views/admin/AdminView.vue'
 import FormAdmin from '../views/admin/FormData.vue'
 import LihatDataAdmin from '../views/admin/LihatData.vue'
-import PreviewPermohonan from '../views/admin/PreviewPermohonan.vue'
-import CetakKwitansi from '../views/admin/CetakKwitansi.vue'
 import SuperAdminView from '@/views/superadmin/SuperAdminView.vue'
 import RiwayatView from '@/views/superadmin/RiwayatView.vue'
 import RiwayatEditView from '@/views/superadmin/RiwayatEditView.vue'
@@ -107,18 +105,6 @@ const router = createRouter({
       path: '/admin/lihatdata',
       component: LihatDataAdmin,
       name: 'LihatData',
-      meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
-    },
-    {
-      path: '/admin/previewpermohonan',
-      component: PreviewPermohonan,
-      name: 'DetailPage',
-      meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
-    },
-    {
-      path: '/admin/cetakkwitansi',
-      component: CetakKwitansi,
-      name: 'PrintPage',
       meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
     },
     {
