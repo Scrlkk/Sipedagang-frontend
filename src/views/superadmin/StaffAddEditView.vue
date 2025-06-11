@@ -161,9 +161,19 @@
     return password.value !== originalPassword.value
   })
 
+  const deleteAction = computed(() => {
+    if (!props.id) return 'delete'
+
+    const isActive = userStatus.value === 'active'
+    return isActive ? 'deactivate' : 'activate'
+  })
+
   const getPhotoUrl = (photoPath) => {
     return config.getStorageUrl(photoPath)
   }
+
+  // ✅ TAMBAHKAN variable bypassConfirmation yang hilang
+  const bypassConfirmation = ref(false)
 
   // ✅ Tambahkan state untuk tracking perubahan
   const hasUnsavedChanges = ref(false)
@@ -225,10 +235,21 @@
 
   // ✅ Guard untuk navigasi Vue Router
   onBeforeRouteLeave(async (to, from) => {
-    const canLeave = await confirmLeave()
-    if (!canLeave) {
-      return false // Batalkan navigasi
+    // ✅ Jika ada bypass flag, langsung allow
+    if (bypassConfirmation.value) {
+      bypassConfirmation.value = false // Reset flag
+      return true
     }
+
+    // Jika navigasi normal dan ada unsaved changes
+    if (hasUnsavedChanges.value) {
+      const canLeave = await confirmLeave()
+      if (!canLeave) {
+        return false // Batalkan navigasi
+      }
+    }
+
+    return true // Allow navigation
   })
 
   // ✅ Guard untuk browser navigation (refresh, close tab, etc.)
@@ -455,6 +476,9 @@
       // ✅ Reset unsaved changes setelah berhasil save
       hasUnsavedChanges.value = false
 
+      // ✅ Set bypass flag sebelum navigate
+      bypassConfirmation.value = true
+
       setTimeout(() => {
         router.push('/superadmin/staff')
       }, 2000)
@@ -469,11 +493,15 @@
     }
   }
 
-  // ✅ Update handleLeft untuk konfirmasi
+  // ✅ Update handleLeft - hilangkan duplikasi konfirmasi
   async function handleLeft() {
+    // Cek apakah ada perubahan yang belum disimpan
     const canLeave = await confirmLeave()
+
     if (canLeave) {
-      router.back()
+      // ✅ Set flag untuk bypass konfirmasi di onBeforeRouteLeave
+      bypassConfirmation.value = true
+      router.push('/superadmin/staff')
     }
   }
 
@@ -490,14 +518,16 @@
     const actionText = isActive ? 'nonaktifkan' : 'aktifkan'
     const confirmText = isActive ? 'Ya, Nonaktifkan!' : 'Ya, Aktifkan!'
 
-    // ✅ Cek apakah ada perubahan yang belum disimpan
+    // ✅ Satu konfirmasi saja - gabung save + status change
+    let confirmTitle = `Konfirmasi ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`
     let confirmMessage = `Yakin ingin ${actionText} staff ini?`
+
     if (hasUnsavedChanges.value) {
       confirmMessage = `Ada perubahan yang belum disimpan. Sistem akan menyimpan perubahan terlebih dahulu, kemudian ${actionText} staff ini. Lanjutkan?`
     }
 
     const result = await Swal.fire({
-      title: `Konfirmasi ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
+      title: confirmTitle,
       text: confirmMessage,
       icon: 'warning',
       showCancelButton: true,
@@ -509,6 +539,20 @@
 
     if (result.isConfirmed) {
       try {
+        // ✅ Satu loading message untuk semua proses
+        Swal.fire({
+          title: hasUnsavedChanges.value
+            ? `Menyimpan dan ${actionText} staff...`
+            : `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} staff...`,
+          text: 'Mohon tunggu',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading()
+          },
+        })
+
         // ✅ Jika ada perubahan yang belum disimpan, simpan dulu
         if (hasUnsavedChanges.value) {
           // Validasi input sebelum save
@@ -539,18 +583,6 @@
             return
           }
 
-          // Tampilkan loading untuk save
-          Swal.fire({
-            title: 'Menyimpan perubahan...',
-            text: 'Mohon tunggu',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false,
-            didOpen: () => {
-              Swal.showLoading()
-            },
-          })
-
           // Lakukan save data
           let updateData = new FormData()
           updateData.append('name', nama.value)
@@ -578,42 +610,17 @@
 
           // Reset unsaved changes setelah berhasil save
           hasUnsavedChanges.value = false
-
-          // Update initial data dengan data terbaru
           saveInitialData()
-
-          console.log(
-            '✅ Data berhasil disimpan, melanjutkan perubahan status...',
-          )
         }
 
-        // ✅ Tampilkan loading untuk perubahan status
-        Swal.fire({
-          title: `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} staff...`,
-          text: 'Mohon tunggu',
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showConfirmButton: false,
-          didOpen: () => {
-            Swal.showLoading()
-          },
-        })
-
         // Lakukan perubahan status
-        console.log(
-          'Calling:',
-          isActive ? 'setAdminInactive' : 'setAdminActive',
-        )
-
         if (isActive) {
-          console.log('Calling setAdminInactive with ID:', props.id)
           await setAdminInactive(props.id)
         } else {
-          console.log('Calling setAdminActive with ID:', props.id)
           await setAdminActive(props.id)
         }
 
-        // ✅ Tampilkan pesan sukses yang mencakup save + status change
+        // ✅ Satu pesan sukses untuk semua operasi
         const successMessage = hasUnsavedChanges.value
           ? `Data berhasil disimpan dan staff berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
           : `Staff berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
@@ -627,28 +634,19 @@
           timerProgressBar: true,
         })
 
+        // ✅ Set bypass flag sebelum navigate
+        bypassConfirmation.value = true
+
         setTimeout(() => {
           router.push('/superadmin/staff')
         }, 2500)
       } catch (e) {
         console.error('handleDelete error:', e)
 
-        // ✅ Pesan error yang lebih spesifik
-        let errorMessage = `Gagal ${actionText} staff!`
-
-        if (hasUnsavedChanges.value) {
-          // Jika ada error, mungkin saat save atau saat change status
-          if (e.message && e.message.includes('validation')) {
-            errorMessage =
-              'Gagal menyimpan perubahan! Periksa kembali data yang dimasukkan.'
-          } else {
-            errorMessage = `Perubahan berhasil disimpan, tetapi gagal ${actionText} staff!`
-          }
-        }
-
+        // ✅ Satu pesan error
         Swal.fire({
           title: 'Error!',
-          text: e.response?.data?.message || errorMessage,
+          text: e.response?.data?.message || `Gagal ${actionText} staff!`,
           icon: 'error',
           confirmButtonColor: '#d33',
         })
@@ -893,6 +891,7 @@
             left-label="Back"
             :show-delete="showDeleteButton"
             :delete-label="deleteButtonLabel"
+            :delete-action="deleteAction"
             @onClickDelete="handleDelete"
             @onClickLeft="handleLeft"
             @onClickRight="handleRight"

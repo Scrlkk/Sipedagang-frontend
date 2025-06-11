@@ -1,4 +1,5 @@
 <script setup>
+  import { computed } from 'vue'
   const props = defineProps({
     leftLabel: {
       type: String,
@@ -24,9 +25,31 @@
       type: Boolean,
       default: false,
     },
+    // ✅ TAMBAHKAN prop untuk menentukan jenis aksi
+    deleteAction: {
+      type: String,
+      default: 'delete', // 'delete', 'deactivate', 'activate'
+      validator: (value) =>
+        ['delete', 'deactivate', 'activate'].includes(value),
+    },
   })
 
   const emit = defineEmits(['onClickLeft', 'onClickRight', 'onClickDelete'])
+
+  // ✅ Computed untuk menentukan style berdasarkan aksi
+  const deleteButtonClass = computed(() => {
+    const baseClass =
+      'text-white rounded-lg h-10 px-9 mr-2 font-semibold cursor-pointer hover:scale-95 disabled:cursor-not-allowed disabled:hover:scale-100 focus:ring-2 focus:ring-offset-2 transition-all duration-200 ease-in-out'
+
+    switch (props.deleteAction) {
+      case 'activate':
+        return `${baseClass} bg-[#28a745] hover:bg-[#218838] disabled:bg-green-300 focus:ring-[#28a745]`
+      case 'deactivate':
+        return `${baseClass} bg-[#F44336] hover:bg-[#d32f2f] disabled:bg-red-300 focus:ring-[#F44336]`
+      default: // delete
+        return `${baseClass} bg-[#F44336] hover:bg-[#d32f2f] disabled:bg-red-300 focus:ring-[#F44336]`
+    }
+  })
 </script>
 
 <template>
@@ -36,7 +59,7 @@
       v-if="showDelete"
       type="button"
       :disabled="rightLoading"
-      class="bg-[#F44336] text-white rounded-lg h-10 px-9 mr-2 font-semibold cursor-pointer hover:scale-95 disabled:bg-red-300 disabled:cursor-not-allowed disabled:hover:scale-100 focus:ring-2 focus:ring-offset-2 focus:ring-[#F44336] transition-all duration-200 ease-in-out"
+      :class="deleteButtonClass"
       @click="$emit('onClickDelete')"
     >
       {{ deleteLabel }}
