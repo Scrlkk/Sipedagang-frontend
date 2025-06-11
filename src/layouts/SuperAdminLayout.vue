@@ -243,7 +243,7 @@
             <!-- REKAP DATA -->
             <RouterLink
               to="/superadmin/rekapdata"
-              class="group hidden flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
+              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out invisible"
               :class="[
                 isHovered.rekap || route.path === '/superadmin/rekapdata'
                   ? 'scale-90 bg-[#0099FF] shadow-md/20'
