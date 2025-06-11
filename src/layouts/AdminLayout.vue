@@ -133,7 +133,7 @@
       </svg>
     </div>    <!-- Header -->
     <header
-      class="flex flex-col sm:flex-row justify-between items-center px-3 sm:px-4 md:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 relative z-10"
+      class="flex flex-col sm:flex-row justify-between items-center px-3 sm:px-4 md:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 relative z-[9998]"
     >
       <!-- Logo -->
       <div
@@ -144,12 +144,11 @@
       </div>
 
       <!-- User Profile -->
-      <div class="flex items-center gap-2 sm:gap-3 lg:gap-5">
-        <!-- User Avatar and Name with Dropdown -->
-        <div id="profile-dropdown-container" class="relative">
+      <div class="flex items-center gap-2 sm:gap-3 lg:gap-5">        <!-- User Avatar and Name with Dropdown -->
+        <div id="profile-dropdown-container" class="relative z-[10000]">
           <div
             @click="toggleProfileDropdown"
-            class="flex items-center gap-2 sm:gap-3 cursor-pointer transition-opacity hover:opacity-90 p-1 rounded-lg hover:bg-white/10"
+            class="flex items-center gap-2 sm:gap-3 cursor-pointer transition-opacity hover:opacity-90 p-1 rounded-lg hover:bg-white/10 relative z-[9999]"
           >
             <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full overflow-hidden flex-shrink-0">
               <img
@@ -187,14 +186,13 @@
             leave-active-class="transition ease-in duration-150"
             leave-from-class="transform opacity-100 scale-100"
             leave-to-class="transform opacity-0 scale-95"
-          >
-            <div
+          >            <div
               v-if="isProfileDropdownOpen"
-              class="absolute right-0 mt-2 w-40 sm:w-48 bg-white/95 backdrop-blur-sm rounded-xl shadow-xl py-2 z-50 origin-top-right border border-gray-100"
+              class="absolute right-0 mt-2 w-40 sm:w-48 bg-white/95 backdrop-blur-sm rounded-xl shadow-xl py-2 z-[10001] origin-top-right border border-gray-100"
             >
               <button
                 @click="handleLogout"
-                class="flex items-center w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 gap-2 sm:gap-3"
+                class="flex items-center w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 gap-2 sm:gap-3 "
               >
                 <svg
                   width="16"
@@ -232,7 +230,7 @@
         </div>
       </div>
     </header>    <!-- Main Content -->
-    <main class="px-3 sm:px-4 md:px-6 lg:px-10 relative z-10 pb-16 sm:pb-20 md:pb-24">
+    <main class="px-3 sm:px-4 md:px-6 lg:px-10 relative z-[1] pb-16 sm:pb-20 md:pb-24">
       <slot></slot>
     </main>
   </div>
@@ -271,5 +269,30 @@
   .absolute.right-0 {
     right: -0.5rem;
   }
+}
+
+/* Ensure dropdown is always on top */
+.z-\[9999\] {
+  z-index: 9999 !important;
+}
+
+.z-\[10000\] {
+  z-index: 10000 !important;
+}
+
+/* Prevent dropdown from being covered by other elements */
+#profile-dropdown-container {
+  position: relative;
+  z-index: 10000 !important;
+}
+
+/* Override any competing z-index values */
+.transition.ease-out {
+  z-index: 10000 !important;
+}
+
+/* Ensure dropdown menu appears above everything */
+#profile-dropdown-container .absolute {
+  z-index: 10001 !important;
 }
 </style>
