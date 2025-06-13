@@ -181,12 +181,10 @@
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section
-        class="flex flex-col justify-between h-full px-2 sm:px-4 lg:px-0"
-      >
+      <section class="flex flex-col justify-between h-full px-2 sm:px-0">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 relative mb-3 sm:mb-4 lg:mb-6"
+          class="text-center font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-8 relative"
         >
           Edit Riwayat Data
           <!-- Indikator unsaved changes -->
@@ -196,15 +194,14 @@
             title="Ada perubahan yang belum disimpan"
           ></span>
         </div>
+
         <!-- NAV -->
-        <div
-          class="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 items-center justify-center sm:justify-start text-[#9BA1AA] text-xs sm:text-sm lg:text-base font-poppins font-medium mb-4 sm:mb-6 lg:mb-8"
-        >
+        <div class="flex gap-2 items-center">
           <RouterLink
             to="/superadmin/riwayat"
             @mouseenter="iconHover = true"
             @mouseleave="iconHover = false"
-            class="flex gap-1 sm:gap-2 justify-center items-center cursor-pointer hover:text-[#0099FF] transition-colors duration-200"
+            class="flex gap-2 items-center cursor-pointer"
           >
             <RiwayatIconElement
               :color="iconHover ? '#0099FF' : '#9BA1AA'"
@@ -212,26 +209,30 @@
             />
             <div
               :class="[
-                'text-xs sm:text-sm lg:text-base font-poppins font-medium transition-colors duration-200',
+                'text-xs sm:text-sm font-poppins font-medium',
                 iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
               ]"
             >
               Riwayat
             </div>
           </RouterLink>
-          <div class="hidden sm:block mt-0.5">
+
+          <div class="mt-0.5">
             <ArrowIconElement />
           </div>
           <div
-            class="text-xs sm:text-sm lg:text-base hover:text-[#0099FF] cursor-pointer transition-colors duration-200 text-center sm:text-left max-w-[200px] sm:max-w-[300px] truncate"
+            class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium truncate max-w-[200px] sm:max-w-[300px]"
           >
             {{ noPreorder }}
           </div>
-          <div class="hidden sm:block mt-0.5">
+          <div class="mt-0.5">
             <ArrowIconElement />
           </div>
-          <div class="text-xs sm:text-sm lg:text-base">Edit Data</div>
+          <div class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium">
+            Edit Data
+          </div>
         </div>
+
         <!-- Loading State -->
         <div
           v-if="isLoading"
@@ -251,29 +252,21 @@
         </div>
 
         <!-- FORM -->
-        <div
+        <FormElement
           v-else
-          class="flex-1 py-2 sm:py-4 lg:py-6 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
-        >
-          <div class="max-w-full mx-auto">
-            <FormElement
-              ref="formRef"
-              :is-edit-mode="true"
-              @form-changed="handleFormChanged"
-            />
-          </div>
-        </div>
+          ref="formRef"
+          :is-edit-mode="true"
+          @form-changed="handleFormChanged"
+        />
 
         <!-- BUTTON -->
-        <div class="mt-4 sm:mt-6 lg:mt-8 px-0 sm:px-4 lg:px-0">
-          <ButtonElement
-            @onClickLeft="handleLeft"
-            @onClickRight="handleRight"
-            :rightLoading="isSubmitting || pengadaanStore.isLoading"
-            rightLabel="Update"
-            leftLabel="Back"
-          />
-        </div>
+        <ButtonElement
+          @onClickLeft="handleLeft"
+          @onClickRight="handleRight"
+          :rightLoading="isSubmitting || pengadaanStore.isLoading"
+          rightLabel="Update"
+          leftLabel="Back"
+        />
       </section>
     </MainElement>
   </SuperAdminLayout>
