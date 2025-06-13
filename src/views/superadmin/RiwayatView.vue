@@ -13,12 +13,11 @@
   const searchMonth = ref('')
   const currentPage = ref(1)
   const totalPages = ref(1)
-
   async function fetchData(page = 1) {
     try {
       const res = await pengadaanStore.fetchPengadaan(
         page,
-        10,
+        5,
         searchText.value,
         searchMonth.value,
       )
@@ -271,10 +270,9 @@
                     <button
                       @click="fetchData(currentPage)"
                       class="px-6 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-                    >
-                      Coba Lagi
+                    >                      Coba Lagi
                     </button>                  </div>
-                </div>                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
+                </div>                <div v-else class="overflow-y-auto max-h-[calc(100vh-400px)]">
                   <table class="w-full min-w-[900px] xl:min-w-[1000px]">
                     <thead class="sticky top-0 z-10">
                       <tr class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200">
