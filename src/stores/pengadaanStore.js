@@ -14,6 +14,7 @@ export const usePengadaanStore = defineStore('pengadaan', {
     loading: false,
     error: null,
     success: null,
+    lastSearchParams: null, // ✅ Tambah ini
     pagination: {
       currentPage: 1,
       lastPage: 1,
@@ -80,10 +81,14 @@ export const usePengadaanStore = defineStore('pengadaan', {
       this.error = null
 
       try {
+        // ✅ Simpan parameter pencarian terakhir untuk operasi refresh
+        this.lastSearchParams = { search, bulan }
+
         const response = await getPengadaan(page, perPage, search, bulan)
 
         this.pengadaanList = response.data.data || []
 
+        // ✅ Update pagination dengan data dari response
         this.pagination = {
           currentPage: response.data.current_page || page,
           lastPage: response.data.last_page || 1,
@@ -91,6 +96,12 @@ export const usePengadaanStore = defineStore('pengadaan', {
           total: response.data.total || 0,
           from: response.data.from || 0,
           to: response.data.to || 0,
+        }
+
+        // ✅ Validasi ulang jika halaman saat ini melebihi total halaman
+        if (this.pagination.currentPage > this.pagination.lastPage && this.pagination.lastPage > 0) {
+          // Recursive call untuk ke halaman terakhir yang valid
+          return await this.fetchPengadaan(this.pagination.lastPage, perPage, search, bulan)
         }
 
         return response.data
@@ -151,12 +162,36 @@ export const usePengadaanStore = defineStore('pengadaan', {
 
       try {
         const response = await deletePengadaan(id)
-
         this.success = 'Data pengadaan berhasil dihapus'
 
+        // ✅ Hitung sisa data setelah delete
+        const remainingItems = this.pagination.total - 1
+        const maxPage = Math.ceil(remainingItems / this.pagination.perPage) || 1
+        
+        // ✅ Tentukan halaman yang akan dituju
+        let targetPage = this.pagination.currentPage
+        
+        // Jika halaman saat ini melebihi halaman maksimum, pindah ke halaman terakhir
+        if (targetPage > maxPage) {
+          targetPage = maxPage
+        }
+        
+        // ✅ Update pagination state terlebih dahulu sebelum fetch
+        this.pagination.currentPage = targetPage
+        
+        // ✅ Fetch data dengan halaman yang sudah disesuaikan
+        const currentFilter = {
+          page: targetPage,
+          perPage: this.pagination.perPage,
+          search: this.lastSearchParams?.search || '',
+          bulan: this.lastSearchParams?.bulan || ''
+        }
+
         await this.fetchPengadaan(
-          this.pagination.currentPage,
-          this.pagination.perPage,
+          currentFilter.page,
+          currentFilter.perPage,
+          currentFilter.search,
+          currentFilter.bulan
         )
 
         return response.data
@@ -166,6 +201,17 @@ export const usePengadaanStore = defineStore('pengadaan', {
       } finally {
         this.loading = false
       }
+    },
+
+    // ✅ Tambah method untuk refresh dengan parameter yang sama
+    async refreshCurrentData() {
+      const params = this.lastSearchParams || { search: '', bulan: '' }
+      await this.fetchPengadaan(
+        this.pagination.currentPage,
+        this.pagination.perPage,
+        params.search,
+        params.bulan
+      )
     },
   },
 })

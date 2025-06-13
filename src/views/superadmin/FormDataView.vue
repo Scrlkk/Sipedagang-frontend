@@ -51,6 +51,7 @@
     }
   }
 
+  // ✅ Handle event dari FormElement
   const handleFormChanged = (hasChanges) => {
     hasUnsavedChanges.value = hasChanges
   }
@@ -63,6 +64,7 @@
     window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
+  // ✅ Clear dengan konfirmasi
   async function handleClear() {
     if (!hasUnsavedChanges.value) {
       if (formRef.value && formRef.value.clearForm) {
@@ -108,7 +110,8 @@
         timer: 2000,
         showConfirmButton: false,
         timerProgressBar: true,
-      })    } catch (error) {
+      })
+    } catch (error) {
       let errorTitle = 'Error!'
       let errorMsg = 'Terjadi kesalahan saat menyimpan data'
       let errorIcon = 'error'
@@ -119,13 +122,13 @@
 
         switch (status) {
           case 422:
-            // Validation errors
             errorTitle = 'Validasi Gagal!'
             if (responseData.errors) {
-              // Format validation errors with field names
               const errorDetails = Object.entries(responseData.errors)
                 .map(([field, messages]) => {
-                  const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+                  const fieldName = field
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, (l) => l.toUpperCase())
                   return `${fieldName}: ${Array.isArray(messages) ? messages.join(', ') : messages}`
                 })
                 .join('\n')
@@ -136,21 +139,21 @@
             break
 
           case 409:
-            // Conflict errors (duplicate data)
             errorTitle = 'Data Duplikat!'
-            errorMsg = responseData.message || 'Data yang Anda masukkan sudah ada dalam sistem'
+            errorMsg =
+              responseData.message ||
+              'Data yang Anda masukkan sudah ada dalam sistem'
             errorIcon = 'warning'
             break
 
           case 404:
-            // Not found errors
             errorTitle = 'Data Tidak Ditemukan!'
-            errorMsg = responseData.message || 'Data yang diminta tidak ditemukan'
+            errorMsg =
+              responseData.message || 'Data yang diminta tidak ditemukan'
             errorIcon = 'info'
             break
 
           case 403:
-            // Forbidden/unauthorized
             errorTitle = 'Akses Ditolak!'
             errorMsg = 'Anda tidak memiliki izin untuk melakukan aksi ini'
             errorIcon = 'warning'
@@ -160,22 +163,20 @@
           case 502:
           case 503:
           case 504:
-            // Server errors
             errorTitle = 'Kesalahan Server!'
             errorMsg = 'Terjadi kesalahan pada server. Silakan coba lagi nanti'
             break
 
           default:
-            // Other HTTP errors
-            errorMsg = responseData.message || `Terjadi kesalahan (Kode: ${status})`
+            errorMsg =
+              responseData.message || `Terjadi kesalahan (Kode: ${status})`
         }
       } else if (error.request) {
-        // Network errors
         errorTitle = 'Koneksi Gagal!'
-        errorMsg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda'
+        errorMsg =
+          'Tidak dapat terhubung ke server. Periksa koneksi internet Anda'
         errorIcon = 'warning'
       } else if (error.message) {
-        // Other errors
         errorMsg = error.message
       }
 
@@ -197,16 +198,22 @@
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section class="flex flex-col justify-between h-full px-2 sm:px-0">
+      <section class="flex flex-col justify-between h-full px-2 sm:px-4">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-8"
+          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative"
         >
           Form Input Data
+          <!-- ✅ Dot indikator perubahan -->
+          <span
+            v-if="hasUnsavedChanges"
+            class="absolute -top-1 -right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"
+            title="Ada perubahan yang belum disimpan"
+          ></span>
         </div>
 
         <!-- NAV -->
-        <div class="flex gap-2 items-center">
+        <div class="flex gap-2 items-center px-2 sm:px-0">
           <div
             @mouseenter="iconHover = true"
             @mouseleave="iconHover = false"
@@ -237,7 +244,7 @@
         </div>
 
         <!-- FORM -->
-        <FormElement ref="formRef" />
+        <FormElement ref="formRef" @form-changed="handleFormChanged" />
 
         <!-- BUTTON -->
         <ButtonElement

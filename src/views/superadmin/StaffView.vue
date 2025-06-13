@@ -93,7 +93,7 @@
         <div class="flex flex-col h-full">
           <!-- ATAS -->
           <section
-            class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-3 mb-3 flex-shrink-0"
+            class="flex flex-col sm:flex-row sm:justify-between px-2 sm:items-center gap-2 sm:gap-3 mb-3 flex-shrink-0"
           >
             <!-- TITLE -->
             <div

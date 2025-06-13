@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onMounted, watch } from 'vue'
+  import { ref, onMounted, watch, computed } from 'vue'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import RiwayatElement from '@/components/RiwayatElement.vue'
@@ -8,25 +8,26 @@
   import Swal from 'sweetalert2'
 
   const pengadaanStore = usePengadaanStore()
-  const data = ref([])
+
+  // ✅ Gunakan computed untuk reaktif data dari store
+  const data = computed(() => pengadaanStore.pengadaanList)
+  const currentPage = computed(() => pengadaanStore.pagination.currentPage)
+  const totalPages = computed(() => pengadaanStore.pagination.lastPage)
+
   const searchText = ref('')
   const searchMonth = ref('')
-  const currentPage = ref(1)
-  const totalPages = ref(1)
+  const itemsPerPage = ref(10)
+
   async function fetchData(page = 1) {
     try {
-      const res = await pengadaanStore.fetchPengadaan(
+      await pengadaanStore.fetchPengadaan(
         page,
-        5,
+        itemsPerPage.value,
         searchText.value,
         searchMonth.value,
       )
-
-      data.value = pengadaanStore.pengadaanList
-      totalPages.value = res.last_page || 1
-      currentPage.value = res.current_page || page
     } catch (error) {
-      // Silent error handling for production
+      console.error('Fetch error:', error)
     }
   }
 
@@ -34,6 +35,7 @@
     fetchData()
   })
 
+  // ✅ Perbaiki handlePageChange agar sync dengan store
   function handlePageChange(page) {
     fetchData(page)
   }
@@ -45,12 +47,11 @@
     }
 
     searchTimeout = setTimeout(() => {
-      currentPage.value = 1
-      fetchData(1)
+      fetchData(1) // Reset ke halaman 1 saat search
     }, 500)
   })
 
-  // Add delete handler for mobile view
+  // ✅ Delete handler yang sudah diperbaiki
   const handleDelete = async (item) => {
     const result = await Swal.fire({
       title: 'Apakah Anda yakin?',
@@ -76,8 +77,8 @@
           timerProgressBar: true,
         })
 
-        // Refresh data after delete
-        fetchData(currentPage.value)
+        // ✅ Data dan pagination sudah otomatis terupdate dari store
+        // Tidak perlu fetch manual lagi
       } catch (error) {
         Swal.fire({
           title: 'Error!',
@@ -88,13 +89,17 @@
       }
     }
   }
+
+  const refreshData = () => {
+    pengadaanStore.refreshCurrentData()
+  }
 </script>
 
 <template>
   <SuperAdminLayout>
     <MainElement>
       <section
-        class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-0 pb-4 sm:pb-6"
+        class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-4 pb-6 sm:pb-4"
       >
         <div>
           <!-- Search -->
@@ -123,12 +128,14 @@
               />
             </div>
           </section>
+
           <!-- Table Container -->
           <section
             class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200 lg:mt-6"
           >
-            <!-- Mobile Card View (xs to md) -->
+            <!-- Mobile Card View -->
             <div class="block lg:hidden">
+              <!-- Loading, Error, dan Data handling sama seperti sebelumnya -->
               <div
                 v-if="pengadaanStore.isLoading"
                 class="flex justify-center items-center h-64 bg-white"
@@ -343,7 +350,7 @@
               </div>
             </div>
 
-            <!-- Desktop Table View (lg and up) -->
+            <!-- Desktop Table View -->
             <div class="hidden lg:block">
               <div class="overflow-x-auto">
                 <div
@@ -463,7 +470,7 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-4 sm:mt-6 lg:mt-8 px-2 pb-4">
+        <div>
           <PageElement
             :current-page="currentPage"
             :total-pages="totalPages"

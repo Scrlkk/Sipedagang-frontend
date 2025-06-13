@@ -599,12 +599,12 @@
   <SuperAdminLayout>
     <MainElement>
       <!-- ✅ Improved container with proper height management for desktop -->
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full px-2">
         <!-- ✅ Header section with controlled height -->
         <section class="flex-shrink-0">
           <!-- TITLE -->
           <div
-            class="text-center font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-[#0099FF] underline underline-offset-2 sm:underline-offset-4 md:underline-offset-6 lg:underline-offset-8 relative px-3 sm:px-4 md:px-6"
+            class="text-center font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-xl text-[#0099FF] underline underline-offset-2 sm:underline-offset-4 md:underline-offset-6 lg:underline-offset-8 relative px-3 sm:px-4 md:px-6"
           >
             {{ pageTitle }}
             <!-- DOT -->
@@ -705,7 +705,7 @@
                     </div>
                     <div
                       @click="triggerFileInput"
-                      class="absolute cursor-pointer overflow-visible -bottom-1 -right-1 sm:bottom-0 sm:right-0 md:-bottom-1 md:-right-1 lg:-bottom-2 lg:-right-2 z-20 scale-75 sm:scale-90 md:scale-100 hover:scale-110 transition-transform duration-200"
+                      class="absolute cursor-pointer overflow-visible -bottom-1 -right-1 sm:bottom-0 sm:right-0 md:-bottom-1 md:-right-1 lg:bottom-2 lg:right-1 z-20 scale-75 sm:scale-90 md:scale-100 hover:scale-110 transition-transform duration-200"
                     >
                       <StaffAddIconElement />
                     </div>

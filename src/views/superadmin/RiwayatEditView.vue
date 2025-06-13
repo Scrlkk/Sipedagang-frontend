@@ -181,13 +181,13 @@
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section class="flex flex-col justify-between h-full px-2 sm:px-0">
+      <section class="flex flex-col justify-between h-full px-2 sm:px-4">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-8 relative"
+          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative"
         >
-          Edit Riwayat Data
-          <!-- Indikator unsaved changes -->
+          Edit Data {{ noPreorder }}
+          <!-- ✅ Dot indikator perubahan -->
           <span
             v-if="hasUnsavedChanges"
             class="absolute -top-1 -right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"
@@ -196,12 +196,12 @@
         </div>
 
         <!-- NAV -->
-        <div class="flex gap-2 items-center">
-          <RouterLink
-            to="/superadmin/riwayat"
+        <div class="flex gap-2 items-center px-2 sm:px-0">
+          <div
             @mouseenter="iconHover = true"
             @mouseleave="iconHover = false"
             class="flex gap-2 items-center cursor-pointer"
+            @click="handleLeft"
           >
             <RiwayatIconElement
               :color="iconHover ? '#0099FF' : '#9BA1AA'"
@@ -215,43 +215,23 @@
             >
               Riwayat
             </div>
-          </RouterLink>
+          </div>
 
           <div class="mt-0.5">
             <ArrowIconElement />
           </div>
           <div
-            class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium truncate max-w-[200px] sm:max-w-[300px]"
+            class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium"
           >
-            {{ noPreorder }}
-          </div>
-          <div class="mt-0.5">
-            <ArrowIconElement />
-          </div>
-          <div class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium">
             Edit Data
           </div>
         </div>
 
-        <!-- Loading State -->
-        <div
-          v-if="isLoading"
-          class="flex justify-center items-center flex-1 py-8 sm:py-12 lg:py-16"
-        >
-          <div class="text-center">
-            <div
-              class="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-blue-500 mx-auto mb-3 lg:mb-4"
-            ></div>
-            <div class="text-gray-500 text-sm sm:text-base lg:text-lg">
-              Memuat data...
-            </div>
-            <div class="text-gray-400 text-xs sm:text-sm mt-1">
-              Mohon tunggu sebentar
-            </div>
-          </div>
+        <!-- FORM -->
+        <div v-if="isLoading" class="flex justify-center items-center flex-1">
+          <div class="text-gray-500">Loading...</div>
         </div>
 
-        <!-- FORM -->
         <FormElement
           v-else
           ref="formRef"
@@ -263,9 +243,9 @@
         <ButtonElement
           @onClickLeft="handleLeft"
           @onClickRight="handleRight"
-          :rightLoading="isSubmitting || pengadaanStore.isLoading"
+          :rightLoading="isSubmitting || pengadaanStore?.isLoading"
           rightLabel="Update"
-          leftLabel="Back"
+          leftLabel="Kembali"
         />
       </section>
     </MainElement>

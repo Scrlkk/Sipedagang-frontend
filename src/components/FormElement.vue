@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch } from 'vue'
+  import { ref, watch, onMounted, nextTick } from 'vue'
   import { usePengadaanStore } from '@/stores/pengadaanStore'
 
   const props = defineProps({
@@ -8,6 +8,9 @@
       default: false,
     },
   })
+
+  // ✅ Emit untuk memberitahu parent ada perubahan
+  const emit = defineEmits(['form-changed'])
 
   const namaSupplier = ref('')
   const namaPerusahaan = ref('')
@@ -24,6 +27,54 @@
 
   const pengadaanStore = usePengadaanStore()
 
+  // ✅ State untuk tracking perubahan
+  const hasChanges = ref(false)
+  const initialFormData = ref({})
+
+  // ✅ Function untuk menyimpan initial data
+  const saveInitialData = () => {
+    initialFormData.value = {
+      namaSupplier: namaSupplier.value,
+      namaPerusahaan: namaPerusahaan.value,
+      jenisBank: jenisBank.value,
+      nomorRekening: nomorRekening.value,
+      nomorPO: nomorPO.value,
+      tanggalPengadaan: tanggalPengadaan.value,
+      jenisPengadaan: jenisPengadaan.value,
+      kuantum: kuantum.value,
+      satuanKuantum: satuanKuantum.value,
+      jumlahPembayaran: jumlahPembayaran.value,
+      satuanJumlahPembayaran: satuanJumlahPembayaran.value,
+      jumlahSPP: jumlahSPP.value,
+      dataInList: JSON.parse(JSON.stringify(dataInList.value))
+    }
+    hasChanges.value = false
+    emit('form-changed', false)
+  }
+
+  // ✅ Function untuk check perubahan
+  const checkForChanges = () => {
+    const currentData = {
+      namaSupplier: namaSupplier.value,
+      namaPerusahaan: namaPerusahaan.value,
+      jenisBank: jenisBank.value,
+      nomorRekening: nomorRekening.value,
+      nomorPO: nomorPO.value,
+      tanggalPengadaan: tanggalPengadaan.value,
+      jenisPengadaan: jenisPengadaan.value,
+      kuantum: kuantum.value,
+      satuanKuantum: satuanKuantum.value,
+      jumlahPembayaran: jumlahPembayaran.value,
+      satuanJumlahPembayaran: satuanJumlahPembayaran.value,
+      jumlahSPP: jumlahSPP.value,
+      dataInList: JSON.parse(JSON.stringify(dataInList.value))
+    }
+
+    const hasFormChanges = JSON.stringify(currentData) !== JSON.stringify(initialFormData.value)
+    hasChanges.value = hasFormChanges
+    emit('form-changed', hasFormChanges)
+  }
+
   function clearForm() {
     namaSupplier.value = ''
     namaPerusahaan.value = ''
@@ -39,6 +90,11 @@
     jumlahSPP.value = ''
     dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }]
     pengadaanStore.clearMessages()
+
+    // ✅ Reset tracking setelah clear
+    nextTick(() => {
+      saveInitialData()
+    })
   }
 
   // Function untuk populate form dengan data API
@@ -99,6 +155,11 @@
         satuan: 'KG',
       })
     }
+
+    // ✅ Simpan initial data setelah populate
+    nextTick(() => {
+      saveInitialData()
+    })
   }
 
   function clearFormWithDelay(delay = 1000) {
@@ -184,9 +245,17 @@
     const formData = getFormData()
     const result = await pengadaanStore.updatePengadaan(id, formData)
 
+    // ✅ Reset tracking setelah berhasil update
+    if (result) {
+      nextTick(() => {
+        saveInitialData()
+      })
+    }
+
     return result
   }
 
+  // ✅ Expose functions untuk dapat diakses parent
   defineExpose({
     clearForm,
     getFormData,
@@ -196,6 +265,8 @@
     updateForm,
     populateForm,
     pengadaanStore,
+    hasChanges,
+    saveInitialData
   })
 
   // DATA IN
@@ -221,6 +292,29 @@
       dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }]
     }
   }
+
+  // ✅ Watch untuk perubahan form
+  watch(
+    [
+      namaSupplier,
+      namaPerusahaan,
+      jenisBank,
+      nomorRekening,
+      nomorPO,
+      tanggalPengadaan,
+      jenisPengadaan,
+      kuantum,
+      satuanKuantum,
+      jumlahPembayaran,
+      satuanJumlahPembayaran,
+      jumlahSPP,
+      dataInList,
+    ],
+    () => {
+      checkForChanges()
+    },
+    { deep: true },
+  )
 
   watch(satuanKuantum, (val) => {
     setAllSatuan(val)
@@ -253,6 +347,15 @@
     satuanJumlahPembayaran.value = newSatuan
     dataInList.value.forEach((row) => (row.satuan = newSatuan))
   }
+
+  // ✅ Set initial data saat mounted untuk form baru
+  onMounted(() => {
+    if (!props.isEditMode) {
+      nextTick(() => {
+        saveInitialData()
+      })
+    }
+  })
 </script>
 
 <template>
@@ -262,14 +365,10 @@
     <!-- DATA PEMOHON -->
     <div class="font-bold text-lg sm:text-xl">Data Pemohon</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="nama-supplier"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Nama Supplier <span class="text-red-500">*</span></label
-        >
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="nama-supplier" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Nama Supplier <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
           id="nama-supplier"
@@ -279,14 +378,11 @@
           required
         />
       </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="nama-perusahaan"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Nama Perusahaan <span class="text-red-500">*</span></label
-        >
+
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="nama-perusahaan" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Nama Perusahaan <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
           id="nama-perusahaan"
@@ -297,14 +393,10 @@
         />
       </div>
 
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jenis-bank"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Jenis Bank <span class="text-red-500">*</span></label
-        >
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="jenis-bank" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Jenis Bank <span class="text-red-500">*</span>
+        </label>
         <div class="relative w-full">
           <select
             id="jenis-bank"
@@ -319,33 +411,18 @@
             <option value="BANK JATENG">BANK JATENG</option>
             <option value="BNI">BNI</option>
           </select>
-          <div
-            class="absolute inset-y-0 right-2 sm:right-3 flex items-center pointer-events-none"
-          >
-            <svg
-              class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
+          <div class="absolute inset-y-0 right-2 sm:right-3 flex items-center pointer-events-none">
+            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </div>
         </div>
       </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="nomor-rekening"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Nomor Rekening <span class="text-red-500">*</span></label
-        >
+      
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="nomor-rekening" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Nomor Rekening <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
           id="nomor-rekening"
@@ -356,17 +433,14 @@
         />
       </div>
     </div>
+
     <!-- DETAIL PURCHASING ORDER -->
     <div class="font-bold text-lg sm:text-xl mt-4">Detail Purchasing Order</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="nomor-po"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Nomor PO <span class="text-red-500">*</span></label
-        >
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="nomor-po" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Nomor PO <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
           id="nomor-po"
@@ -376,14 +450,11 @@
           required
         />
       </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="tanggal-pengadaan"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Tanggal Pengadaan <span class="text-red-500">*</span></label
-        >
+      
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="tanggal-pengadaan" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Tanggal Pengadaan <span class="text-red-500">*</span>
+        </label>
         <input
           type="date"
           id="tanggal-pengadaan"
@@ -392,14 +463,11 @@
           required
         />
       </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jenis-pengadaan"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Jenis Pengadaan <span class="text-red-500">*</span></label
-        >
+      
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="jenis-pengadaan" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Jenis Pengadaan <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
           id="jenis-pengadaan"
@@ -409,14 +477,11 @@
           required
         />
       </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="kuantum"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Kuantum <span class="text-red-500">*</span></label
-        >
+      
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="kuantum" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Kuantum <span class="text-red-500">*</span>
+        </label>
         <div class="relative w-full">
           <input
             type="number"
@@ -426,9 +491,7 @@
             v-model="kuantum"
             required
           />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
+          <div class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2">
             <select
               v-model="satuanKuantum"
               class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
@@ -441,6 +504,7 @@
         </div>
       </div>
     </div>
+
     <!-- DATA IN -->
     <div class="font-bold text-lg sm:text-xl mt-4 flex gap-x-2 items-center">
       <div>Data IN</div>
@@ -473,9 +537,7 @@
             placeholder="Masukkan jumlah (opsional)"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
+          <div class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2">
             <select
               v-model="row.satuan"
               class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
@@ -501,14 +563,11 @@
             stroke="currentColor"
             stroke-width="2"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
+      
       <div class="flex justify-center w-full">
         <button
           type="button"
@@ -519,24 +578,19 @@
           + Tambah Data IN
         </button>
       </div>
-      <div
-        v-if="dataInList.length >= maxDataIn"
-        class="text-gray-400 text-center text-sm"
-      >
+      
+      <div v-if="dataInList.length >= maxDataIn" class="text-gray-400 text-center text-sm">
         Maksimal 10 baris Data IN.
       </div>
     </div>
+
     <!-- JUMLAH PEMBAYARAN -->
     <div class="font-bold text-lg sm:text-xl mt-4">Informasi Pembayaran</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jumlah-pembayaran"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Jumlah Pembayaran <span class="text-red-500">*</span></label
-        >
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="jumlah-pembayaran" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Jumlah Pembayaran <span class="text-red-500">*</span>
+        </label>
         <div class="relative w-full">
           <input
             type="number"
@@ -546,9 +600,7 @@
             v-model="jumlahPembayaran"
             required
           />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
+          <div class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2">
             <select
               v-model="satuanJumlahPembayaran"
               class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
@@ -560,14 +612,11 @@
           </div>
         </div>
       </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jumlah-spp"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-          >Jumlah SPP <span class="text-red-500">*</span></label
-        >
+      
+      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
+        <label for="jumlah-spp" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base">
+          Jumlah SPP <span class="text-red-500">*</span>
+        </label>
         <input
           type="number"
           id="jumlah-spp"
