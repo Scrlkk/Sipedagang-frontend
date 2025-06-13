@@ -43,40 +43,38 @@
   )
 </script>
 
-<template>
-  <section
+<template>  <section
     v-if="show"
-    class="absolute inset-0 flex justify-center items-center z-50"
+    class="fixed inset-0 flex justify-center items-center z-50 p-4 sm:p-6 md:p-8"
   >
     <div class="w-full h-full bg-black opacity-50 absolute"></div>
     <div
       @click="handleClose"
-      class="absolute inset-0 flex justify-center items-center"
+      class="absolute inset-0 flex justify-center items-center p-4 sm:p-6 md:p-8"
     >
       <div
         @click.stop
-        class="relative bg-white rounded-lg shadow-xl w-[55rem] h-[38rem] flex flex-col pb-6"
-      >
-        <!-- Header -->
+        class="relative bg-white rounded-lg shadow-xl w-full max-w-[95vw] sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl h-full max-h-[90vh] sm:max-h-[85vh] md:max-h-[80vh] flex flex-col"
+      >        <!-- Header -->
         <div
-          class="flex items-center justify-between px-8 py-6 border-b border-gray-200"
+          class="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-6 border-b border-gray-200 gap-3 sm:gap-4"
         >
-          <div class="flex items-center gap-4">
-            <h2 class="text-xl font-semibold text-[#0099FF]">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#0099FF]">
               Request Password Reset
             </h2>
-            <div class="h-6 w-px bg-gray-300"></div>
+            <div class="hidden sm:block h-6 w-px bg-gray-300"></div>
             <span class="text-sm text-gray-600">
               {{ resetStore.resetRequests.length }} permintaan
             </span>
           </div>
 
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 flex-shrink-0">
             <!-- Refresh Button -->
             <button
               @click="handleRefresh"
               :disabled="isRefreshing || resetStore.adminLoading"
-              class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               title="Refresh Data"
             >
               <svg
@@ -96,7 +94,7 @@
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
-              <span class="text-sm font-medium">Refresh</span>
+              <span class="hidden sm:inline font-medium">Refresh</span>
             </button>
 
             <!-- Close Button -->
@@ -124,19 +122,18 @@
         </div>
 
         <!-- Content -->
-        <div class="flex-1 flex flex-col min-h-0">
-          <!-- Error State -->
+        <div class="flex-1 flex flex-col min-h-0">          <!-- Error State -->
           <div
             v-if="resetStore.adminError && !isRefreshing"
-            class="flex-1 flex items-center justify-center"
+            class="flex-1 flex items-center justify-center p-4 sm:p-6"
           >
             <div class="text-center max-w-md">
               <div
-                class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4"
+                class="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mb-4"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-8 w-8 text-red-500"
+                  class="h-6 w-6 sm:h-8 sm:w-8 text-red-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -149,13 +146,12 @@
                   />
                 </svg>
               </div>
-              <p class="text-red-600 font-medium mb-2">Gagal memuat data</p>
-              <p class="text-gray-600 text-sm mb-4">
+              <p class="text-red-600 font-medium mb-2 text-sm sm:text-base">Gagal memuat data</p>
+              <p class="text-gray-600 text-xs sm:text-sm mb-4">
                 {{ resetStore.adminError }}
-              </p>
-              <button
+              </p>              <button
                 @click="handleRefresh"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                class="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
               >
                 Coba Lagi
               </button>
@@ -169,15 +165,15 @@
               !resetStore.adminLoading &&
               !isRefreshing
             "
-            class="flex-1 flex items-center justify-center"
+            class="flex-1 flex items-center justify-center p-4 sm:p-6"
           >
             <div class="text-center max-w-md">
               <div
-                class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4"
+                class="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-8 w-8 text-gray-400"
+                  class="h-6 w-6 sm:h-8 sm:w-8 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -190,8 +186,8 @@
                   />
                 </svg>
               </div>
-              <p class="text-gray-500 font-medium mb-2">Tidak ada permintaan</p>
-              <p class="text-gray-400 text-sm">
+              <p class="text-gray-500 font-medium mb-2 text-sm sm:text-base">Tidak ada permintaan</p>
+              <p class="text-gray-400 text-xs sm:text-sm">
                 Belum ada permintaan reset password
               </p>
             </div>
@@ -214,10 +210,8 @@
                   {{ isRefreshing ? 'Memperbarui data...' : 'Memuat data...' }}
                 </p>
               </div>
-            </div>
-
-            <div
-              class="flex-1 overflow-y-auto px-8 py-4 transition-opacity duration-300"
+            </div>            <div
+              class="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 transition-opacity duration-300"
               :class="{ 'opacity-40': resetStore.adminLoading || isRefreshing }"
             >
               <!-- Skeleton Loading untuk initial load -->

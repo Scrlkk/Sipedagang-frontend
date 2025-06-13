@@ -417,13 +417,12 @@
         v-for="(row, idx) in dataInList"
         :key="idx"
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-x-3"
-      >
-        <!-- Nomor IN manual -->
+      >        <!-- Nomor IN manual -->
         <input
           type="number"
           v-model="row.no_in"
           min="1"
-          class="w-full sm:w-12 h-10 sm:h-12 border-[2.2px] border-[#D9D9D9] rounded-lg px-2 text-center text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          class="w-full sm:w-20 md:w-24 h-10 sm:h-12 border-[2.2px] border-[#D9D9D9] rounded-lg px-2 text-center text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           placeholder="No"
           required
         />
