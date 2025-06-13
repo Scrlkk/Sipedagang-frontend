@@ -138,19 +138,19 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'superadmin' }, // ✅ Protection
     },
     {
-      path: '/superadmin/staff',
+      path: '/superadmin/admin',
       name: 'staff',
       component: Staff,
       meta: { requiresAuth: true, role: 'superadmin' }, // ✅ Protection
     },
     {
-      path: '/superadmin/staff-add',
+      path: '/superadmin/admin-add',
       name: 'add staff',
       component: StaffAddEditView,
       meta: { requiresAuth: true, role: 'superadmin' }, // ✅ Protection
     },
     {
-      path: '/superadmin/staff-edit/:id',
+      path: '/superadmin/admin-edit/:id',
       name: 'edit staff',
       component: StaffAddEditView,
       props: true,
