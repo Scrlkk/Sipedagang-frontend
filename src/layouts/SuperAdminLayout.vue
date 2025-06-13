@@ -69,13 +69,14 @@
     <!-- SIDEBAR -->
     <div
       class="fixed lg:relative inset-y-0 left-0 z-50 flex h-full transition-transform duration-300 ease-in-out lg:translate-x-0"
-      :class="
-        [
-          'w-64 sm:w-72',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',      ]
-      "
+      :class="[
+        'w-64 sm:w-72',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+      ]"
     >
-      <div class="flex w-full py-8 lg:py-14 px-3 sm:px-5 justify-center shadow-xl outline-gray-200 outline-1 bg-white/80 backdrop-blur-sm h-full overflow-y-auto">
+      <div
+        class="flex w-full py-8 lg:py-14 px-3 sm:px-5 justify-center shadow-xl outline-gray-200 outline-1 bg-white/80 backdrop-blur-sm h-full overflow-y-auto"
+      >
         <div class="flex flex-col gap-4 items-center justify-between w-full">
           <div class="flex flex-col items-center w-full">
             <!-- LOGO -->
@@ -87,7 +88,8 @@
             />
 
             <div class="flex flex-col gap-3 sm:gap-4 w-full">
-              <!-- DASHBOARD -->              <RouterLink
+              <!-- DASHBOARD -->
+              <RouterLink
                 to="/superadmin/dashboard"
                 class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 mt-8 sm:mt-16 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
@@ -122,7 +124,8 @@
                 </div>
               </RouterLink>
 
-              <!-- INPUT -->              <RouterLink
+              <!-- INPUT -->
+              <RouterLink
                 to="/superadmin/input"
                 class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
@@ -158,7 +161,8 @@
                     Input
                   </div>
                 </div>
-              </RouterLink>              <!-- RIWAYAT -->
+              </RouterLink>
+              <!-- RIWAYAT -->
               <RouterLink
                 to="/superadmin/riwayat"
                 class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
@@ -199,7 +203,8 @@
                     Riwayat
                   </div>
                 </div>
-              </RouterLink>              <!-- STAFF -->
+              </RouterLink>
+              <!-- STAFF -->
               <RouterLink
                 to="/superadmin/staff"
                 class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
@@ -252,7 +257,7 @@
               <!-- REKAP DATA -->
               <RouterLink
                 to="/superadmin/rekapdata"
-                class="group hidden flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
+                class="group hidden px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
                 :class="[
                   isHovered.rekap || route.path === '/superadmin/rekapdata'
                     ? 'scale-90 bg-[#0099FF] shadow-md/20'
@@ -321,8 +326,18 @@
             @click="toggleSidebar"
             class="lg:hidden p-2 text-white hover:bg-blue-600 rounded-md transition-colors"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
 
@@ -340,7 +355,9 @@
                 "
               />
             </div>
-            <div class="font-poppins font-medium text-white text-sm sm:text-base truncate max-w-32 sm:max-w-none">
+            <div
+              class="font-poppins font-medium text-white text-sm sm:text-base truncate max-w-32 sm:max-w-none"
+            >
               {{ userName }}
             </div>
           </div>
