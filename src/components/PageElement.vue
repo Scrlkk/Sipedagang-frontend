@@ -68,8 +68,97 @@
   }
 </script>
 
-<template>
-  <section class="flex justify-center items-center gap-2">
+<template>  <!-- Mobile Pagination -->
+  <section class="block lg:hidden">
+    <div class="flex flex-col items-center gap-3">
+      <!-- Current Page Info with Quick Jump -->
+      <div class="flex items-center gap-3">
+        <div class="text-sm text-gray-600 font-medium">
+          Halaman {{ currentPage }} dari {{ totalPages }}
+        </div>
+        
+        <!-- Quick Jump Input (Mobile) - Positioned next to page info -->
+        <div class="flex text-xs gap-1 items-center">
+          <span class="text-[#6C757D] text-xs">|</span>
+          <span class="text-[#6C757D] text-xs">Ke:</span>
+          <input
+            ref="inputRef"
+            type="number"
+            min="1"
+            :max="props.totalPages"
+            :placeholder="`${props.currentPage}`"
+            v-model="inputPage"
+            @change="handleInputPage"
+            @keyup="handleKeyUp"
+            class="border border-[#CED4DA] rounded-md w-12 h-6 px-1 text-center text-xs focus:outline-[#0099FF] focus:text-[#0099FF] focus:border-[#0099FF] transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+      </div>
+      
+      <!-- Navigation Controls -->
+      <div class="flex items-center justify-center gap-2">
+        <!-- First Page Button -->
+        <button
+          v-if="currentPage > 1"
+          :class="[
+            'font-poppins rounded-md px-2 py-1 text-xs transition-all duration-200',
+            'border border-[#CED4DA] hover:bg-[#0099FF] hover:border-[#0099FF] hover:text-white text-[#333] cursor-pointer'
+          ]"
+          @click="goToPage(1)"
+        >
+          ««
+        </button>
+
+        <!-- Prev Button -->
+        <button
+          :class="[
+            'font-poppins rounded-md px-3 py-1 text-xs transition-all duration-200',
+            canGoPrevious
+              ? 'border border-[#CED4DA] hover:bg-[#0099FF] hover:border-[#0099FF] hover:text-white text-[#333] cursor-pointer'
+              : 'bg-[#EAE9EF] text-[#ADB5BD] cursor-not-allowed border border-[#EAE9EF]',
+          ]"
+          :disabled="!canGoPrevious"
+          @click="canGoPrevious && goToPage(props.currentPage - 1)"
+        >
+          « Prev
+        </button>
+
+        <!-- Current Page Indicator -->
+        <div class="bg-[#0099FF] text-white border border-[#0099FF] font-medium text-sm rounded-md px-3 py-1 min-w-[40px] text-center">
+          {{ currentPage }}
+        </div>
+
+        <!-- Next Button -->
+        <button
+          :class="[
+            'font-poppins rounded-md px-3 py-1 text-xs transition-all duration-200',
+            canGoNext
+              ? 'border border-[#CED4DA] hover:bg-[#0099FF] hover:border-[#0099FF] hover:text-white text-[#333] cursor-pointer'
+              : 'bg-[#EAE9EF] text-[#ADB5BD] cursor-not-allowed border border-[#EAE9EF]',
+          ]"
+          :disabled="!canGoNext"
+          @click="canGoNext && goToPage(props.currentPage + 1)"
+        >
+          Next »
+        </button>
+
+        <!-- Last Page Button -->
+        <button
+          v-if="currentPage < totalPages"
+          :class="[
+            'font-poppins rounded-md px-2 py-1 text-xs transition-all duration-200',
+            'border border-[#CED4DA] hover:bg-[#0099FF] hover:border-[#0099FF] hover:text-white text-[#333] cursor-pointer'
+          ]"
+          @click="goToPage(totalPages)"
+        >
+          »»
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Desktop Pagination -->
+  <section class="hidden lg:flex justify-center items-center gap-2">
     <!-- Prev Button -->
     <button
       :class="[

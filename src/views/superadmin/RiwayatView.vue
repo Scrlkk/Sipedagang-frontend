@@ -94,7 +94,7 @@
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section class="flex flex-col justify-between h-full px-2 sm:px-4 lg:px-0">
+      <section class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-0 pb-4 sm:pb-6">
         <div>
           <!-- Search -->
           <section class="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
@@ -162,7 +162,7 @@
                   </div>
                 </template>
                 <template v-else>
-                  <div class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-320px)] sm:max-h-[calc(100vh-300px)] overflow-y-auto">
+                  <div class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-400px)] sm:max-h-[calc(100vh-380px)] overflow-y-auto">
                     <div
                       v-for="(item, index) in data"
                       :key="item.id || index"
@@ -279,7 +279,7 @@
                     </button>
                   </div>
                 </div>
-                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
+                <div v-else class="overflow-y-auto max-h-[calc(100vh-380px)]">
                   <table class="w-full min-w-[900px] xl:min-w-[1000px]">
                     <thead class="sticky top-0 z-10">
                       <tr class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200">
@@ -323,11 +323,10 @@
                 </div>
               </div>
             </div>
-          </section>
-        </div>
+          </section>        </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-center mt-4 sm:mt-6 lg:mt-8">
+        <div class="mt-4 sm:mt-6 lg:mt-8 px-2 pb-4">
           <PageElement
             :current-page="currentPage"
             :total-pages="totalPages"
