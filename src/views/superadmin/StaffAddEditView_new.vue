@@ -26,7 +26,7 @@
   const router = useRouter()
 
   const pageTitle = computed(() =>
-    props.id ? 'Management Staff - Edit' : 'Management Staff - Tambah',
+    props.id ? 'Management Admin - Edit' : 'Management Admin - Tambah',
   )
 
   const nama = ref('')
@@ -311,7 +311,7 @@
         originalPasswordExists.value = false
         Swal.fire({
           title: 'Error!',
-          text: 'Data staff tidak ditemukan!',
+          text: 'Data Admin tidak ditemukan!',
           icon: 'error',
           confirmButtonColor: '#d33',
         })
@@ -415,7 +415,7 @@
 
         Swal.fire({
           title: 'Berhasil!',
-          text: 'Data staff berhasil diupdate!',
+          text: 'Data Admin berhasil diupdate!',
           icon: 'success',
           timer: 2000,
           showConfirmButton: false,
@@ -449,7 +449,7 @@
 
         Swal.fire({
           title: 'Berhasil!',
-          text: 'Staff berhasil ditambahkan!',
+          text: 'Admin berhasil ditambahkan!',
           icon: 'success',
           timer: 2000,
           showConfirmButton: false,
@@ -461,13 +461,13 @@
       hasUnsavedChanges.value = false
 
       setTimeout(() => {
-        router.push('/superadmin/staff')
+        router.push('/superadmin/admin')
       }, 2000)
     } catch (e) {
       console.error('Error:', e)
       Swal.fire({
         title: 'Error!',
-        text: e.response?.data?.message || 'Gagal menyimpan data staff!',
+        text: e.response?.data?.message || 'Gagal menyimpan data admin!',
         icon: 'error',
         confirmButtonColor: '#d33',
       })
@@ -496,9 +496,9 @@
     const confirmText = isActive ? 'Ya, Nonaktifkan!' : 'Ya, Aktifkan!'
 
     // ✅ Cek apakah ada perubahan yang belum disimpan
-    let confirmMessage = `Yakin ingin ${actionText} staff ini?`
+    let confirmMessage = `Yakin ingin ${actionText} admin ini?`
     if (hasUnsavedChanges.value) {
-      confirmMessage = `Ada perubahan yang belum disimpan. Sistem akan menyimpan perubahan terlebih dahulu, kemudian ${actionText} staff ini. Lanjutkan?`
+      confirmMessage = `Ada perubahan yang belum disimpan. Sistem akan menyimpan perubahan terlebih dahulu, kemudian ${actionText} admin ini. Lanjutkan?`
     }
 
     const result = await Swal.fire({
@@ -594,7 +594,7 @@
 
         // ✅ Tampilkan loading untuk perubahan status
         Swal.fire({
-          title: `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} staff...`,
+          title: `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} admin...`,
           text: 'Mohon tunggu',
           allowOutsideClick: false,
           allowEscapeKey: false,
@@ -620,8 +620,8 @@
 
         // ✅ Tampilkan pesan sukses yang mencakup save + status change
         const successMessage = hasUnsavedChanges.value
-          ? `Data berhasil disimpan dan staff berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
-          : `Staff berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
+          ? `Data berhasil disimpan dan admin berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
+          : `Admin berhasil ${isActive ? 'di-nonaktifkan' : 'diaktifkan'}!`
 
         Swal.fire({
           title: 'Berhasil!',
@@ -633,13 +633,13 @@
         })
 
         setTimeout(() => {
-          router.push('/superadmin/staff')
+          router.push('/superadmin/admin')
         }, 2500)
       } catch (e) {
         console.error('handleDelete error:', e)
 
         // ✅ Pesan error yang lebih spesifik
-        let errorMessage = `Gagal ${actionText} staff!`
+        let errorMessage = `Gagal ${actionText} admin!`
 
         if (hasUnsavedChanges.value) {
           // Jika ada error, mungkin saat save atau saat change status
@@ -647,7 +647,7 @@
             errorMessage =
               'Gagal menyimpan perubahan! Periksa kembali data yang dimasukkan.'
           } else {
-            errorMessage = `Perubahan berhasil disimpan, tetapi gagal ${actionText} staff!`
+            errorMessage = `Perubahan berhasil disimpan, tetapi gagal ${actionText} admin!`
           }
         }
 
@@ -683,7 +683,10 @@
           </div>
 
           <!-- NAV -->
-          <RouterLink to="/superadmin/staff" class="flex gap-1.5 sm:gap-2 items-center px-3 sm:px-4 md:px-0 mt-3 sm:mt-4 md:mt-6 lg:mt-4">
+          <RouterLink
+            to="/superadmin/admin"
+            class="flex gap-1.5 sm:gap-2 items-center px-3 sm:px-4 md:px-0 mt-3 sm:mt-4 md:mt-6 lg:mt-4"
+          >
             <div
               @mouseenter="iconHover = true"
               @mouseleave="iconHover = false"
@@ -701,27 +704,37 @@
                   iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
                 ]"
               >
-                Staff
+                Admin
               </div>
             </div>
             <div class="mt-0.5 scale-75 sm:scale-90 md:scale-100">
               <ArrowIconElement />
             </div>
-            <div class="text-[#9BA1AA] text-xs sm:text-sm md:text-base font-poppins font-medium">
-              {{ props.id ? 'Edit Staff' : 'Tambah Staff' }}
+            <div
+              class="text-[#9BA1AA] text-xs sm:text-sm md:text-base font-poppins font-medium"
+            >
+              {{ props.id ? 'Edit Admin' : 'Tambah Admin' }}
             </div>
           </RouterLink>
         </section>
 
         <!-- ✅ Scrollable content area with proper overflow handling -->
-        <section class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-3 sm:px-4 md:px-6 lg:px-0">
+        <section
+          class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-3 sm:px-4 md:px-6 lg:px-0"
+        >
           <!-- FORM -->
           <div class="mt-4 sm:mt-6 md:mt-6 lg:mt-8 py-2">
             <form @submit.prevent="handleRight">
-              <div class="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-8 xl:gap-12 w-full">
+              <div
+                class="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-8 xl:gap-12 w-full"
+              >
                 <!-- FOTO -->
-                <div class="flex flex-col items-center flex-shrink-0 lg:w-auto w-full">
-                  <div class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
+                <div
+                  class="flex flex-col items-center flex-shrink-0 lg:w-auto w-full"
+                >
+                  <div
+                    class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  >
                     <div
                       class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full overflow-hidden border-2 border-gray-300 hover:border-blue-400 hover:shadow-lg transition-all duration-300 shadow-md"
                     >
@@ -735,7 +748,7 @@
                       <img
                         v-if="photoUrl"
                         :src="photoUrl"
-                        alt="Foto Staff"
+                        alt="Foto Admin"
                         class="object-cover w-full h-full"
                       />
                       <div
@@ -762,9 +775,17 @@
                       <StaffAddIconElement />
                     </div>
                   </div>
-                  <div class="pt-2 sm:pt-3 w-full text-center text-gray-600 max-w-xs">
-                    <div class="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-medium">Upload Your Photo</div>
-                    <div class="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-500 mt-1 leading-tight">
+                  <div
+                    class="pt-2 sm:pt-3 w-full text-center text-gray-600 max-w-xs"
+                  >
+                    <div
+                      class="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-medium"
+                    >
+                      Upload Your Photo
+                    </div>
+                    <div
+                      class="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-500 mt-1 leading-tight"
+                    >
                       Klik untuk upload & edit foto
                     </div>
                   </div>
@@ -773,14 +794,18 @@
                 <!-- INPUT FIELDS -->
                 <div class="flex-1 w-full min-w-0">
                   <!-- NAMA Staff -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
-                    <label for="nama-staff" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
-                      >Nama Staff <span class="text-red-500">*</span></label
+                  <div
+                    class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4"
+                  >
+                    <label
+                      for="nama-staff"
+                      class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
+                      >Nama Admin <span class="text-red-500">*</span></label
                     >
                     <input
                       type="text"
                       id="nama-staff"
-                      placeholder="Masukkan Nama Staff"
+                      placeholder="Masukkan Nama Admin"
                       class="border-2 border-gray-300 rounded-lg h-9 sm:h-10 md:h-11 lg:h-10 xl:h-11 px-3 sm:px-4 md:px-5 lg:px-4 xl:px-5 w-full text-xs sm:text-sm md:text-base lg:text-sm xl:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                       v-model="nama"
                       autocomplete="name"
@@ -789,8 +814,14 @@
                   </div>
 
                   <!-- NO TELP -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
-                    <label for="no-telp" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700">No. Telp</label>
+                  <div
+                    class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4"
+                  >
+                    <label
+                      for="no-telp"
+                      class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
+                      >No. Telp</label
+                    >
                     <input
                       type="text"
                       id="no-telp"
@@ -807,8 +838,12 @@
                   </div>
 
                   <!-- NAMA PENGGUNA -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
-                    <label for="nama-pengguna" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
+                  <div
+                    class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4"
+                  >
+                    <label
+                      for="nama-pengguna"
+                      class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
                       >Nama Pengguna <span class="text-red-500">*</span></label
                     >
                     <input
@@ -823,8 +858,13 @@
                   </div>
 
                   <!-- PASSWORD -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
-                    <label for="password" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700">
+                  <div
+                    class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4"
+                  >
+                    <label
+                      for="password"
+                      class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
+                    >
                       Password <span class="text-red-500">*</span>
                       <span
                         v-if="props.id && !isPasswordChanged"
@@ -857,8 +897,14 @@
                         class="absolute right-2 sm:right-3 lg:right-2 xl:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
                         @click="togglePasswordVisibility"
                       >
-                        <PasswordShowElement v-if="!showPassword" class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                        <PasswordHideElement v-else class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        <PasswordShowElement
+                          v-if="!showPassword"
+                          class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5"
+                        />
+                        <PasswordHideElement
+                          v-else
+                          class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5"
+                        />
                       </span>
                     </div>
                   </div>
@@ -868,9 +914,15 @@
                     class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4"
                     v-if="shouldShowPasswordConfirmation"
                   >
-                    <label for="password-confirmation" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700">
+                    <label
+                      for="password-confirmation"
+                      class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
+                    >
                       Konfirmasi Password <span class="text-red-500">*</span>
-                      <span v-if="props.id" class="text-orange-500 text-xs sm:text-sm block sm:inline">
+                      <span
+                        v-if="props.id"
+                        class="text-orange-500 text-xs sm:text-sm block sm:inline"
+                      >
                         (ulangi password baru)
                       </span>
                     </label>
@@ -888,8 +940,14 @@
                         class="absolute right-2 sm:right-3 lg:right-2 xl:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
                         @click="togglePasswordConfirmationVisibility"
                       >
-                        <PasswordShowElement v-if="!showPasswordConfirmation" class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                        <PasswordHideElement v-else class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        <PasswordShowElement
+                          v-if="!showPasswordConfirmation"
+                          class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5"
+                        />
+                        <PasswordHideElement
+                          v-else
+                          class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5"
+                        />
                       </span>
                     </div>
                   </div>
@@ -900,7 +958,9 @@
         </section>
 
         <!-- ✅ Button section with controlled height -->
-        <section class="flex-shrink-0 mt-4 sm:mt-6 md:mt-8 lg:mt-6 px-3 sm:px-4 md:px-6 lg:px-0 pb-4 lg:pb-2">
+        <section
+          class="flex-shrink-0 mt-4 sm:mt-6 md:mt-8 lg:mt-6 px-3 sm:px-4 md:px-6 lg:px-0 pb-4 lg:pb-2"
+        >
           <ButtonElement
             left-label="Back"
             :show-delete="showDeleteButton"
@@ -926,13 +986,20 @@
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-95"
       >
-        <div class="bg-white rounded-xl p-4 sm:p-6 max-w-[95vw] sm:max-w-lg md:max-w-xl w-full shadow-2xl">
-          <h3 class="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 text-center sm:text-left">
+        <div
+          class="bg-white rounded-xl p-4 sm:p-6 max-w-[95vw] sm:max-w-lg md:max-w-xl w-full shadow-2xl"
+        >
+          <h3
+            class="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 text-center sm:text-left"
+          >
             Edit Foto Profile
           </h3>
 
           <!-- Cropper -->
-          <div class="cropper-container mb-4 sm:mb-6" style="height: 250px; min-height: 200px;">
+          <div
+            class="cropper-container mb-4 sm:mb-6"
+            style="height: 250px; min-height: 200px"
+          >
             <Cropper
               ref="cropperRef"
               :src="selectedImageSrc"
@@ -945,7 +1012,9 @@
           </div>
 
           <!-- Modal Buttons -->
-          <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
+          <div
+            class="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3"
+          >
             <button
               type="button"
               @click="cancelCrop"
@@ -995,13 +1064,13 @@
     .cropper-container {
       touch-action: pan-x pan-y;
     }
-    
+
     /* Increase touch target size for mobile */
-    input[type="file"] {
+    input[type='file'] {
       min-height: 44px;
       min-width: 44px;
     }
-    
+
     button {
       min-height: 44px;
       min-width: 44px;

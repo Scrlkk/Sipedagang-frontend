@@ -206,13 +206,13 @@
               </RouterLink>
               <!-- STAFF -->
               <RouterLink
-                to="/superadmin/staff"
+                to="/superadmin/admin"
                 class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
                 :class="[
                   isHovered.staff ||
-                  route.path === '/superadmin/staff' ||
-                  route.path === '/superadmin/staff-add' ||
-                  route.path.startsWith('/superadmin/staff-edit')
+                  route.path === '/superadmin/admin' ||
+                  route.path === '/superadmin/admin-add' ||
+                  route.path.startsWith('/superadmin/admin-edit')
                     ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
                     : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
                 ]"
@@ -224,17 +224,17 @@
                   <StaffIconElement
                     :color="
                       isHovered.staff ||
-                      route.path === '/superadmin/staff' ||
-                      route.path === '/superadmin/staff-add' ||
-                      route.path.startsWith('/superadmin/staff-edit')
+                      route.path === '/superadmin/admin' ||
+                      route.path === '/superadmin/admin-add' ||
+                      route.path.startsWith('/superadmin/admin-edit')
                         ? '#ffff'
                         : '#9BA1AA'
                     "
                     :stroke="
                       isHovered.staff ||
-                      route.path === '/superadmin/staff' ||
-                      route.path === '/superadmin/staff-add' ||
-                      route.path.startsWith('/superadmin/staff-edit')
+                      route.path === '/superadmin/admin' ||
+                      route.path === '/superadmin/admin-add' ||
+                      route.path.startsWith('/superadmin/admin-edit')
                         ? '#0099FF'
                         : '#ffff'
                     "
@@ -243,14 +243,14 @@
                     class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
                     :class="
                       isHovered.staff ||
-                      route.path === '/superadmin/staff' ||
-                      route.path === '/superadmin/staff-add' ||
-                      route.path.startsWith('/superadmin/staff-edit')
+                      route.path === '/superadmin/admin' ||
+                      route.path === '/superadmin/admin-add' ||
+                      route.path.startsWith('/superadmin/admin-edit')
                         ? 'text-white'
                         : 'group-hover:text-white'
                     "
                   >
-                    Staff
+                    Admin
                   </div>
                 </div>
               </RouterLink>

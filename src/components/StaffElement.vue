@@ -30,11 +30,12 @@
   })
 
   const keHalamanStaff = () => {
-    router.push(`/superadmin/staff-edit/${props.person.id}`)
+    router.push(`/superadmin/admin-edit/${props.person.id}`)
   }
 </script>
 
-<template>  <div
+<template>
+  <div
     @click="keHalamanStaff"
     class="w-full cursor-pointer flex flex-col bg-[#F7F8FA] py-2 sm:py-3 px-3 sm:px-4 rounded-lg shadow-md/25 min-h-[90px] sm:min-h-[100px] hover:scale-[0.98] hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
   >
@@ -58,7 +59,8 @@
             }
           "
         />
-      </div>      <!-- Indikator status -->
+      </div>
+      <!-- Indikator status -->
       <div
         :class="[
           'absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white',
@@ -66,7 +68,8 @@
         ]"
         :title="person.status === 'active' ? 'Aktif' : 'Tidak Aktif'"
       ></div>
-    </div>    <!-- Konten Teks dengan lebar responsif -->
+    </div>
+    <!-- Konten Teks dengan lebar responsif -->
     <div
       class="flex flex-col justify-center ml-3 sm:ml-4 flex-1 min-w-0 pr-8 sm:pr-10"
     >
