@@ -1,11 +1,11 @@
 <script setup>
+  import { onMounted, ref, nextTick } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { usePengadaanStore } from '@/stores/pengadaanStore'
   import SuratPermohonan from '@/components/SuratPermohonan.vue'
   import SuratKwitansi from '@/components/SuratKwitansi.vue'
   import SuratDetailPengadaan from '@/components/SuratDetailPengadaan.vue'
   import ButtonPrintElement from '@/components/ButtonPrintElement.vue'
-  import { onMounted, ref, nextTick } from 'vue'
-  import { useRoute } from 'vue-router'
-  import { usePengadaanStore } from '@/stores/pengadaanStore'
 
   const currentView = ref('surat')
   const pengadaanStore = usePengadaanStore()
@@ -17,31 +17,19 @@
     const id = route.params.id
     if (id) {
       try {
-        console.log('Fetching pengadaan data...')
-
-        // Fetch data
         pengadaan.value = await pengadaanStore.fetchPengadaanById(id)
 
         if (pengadaan.value) {
-          console.log('Data berhasil dimuat, mempersiapkan print...')
-
-          // Tunggu DOM update
           await nextTick()
-
-          // Set loading false
           isLoading.value = false
 
-          // Print setelah data siap
           setTimeout(() => {
-            console.log('Memulai print...')
             window.print()
           }, 300)
         } else {
-          console.error('Data tidak ditemukan')
           isLoading.value = false
         }
       } catch (error) {
-        console.error('Error fetching pengadaan:', error)
         isLoading.value = false
       }
     } else {
@@ -55,7 +43,6 @@
 </script>
 
 <template>
-  <!-- Loading indicator -->
   <div
     v-if="isLoading"
     class="fixed inset-0 bg-white z-50 flex items-center justify-center px-4"
@@ -112,13 +99,11 @@
 
 <style>
   @media print {
-    /* Default page untuk surat-surat */
     @page {
       size: A4;
       margin: 0mm;
     }
 
-    /* Page khusus untuk kuitansi */
     @page kuitansi {
       size: A4 Landscape;
       margin: 0mm;

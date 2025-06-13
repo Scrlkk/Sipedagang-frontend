@@ -249,7 +249,6 @@
                   </div>
                 </div>
               </RouterLink>
-
               <!-- REKAP DATA -->
               <RouterLink
                 to="/superadmin/rekapdata"
@@ -286,7 +285,6 @@
                   >
                     Rekap Data
                   </div>
-                </div>
               </RouterLink>
             </div>
           </div>

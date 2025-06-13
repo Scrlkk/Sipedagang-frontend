@@ -14,7 +14,6 @@ export const usePengadaanStore = defineStore('pengadaan', {
     loading: false,
     error: null,
     success: null,
-    // ✅ Tambah pagination data dari backend
     pagination: {
       currentPage: 1,
       lastPage: 1,
@@ -29,7 +28,6 @@ export const usePengadaanStore = defineStore('pengadaan', {
     isLoading: (state) => state.loading,
     hasError: (state) => !!state.error,
     hasSuccess: (state) => !!state.success,
-    // ✅ Getter untuk pagination
     totalPages: (state) => state.pagination.lastPage,
     currentPageData: (state) => state.pagination.currentPage,
     totalItems: (state) => state.pagination.total,
@@ -42,9 +40,20 @@ export const usePengadaanStore = defineStore('pengadaan', {
     },
 
     handleError(error, defaultMessage = 'Terjadi kesalahan') {
-      console.error('Store error:', error)
-      this.error =
-        error.response?.data?.message || error.message || defaultMessage
+      // Extract detailed error information for debugging
+      if (error.response?.status === 422) {
+        const errors = error.response.data.errors
+        if (errors) {
+          // Format validation errors
+          const errorMessages = Object.values(errors).flat()
+          this.error = errorMessages.join(', ')
+        } else {
+          this.error = error.response.data.message || 'Validation failed'
+        }
+      } else {
+        this.error =
+          error.response?.data?.message || error.message || defaultMessage
+      }
     },
 
     async createPengadaan(formData) {
@@ -55,7 +64,6 @@ export const usePengadaanStore = defineStore('pengadaan', {
         const response = await createPengadaan(formData)
         this.success = 'Data pengadaan berhasil disimpan'
 
-        // ✅ Refresh dengan pagination
         await this.fetchPengadaan(1, 10)
 
         return response.data
@@ -67,20 +75,15 @@ export const usePengadaanStore = defineStore('pengadaan', {
       }
     },
 
-    // ✅ Update fetchPengadaan untuk backend pagination
     async fetchPengadaan(page = 1, perPage = 10, search = '', bulan = '') {
       this.loading = true
       this.error = null
 
       try {
-        console.log('Fetching data:', { page, perPage, search, bulan })
         const response = await getPengadaan(page, perPage, search, bulan)
-        console.log('Backend response:', response.data)
 
-        // ✅ Set data dari backend
         this.pengadaanList = response.data.data || []
 
-        // ✅ Set pagination info dari backend
         this.pagination = {
           currentPage: response.data.current_page || page,
           lastPage: response.data.last_page || 1,
@@ -90,10 +93,8 @@ export const usePengadaanStore = defineStore('pengadaan', {
           to: response.data.to || 0,
         }
 
-        console.log('Updated pagination:', this.pagination)
         return response.data
       } catch (err) {
-        console.error('Fetch error:', err)
         this.handleError(err, 'Gagal mengambil data pengadaan')
         throw err
       } finally {
@@ -106,16 +107,12 @@ export const usePengadaanStore = defineStore('pengadaan', {
       this.error = null
 
       try {
-        console.log('Store: Fetching pengadaan by ID:', id)
         const response = await getPengadaanById(id)
-        console.log('Store: API response:', response)
 
         this.currentPengadaan = response.data.data || response.data
-        console.log('Store: Set currentPengadaan:', this.currentPengadaan)
 
         return this.currentPengadaan
       } catch (err) {
-        console.error('Store: Error in fetchPengadaanById:', err)
         this.handleError(err, 'Gagal mengambil detail pengadaan')
         throw err
       } finally {
@@ -128,13 +125,10 @@ export const usePengadaanStore = defineStore('pengadaan', {
       this.error = null
 
       try {
-        console.log('Store: Updating pengadaan:', id, formData)
         const response = await updatePengadaan(id, formData)
-        console.log('Store: Update response:', response)
 
         this.success = 'Data pengadaan berhasil diperbarui'
 
-        // ✅ Refresh dengan pagination
         await this.fetchPengadaan(
           this.pagination.currentPage,
           this.pagination.perPage,
@@ -144,7 +138,6 @@ export const usePengadaanStore = defineStore('pengadaan', {
 
         return response.data
       } catch (err) {
-        console.error('Store: Error in updatePengadaan:', err)
         this.handleError(err, 'Gagal memperbarui data pengadaan')
         throw err
       } finally {
@@ -157,13 +150,10 @@ export const usePengadaanStore = defineStore('pengadaan', {
       this.error = null
 
       try {
-        console.log('Store: Deleting pengadaan:', id)
         const response = await deletePengadaan(id)
-        console.log('Store: Delete response:', response)
 
         this.success = 'Data pengadaan berhasil dihapus'
 
-        // ✅ Refresh dengan pagination
         await this.fetchPengadaan(
           this.pagination.currentPage,
           this.pagination.perPage,
@@ -171,7 +161,6 @@ export const usePengadaanStore = defineStore('pengadaan', {
 
         return response.data
       } catch (err) {
-        console.error('Store: Error in deletePengadaan:', err)
         this.handleError(err, 'Gagal menghapus data pengadaan')
         throw err
       } finally {

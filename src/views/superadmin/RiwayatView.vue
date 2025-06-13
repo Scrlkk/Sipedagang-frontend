@@ -18,7 +18,7 @@
     try {
       const res = await pengadaanStore.fetchPengadaan(
         page,
-        10, // perPage
+        10,
         searchText.value,
         searchMonth.value,
       )
@@ -27,7 +27,7 @@
       totalPages.value = res.last_page || 1
       currentPage.value = res.current_page || page
     } catch (error) {
-      console.error('Error in fetchData:', error)
+      // Silent error handling for production
     }
   }
 
@@ -41,16 +41,14 @@
 
   let searchTimeout = null
   watch([searchText, searchMonth], () => {
-    // Clear previous timeout
     if (searchTimeout) {
       clearTimeout(searchTimeout)
     }
 
-    // Set new timeout
     searchTimeout = setTimeout(() => {
-      currentPage.value = 1 // Reset to first page
+      currentPage.value = 1
       fetchData(1)
-    }, 500) // 500ms delay
+    }, 500)
   })
 
   // Add delete handler for mobile view

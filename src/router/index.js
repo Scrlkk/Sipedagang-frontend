@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useResetPasswordStore } from '@/stores/resetStore'
 import Login from '../views/login/Login.vue'
 import ResetRequest from '../views/login/ResetPassword.vue'
 import ResetPasswordAccepted from '../views/login/ResetPasswordAccepted.vue'
@@ -64,17 +65,15 @@ const router = createRouter({
           to.query.nama_pengguna
 
         if (!namapengguna) {
-          import('@/stores/resetStore').then(({ useResetPasswordStore }) => {
-            const resetStore = useResetPasswordStore()
+          const resetStore = useResetPasswordStore()
 
-            if (!resetStore.requestedUsername) {
-              next({
-                path: '/resetpassword',
-              })
-            } else {
-              next()
-            }
-          })
+          if (!resetStore.requestedUsername) {
+            next({
+              path: '/resetpassword',
+            })
+          } else {
+            next()
+          }
         } else {
           next()
         }

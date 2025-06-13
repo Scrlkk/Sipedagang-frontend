@@ -11,12 +11,82 @@
   const iconHover = ref(false)
   const formRef = ref(null)
   const isSubmitting = ref(false)
+  const router = useRouter()
+  const hasUnsavedChanges = ref(false)
 
   const pengadaanStore = computed(() => formRef.value?.pengadaanStore)
 
-  function handleClear() {
-    if (formRef.value && formRef.value.clearForm) {
-      formRef.value.clearForm()
+  const confirmLeave = async () => {
+    if (!hasUnsavedChanges.value) return true
+
+    const result = await Swal.fire({
+      title: 'Perubahan Belum Disimpan!',
+      text: 'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman ini?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Tinggalkan',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+    })
+
+    return result.isConfirmed
+  }
+
+  onBeforeRouteLeave(async (to, from) => {
+    const canLeave = await confirmLeave()
+    if (!canLeave) {
+      return false
+    }
+  })
+
+  const handleBeforeUnload = (event) => {
+    if (hasUnsavedChanges.value) {
+      event.preventDefault()
+      event.returnValue =
+        'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
+      return event.returnValue
+    }
+  }
+
+  const handleFormChanged = (hasChanges) => {
+    hasUnsavedChanges.value = hasChanges
+  }
+
+  onMounted(() => {
+    window.addEventListener('beforeunload', handleBeforeUnload)
+  })
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('beforeunload', handleBeforeUnload)
+  })
+
+  async function handleClear() {
+    if (!hasUnsavedChanges.value) {
+      if (formRef.value && formRef.value.clearForm) {
+        formRef.value.clearForm()
+      }
+      return
+    }
+
+    const result = await Swal.fire({
+      title: 'Konfirmasi Clear Form',
+      text: 'Yakin ingin menghapus semua data yang sudah diisi?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+    })
+
+    if (result.isConfirmed) {
+      if (formRef.value && formRef.value.clearForm) {
+        formRef.value.clearForm()
+        hasUnsavedChanges.value = false
+      }
     }
   }
 
@@ -27,6 +97,8 @@
 
     try {
       await formRef.value.submitForm()
+
+      hasUnsavedChanges.value = false
 
       Swal.fire({
         title: 'Berhasil!',
