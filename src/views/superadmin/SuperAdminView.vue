@@ -54,7 +54,7 @@
       desc: '-',
     },
     {
-      title: 'Staff',
+      title: 'Admin',
       desc: '-',
     },
   ])
