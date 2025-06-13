@@ -1,5 +1,6 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+  import { useRouter, onBeforeRouteLeave } from 'vue-router'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormElement from '@/components/FormElement.vue'
@@ -134,7 +135,8 @@
 </script>
 
 <template>
-  <SuperAdminLayout>    <MainElement>
+  <SuperAdminLayout>
+    <MainElement>
       <section class="flex flex-col justify-between h-full px-2 sm:px-0">
         <!-- TITLE -->
         <div
@@ -167,7 +169,9 @@
           <div class="mt-0.5">
             <ArrowIconElement />
           </div>
-          <div class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium">
+          <div
+            class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium"
+          >
             Input Data
           </div>
         </div>
