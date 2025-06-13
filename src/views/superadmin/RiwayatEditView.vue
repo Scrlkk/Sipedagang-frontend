@@ -181,9 +181,13 @@
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section class="flex flex-col justify-between h-full px-2 sm:px-4 lg:px-0">
+      <section
+        class="flex flex-col justify-between h-full px-2 sm:px-4 lg:px-0"
+      >
         <!-- TITLE -->
-        <div class="text-center font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 relative mb-3 sm:mb-4 lg:mb-6">
+        <div
+          class="text-center font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 relative mb-3 sm:mb-4 lg:mb-6"
+        >
           Edit Riwayat Data
           <!-- Indikator unsaved changes -->
           <span
@@ -193,7 +197,9 @@
           ></span>
         </div>
         <!-- NAV -->
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 items-center justify-center sm:justify-start text-[#9BA1AA] text-xs sm:text-sm lg:text-base font-poppins font-medium mb-4 sm:mb-6 lg:mb-8">
+        <div
+          class="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 items-center justify-center sm:justify-start text-[#9BA1AA] text-xs sm:text-sm lg:text-base font-poppins font-medium mb-4 sm:mb-6 lg:mb-8"
+        >
           <RouterLink
             to="/superadmin/riwayat"
             @mouseenter="iconHover = true"
@@ -205,7 +211,7 @@
               :innerColor="iconHover ? 'white' : 'white'"
             />
             <div
-              :class=" [
+              :class="[
                 'text-xs sm:text-sm lg:text-base font-poppins font-medium transition-colors duration-200',
                 iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
               ]"
@@ -216,7 +222,9 @@
           <div class="hidden sm:block mt-0.5">
             <ArrowIconElement />
           </div>
-          <div class="text-xs sm:text-sm lg:text-base hover:text-[#0099FF] cursor-pointer transition-colors duration-200 text-center sm:text-left max-w-[200px] sm:max-w-[300px] truncate">
+          <div
+            class="text-xs sm:text-sm lg:text-base hover:text-[#0099FF] cursor-pointer transition-colors duration-200 text-center sm:text-left max-w-[200px] sm:max-w-[300px] truncate"
+          >
             {{ noPreorder }}
           </div>
           <div class="hidden sm:block mt-0.5">
@@ -225,16 +233,28 @@
           <div class="text-xs sm:text-sm lg:text-base">Edit Data</div>
         </div>
         <!-- Loading State -->
-        <div v-if="isLoading" class="flex justify-center items-center flex-1 py-8 sm:py-12 lg:py-16">
+        <div
+          v-if="isLoading"
+          class="flex justify-center items-center flex-1 py-8 sm:py-12 lg:py-16"
+        >
           <div class="text-center">
-            <div class="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-blue-500 mx-auto mb-3 lg:mb-4"></div>
-            <div class="text-gray-500 text-sm sm:text-base lg:text-lg">Memuat data...</div>
-            <div class="text-gray-400 text-xs sm:text-sm mt-1">Mohon tunggu sebentar</div>
+            <div
+              class="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-blue-500 mx-auto mb-3 lg:mb-4"
+            ></div>
+            <div class="text-gray-500 text-sm sm:text-base lg:text-lg">
+              Memuat data...
+            </div>
+            <div class="text-gray-400 text-xs sm:text-sm mt-1">
+              Mohon tunggu sebentar
+            </div>
           </div>
         </div>
 
         <!-- FORM -->
-        <div v-else class="flex-1 py-2 sm:py-4 lg:py-6">
+        <div
+          v-else
+          class="flex-1 py-2 sm:py-4 lg:py-6 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
+        >
           <div class="max-w-full mx-auto">
             <FormElement
               ref="formRef"

@@ -262,8 +262,12 @@
     <!-- DATA PEMOHON -->
     <div class="font-bold text-lg sm:text-xl">Data Pemohon</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="nama-supplier" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="nama-supplier"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Nama Supplier <span class="text-red-500">*</span></label
         >
         <input
@@ -275,8 +279,12 @@
           required
         />
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="nama-perusahaan" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="nama-perusahaan"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Nama Perusahaan <span class="text-red-500">*</span></label
         >
         <input
@@ -289,8 +297,12 @@
         />
       </div>
 
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="jenis-bank" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="jenis-bank"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Jenis Bank <span class="text-red-500">*</span></label
         >
         <div class="relative w-full">
@@ -326,8 +338,12 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="nomor-rekening" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="nomor-rekening"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Nomor Rekening <span class="text-red-500">*</span></label
         >
         <input
@@ -339,11 +355,16 @@
           required
         />
       </div>
-    </div>    <!-- DETAIL PURCHASING ORDER -->
+    </div>
+    <!-- DETAIL PURCHASING ORDER -->
     <div class="font-bold text-lg sm:text-xl mt-4">Detail Purchasing Order</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="nomor-po" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="nomor-po"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Nomor PO <span class="text-red-500">*</span></label
         >
         <input
@@ -355,8 +376,12 @@
           required
         />
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="tanggal-pengadaan" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="tanggal-pengadaan"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Tanggal Pengadaan <span class="text-red-500">*</span></label
         >
         <input
@@ -367,8 +392,12 @@
           required
         />
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="jenis-pengadaan" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="jenis-pengadaan"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Jenis Pengadaan <span class="text-red-500">*</span></label
         >
         <input
@@ -380,8 +409,12 @@
           required
         />
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="kuantum" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="kuantum"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Kuantum <span class="text-red-500">*</span></label
         >
         <div class="relative w-full">
@@ -407,7 +440,8 @@
           </div>
         </div>
       </div>
-    </div>    <!-- DATA IN -->
+    </div>
+    <!-- DATA IN -->
     <div class="font-bold text-lg sm:text-xl mt-4 flex gap-x-2 items-center">
       <div>Data IN</div>
       <div class="text-xs sm:text-sm font-normal text-gray-500">(Opsional)</div>
@@ -417,7 +451,8 @@
         v-for="(row, idx) in dataInList"
         :key="idx"
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-x-3"
-      >        <!-- Nomor IN manual -->
+      >
+        <!-- Nomor IN manual -->
         <input
           type="number"
           v-model="row.no_in"
@@ -490,11 +525,16 @@
       >
         Maksimal 10 baris Data IN.
       </div>
-    </div>    <!-- JUMLAH PEMBAYARAN -->
+    </div>
+    <!-- JUMLAH PEMBAYARAN -->
     <div class="font-bold text-lg sm:text-xl mt-4">Informasi Pembayaran</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="jumlah-pembayaran" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="jumlah-pembayaran"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Jumlah Pembayaran <span class="text-red-500">*</span></label
         >
         <div class="relative w-full">
@@ -520,8 +560,12 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0">
-        <label for="jumlah-spp" class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="jumlah-spp"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >Jumlah SPP <span class="text-red-500">*</span></label
         >
         <input
