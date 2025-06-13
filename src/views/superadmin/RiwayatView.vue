@@ -95,9 +95,8 @@
   <SuperAdminLayout>
     <MainElement>
       <section class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-0 pb-4 sm:pb-6">
-        <div>
-          <!-- Search -->
-          <section class="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+        <div>          <!-- Search -->
+          <section class="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-12 lg:mt-8">
             <div class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 text-center lg:text-left">
               Riwayat Pengadaan
             </div>
@@ -115,10 +114,8 @@
                 title="Filter berdasarkan bulan"
               />
             </div>
-          </section>
-
-          <!-- Table Container -->
-          <section class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200">
+          </section>          <!-- Table Container -->
+          <section class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200 lg:mt-6">
             <!-- Mobile Card View (xs to md) -->
             <div class="block lg:hidden">
               <div
@@ -276,10 +273,8 @@
                       class="px-6 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
                     >
                       Coba Lagi
-                    </button>
-                  </div>
-                </div>
-                <div v-else class="overflow-y-auto max-h-[calc(100vh-380px)]">
+                    </button>                  </div>
+                </div>                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
                   <table class="w-full min-w-[900px] xl:min-w-[1000px]">
                     <thead class="sticky top-0 z-10">
                       <tr class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200">
