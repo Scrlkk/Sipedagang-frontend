@@ -13,12 +13,11 @@
   const searchMonth = ref('')
   const currentPage = ref(1)
   const totalPages = ref(1)
-
   async function fetchData(page = 1) {
     try {
       const res = await pengadaanStore.fetchPengadaan(
         page,
-        10,
+        5,
         searchText.value,
         searchMonth.value,
       )
