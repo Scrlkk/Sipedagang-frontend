@@ -75,7 +75,7 @@
           showConfirmButton: false,
           timerProgressBar: true,
         })
-        
+
         // Refresh data after delete
         fetchData(currentPage.value)
       } catch (error) {
@@ -93,13 +93,22 @@
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-0 pb-4 sm:pb-6">
-        <div>          <!-- Search -->
-          <section class="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-12 lg:mt-8">
-            <div class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 text-center lg:text-left">
+      <section
+        class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-0 pb-4 sm:pb-6"
+      >
+        <div>
+          <!-- Search -->
+          <section
+            class="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8 lg:items-center lg:justify-between"
+          >
+            <div
+              class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 text-center lg:text-left"
+            >
               Riwayat Pengadaan
             </div>
-            <div class="flex flex-col sm:flex-row justify-center lg:justify-end gap-2 sm:gap-3 lg:gap-4">
+            <div
+              class="flex flex-col sm:flex-row justify-center lg:justify-end gap-2 sm:gap-3 lg:gap-4"
+            >
               <input
                 type="text"
                 placeholder="Cari data..."
@@ -113,8 +122,11 @@
                 title="Filter berdasarkan bulan"
               />
             </div>
-          </section>          <!-- Table Container -->
-          <section class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200 lg:mt-6">
+          </section>
+          <!-- Table Container -->
+          <section
+            class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200 lg:mt-6"
+          >
             <!-- Mobile Card View (xs to md) -->
             <div class="block lg:hidden">
               <div
@@ -122,8 +134,12 @@
                 class="flex justify-center items-center h-64 bg-white"
               >
                 <div class="text-center">
-                  <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                  <div class="text-gray-500 text-xs sm:text-sm">Memuat data...</div>
+                  <div
+                    class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-500 mx-auto mb-2"
+                  ></div>
+                  <div class="text-gray-500 text-xs sm:text-sm">
+                    Memuat data...
+                  </div>
                 </div>
               </div>
               <div
@@ -132,8 +148,16 @@
               >
                 <div class="text-red-500 text-center p-4">
                   <div class="text-red-400 mb-2">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    <svg
+                      class="w-8 h-8 sm:w-10 sm:h-10 mx-auto"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
                   </div>
                   <p class="text-sm mb-3">{{ pengadaanStore.error }}</p>
@@ -149,16 +173,30 @@
                 <template v-if="data.length === 0">
                   <div class="py-16 text-center text-gray-400 bg-white">
                     <div class="text-gray-300 mb-3">
-                      <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd" />
+                      <svg
+                        class="w-12 h-12 sm:w-16 sm:h-16 mx-auto"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                          clip-rule="evenodd"
+                        />
                       </svg>
                     </div>
-                    <p class="text-sm sm:text-base">Tidak ada data yang sesuai</p>
-                    <p class="text-xs text-gray-300 mt-1">Coba ubah kata kunci pencarian</p>
+                    <p class="text-sm sm:text-base">
+                      Tidak ada data yang sesuai
+                    </p>
+                    <p class="text-xs text-gray-300 mt-1">
+                      Coba ubah kata kunci pencarian
+                    </p>
                   </div>
                 </template>
                 <template v-else>
-                  <div class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-400px)] sm:max-h-[calc(100vh-380px)] overflow-y-auto">
+                  <div
+                    class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-400px)] sm:max-h-[calc(100vh-380px)] overflow-y-auto"
+                  >
                     <div
                       v-for="(item, index) in data"
                       :key="item.id || index"
@@ -167,7 +205,9 @@
                       <!-- Header with actions -->
                       <div class="flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
-                          <h4 class="font-medium text-sm sm:text-base text-gray-900 mb-1 truncate">
+                          <h4
+                            class="font-medium text-sm sm:text-base text-gray-900 mb-1 truncate"
+                          >
                             {{ item.jenis_pengadaan_barang || '-' }}
                           </h4>
                           <p class="text-xs sm:text-sm text-gray-600 font-mono">
@@ -176,18 +216,45 @@
                         </div>
                         <div class="flex space-x-1 sm:space-x-2 ml-2">
                           <button
-                            @click="() => window.open(`/surat-preview/${item.id}`, '_blank')"
+                            @click="
+                              () =>
+                                window.open(
+                                  `/surat-preview/${item.id}`,
+                                  '_blank',
+                                )
+                            "
                             class="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors duration-200"
                             title="Cetak"
                           >
-                            <svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                            <svg
+                              width="16"
+                              height="16"
+                              class="sm:w-[18px] sm:h-[18px]"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path
+                                d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"
+                              />
                             </svg>
                           </button>
-                          <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
-                            <button class="p-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors duration-200" title="Edit">
-                              <svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                          <RouterLink
+                            :to="`/superadmin/riwayat-edit/${item.id}`"
+                          >
+                            <button
+                              class="p-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors duration-200"
+                              title="Edit"
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                class="sm:w-[18px] sm:h-[18px]"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                              >
+                                <path
+                                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                                />
                               </svg>
                             </button>
                           </RouterLink>
@@ -196,44 +263,76 @@
                             class="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors duration-200"
                             title="Hapus"
                           >
-                            <svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            <svg
+                              width="16"
+                              height="16"
+                              class="sm:w-[18px] sm:h-[18px]"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path
+                                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                              />
                             </svg>
                           </button>
                         </div>
                       </div>
 
                       <!-- Content Grid -->
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+                      <div
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm"
+                      >
                         <div class="space-y-1">
-                          <span class="text-gray-500 font-medium">Supplier:</span>
-                          <p class="font-medium text-gray-900 truncate">{{ item.nama_suplier || '-' }}</p>
+                          <span class="text-gray-500 font-medium"
+                            >Supplier:</span
+                          >
+                          <p class="font-medium text-gray-900 truncate">
+                            {{ item.nama_suplier || '-' }}
+                          </p>
                         </div>
                         <div class="space-y-1">
-                          <span class="text-gray-500 font-medium">Perusahaan:</span>
-                          <p class="font-medium text-gray-900 truncate">{{ item.nama_perusahaan || '-' }}</p>
+                          <span class="text-gray-500 font-medium"
+                            >Perusahaan:</span
+                          >
+                          <p class="font-medium text-gray-900 truncate">
+                            {{ item.nama_perusahaan || '-' }}
+                          </p>
                         </div>
                         <div class="space-y-1">
                           <span class="text-gray-500 font-medium">Admin:</span>
-                          <p class="font-medium text-gray-900 truncate">{{ item.user?.name || 'Unknown' }}</p>
+                          <p class="font-medium text-gray-900 truncate">
+                            {{ item.user?.name || 'Unknown' }}
+                          </p>
                         </div>
                         <div class="space-y-1">
-                          <span class="text-gray-500 font-medium">Kuantum:</span>
-                          <p class="font-medium text-gray-900">{{ item.kuantum || '-' }}</p>
+                          <span class="text-gray-500 font-medium"
+                            >Kuantum:</span
+                          >
+                          <p class="font-medium text-gray-900">
+                            {{ item.kuantum || '-' }}
+                          </p>
                         </div>
                       </div>
 
                       <!-- Footer -->
-                      <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                      <div
+                        class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100"
+                      >
                         <div class="text-xs sm:text-sm text-gray-500">
-                          {{ new Date(item.tanggal_pengadaan || item.tanggal).toLocaleDateString('id-ID', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric'
-                          }) || '-' }}
+                          {{
+                            new Date(
+                              item.tanggal_pengadaan || item.tanggal,
+                            ).toLocaleDateString('id-ID', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                            }) || '-'
+                          }}
                         </div>
                         <div class="flex items-center space-x-2">
-                          <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                          <span
+                            class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                          >
                             {{ index + 1 }}
                           </span>
                         </div>
@@ -252,7 +351,9 @@
                   class="flex justify-center items-center h-64"
                 >
                   <div class="text-center">
-                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"></div>
+                    <div
+                      class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"
+                    ></div>
                     <div class="text-gray-500">Memuat data...</div>
                   </div>
                 </div>
@@ -262,41 +363,81 @@
                 >
                   <div class="text-red-500 text-center">
                     <div class="text-red-400 mb-3">
-                      <svg class="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      <svg
+                        class="w-12 h-12 mx-auto"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clip-rule="evenodd"
+                        />
                       </svg>
                     </div>
                     <p class="mb-4">{{ pengadaanStore.error }}</p>
                     <button
                       @click="fetchData(currentPage)"
                       class="px-6 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-                    >                      Coba Lagi
-                    </button>                  </div>
-                </div>                <div v-else class="overflow-y-auto max-h-[calc(100vh-400px)]">
+                    >
+                      Coba Lagi
+                    </button>
+                  </div>
+                </div>
+                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
                   <table class="w-full min-w-[900px] xl:min-w-[1000px]">
                     <thead class="sticky top-0 z-10">
-                      <tr class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200">
-                        <th class="px-3 xl:px-4 py-4 rounded-tl-xl text-left font-semibold">Jenis Pengadaan</th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">No Preorder</th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">Supplier</th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">Perusahaan</th>
+                      <tr
+                        class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200"
+                      >
+                        <th
+                          class="px-3 xl:px-4 py-4 rounded-tl-xl text-left font-semibold"
+                        >
+                          Jenis Pengadaan
+                        </th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">
+                          No Preorder
+                        </th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">
+                          Supplier
+                        </th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">
+                          Perusahaan
+                        </th>
                         <th class="px-2 xl:px-3 py-4 font-semibold">Admin</th>
                         <th class="px-2 xl:px-3 py-4 font-semibold">Kuantum</th>
                         <th class="px-2 xl:px-3 py-4 font-semibold">Tanggal</th>
-                        <th class="px-2 xl:px-3 py-4 rounded-tr-xl font-semibold">Aksi</th>
+                        <th
+                          class="px-2 xl:px-3 py-4 rounded-tr-xl font-semibold"
+                        >
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       <template v-if="data.length === 0">
                         <tr>
-                          <td colspan="8" class="py-16 text-center text-gray-400 bg-gray-50">
+                          <td
+                            colspan="8"
+                            class="py-16 text-center text-gray-400 bg-gray-50"
+                          >
                             <div class="text-gray-300 mb-3">
-                              <svg class="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd" />
+                              <svg
+                                class="w-16 h-16 mx-auto"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                                  clip-rule="evenodd"
+                                />
                               </svg>
                             </div>
                             <p class="text-base">Tidak ada data yang sesuai</p>
-                            <p class="text-sm text-gray-300 mt-2">Coba ubah kata kunci pencarian atau filter</p>
+                            <p class="text-sm text-gray-300 mt-2">
+                              Coba ubah kata kunci pencarian atau filter
+                            </p>
                           </td>
                         </tr>
                       </template>
@@ -305,8 +446,10 @@
                           v-for="(item, index) in data"
                           :key="item.id || index"
                           :item="item"
-                          :class=" [
-                            index % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50/50 hover:bg-gray-100/50',
+                          :class="[
+                            index % 2 === 0
+                              ? 'bg-white hover:bg-gray-50'
+                              : 'bg-gray-50/50 hover:bg-gray-100/50',
                             'text-center transition-colors duration-150',
                           ]"
                         />
@@ -316,7 +459,8 @@
                 </div>
               </div>
             </div>
-          </section>        </div>
+          </section>
+        </div>
 
         <!-- Pagination -->
         <div class="mt-4 sm:mt-6 lg:mt-8 px-2 pb-4">
