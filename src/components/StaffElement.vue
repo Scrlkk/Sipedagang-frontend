@@ -23,9 +23,7 @@
     if (foto) {
       // Gunakan fungsi getStorageUrl dari env.js
       return config.getStorageUrl(foto)
-    }
-
-    // Fallback ke avatar berdasarkan nama atau avatar generik
+    }    // Fallback ke avatar berdasarkan nama atau avatar generik
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(props.person?.nama || 'Pengguna')}&background=0099FF&color=fff&size=128`
   })
 
@@ -36,7 +34,7 @@
 
 <template>  <div
     @click="keHalamanStaff"
-    class="w-full cursor-pointer flex items-start bg-[#F7F8FA] py-2 sm:py-3 px-3 sm:px-4 rounded-lg shadow-md/25 min-h-[90px] sm:min-h-[100px] hover:scale-[0.98] hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
+    class="w-full cursor-pointer flex items-center bg-[#F7F8FA] py-2 sm:py-3 px-3 sm:px-4 rounded-lg shadow-md/25 min-h-[90px] sm:min-h-[100px] hover:scale-[0.98] hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
   >
     <!-- Gambar Profil -->
     <div class="relative flex-shrink-0">
@@ -69,23 +67,24 @@
       ></div>
     </div>    <!-- Konten Teks dengan lebar responsif -->
     <div
-      class="flex flex-col justify-center ml-3 sm:ml-4 flex-1 min-w-0 pr-8 sm:pr-10"
-    >
-      <div
+      class="flex flex-col justify-center items-start ml-3 sm:ml-4 flex-1 min-w-0 pr-6 sm:pr-1 h-full overflow-hidden"
+    >      <div
         :class="[
-          'font-semibold text-sm sm:text-base md:text-lg leading-tight truncate',
+          'font-semibold text-xs sm:text-sm md:text-base leading-tight block overflow-hidden text-ellipsis whitespace-nowrap',
           person.status === 'inactive' ? 'text-gray-500' : 'text-black',
         ]"
         :title="person.nama"
+        style="max-width: calc(100% - 1rem);"
       >
         {{ person.nama }}
       </div>
       <p
         :class="[
-          'text-xs sm:text-sm md:text-base leading-tight mt-1 truncate',
+          'text-xs sm:text-xs md:text-sm leading-tight mt-1 block overflow-hidden text-ellipsis whitespace-nowrap',
           person.status === 'inactive' ? 'text-gray-400' : 'text-gray-600',
         ]"
         :title="person.nama_pengguna"
+        style="max-width: calc(100% - 1rem);"
       >
         {{ person.nama_pengguna }}
       </p>
@@ -116,3 +115,5 @@
     </div>
   </div>
 </template>
+
+
