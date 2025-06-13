@@ -294,6 +294,11 @@
           photoUrl: photoUrl.value,
           hasPassword: !!password.value,
         })
+
+        // ✅ Save initial data setelah data berhasil dimuat
+        setTimeout(() => {
+          saveInitialData()
+        }, 100)
       } catch (e) {
         console.error('Error loading admin data:', e)
         nama.value = ''
@@ -709,13 +714,14 @@
         </section>
 
         <!-- ✅ Scrollable content area with proper overflow handling -->
-        <section class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-3 sm:px-4 md:px-6 lg:px-0"><!-- FORM -->
-          <div class="mt-4 sm:mt-6 md:mt-8 lg:mt-10 px-3 sm:px-4 md:px-6 lg:px-0">
+        <section class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-3 sm:px-4 md:px-6 lg:px-0">
+          <!-- FORM -->
+          <div class="mt-4 sm:mt-6 md:mt-6 lg:mt-8 py-2">
             <form @submit.prevent="handleRight">
-              <div class="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 xl:gap-16 w-full">
+              <div class="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-8 xl:gap-12 w-full">
                 <!-- FOTO -->
                 <div class="flex flex-col items-center flex-shrink-0 lg:w-auto w-full">
-                  <div class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40">
+                  <div class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     <div
                       class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full overflow-hidden border-2 border-gray-300 hover:border-blue-400 hover:shadow-lg transition-all duration-300 shadow-md"
                     >
@@ -737,7 +743,7 @@
                         class="flex items-center justify-center h-full text-gray-400"
                       >
                         <svg
-                          class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14"
+                          class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-8 lg:h-8 xl:w-10 xl:h-10"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -751,29 +757,31 @@
                     </div>
                     <div
                       @click="triggerFileInput"
-                      class="absolute cursor-pointer overflow-visible -bottom-1 -right-1 sm:bottom-0 sm:right-0 md:-bottom-1 md:-right-1 lg:-bottom-2 lg:-right-2 z-20 scale-75 sm:scale-90 md:scale-100 hover:scale-110 transition-transform duration-200"
+                      class="absolute cursor-pointer overflow-visible -bottom-1 -right-1 sm:bottom-0 sm:right-0 md:-bottom-1 md:-right-1 lg:-bottom-1 lg:-right-1 z-20 scale-75 sm:scale-90 md:scale-100 lg:scale-90 xl:scale-100 hover:scale-110 transition-transform duration-200"
                     >
                       <StaffAddIconElement />
                     </div>
                   </div>
                   <div class="pt-2 sm:pt-3 w-full text-center text-gray-600 max-w-xs">
-                    <div class="text-xs sm:text-sm md:text-base font-medium">Upload Your Photo</div>
-                    <div class="text-xs sm:text-sm text-gray-500 mt-1 leading-tight">
+                    <div class="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-medium">Upload Your Photo</div>
+                    <div class="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-500 mt-1 leading-tight">
                       Klik untuk upload & edit foto
                     </div>
                   </div>
-                </div>                <!-- INPUT FIELDS -->
+                </div>
+
+                <!-- INPUT FIELDS -->
                 <div class="flex-1 w-full min-w-0">
                   <!-- NAMA Staff -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6">
-                    <label for="nama-staff" class="font-medium text-xs sm:text-sm md:text-base text-gray-700"
+                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
+                    <label for="nama-staff" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
                       >Nama Staff <span class="text-red-500">*</span></label
                     >
                     <input
                       type="text"
                       id="nama-staff"
                       placeholder="Masukkan Nama Staff"
-                      class="border-2 border-gray-300 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      class="border-2 border-gray-300 rounded-lg h-9 sm:h-10 md:h-11 lg:h-10 xl:h-11 px-3 sm:px-4 md:px-5 lg:px-4 xl:px-5 w-full text-xs sm:text-sm md:text-base lg:text-sm xl:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                       v-model="nama"
                       autocomplete="name"
                       required
@@ -781,13 +789,13 @@
                   </div>
 
                   <!-- NO TELP -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6">
-                    <label for="no-telp" class="font-medium text-xs sm:text-sm md:text-base text-gray-700">No. Telp</label>
+                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
+                    <label for="no-telp" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700">No. Telp</label>
                     <input
                       type="text"
                       id="no-telp"
                       placeholder="Masukkan Nomor Telepon"
-                      class="border-2 border-gray-300 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      class="border-2 border-gray-300 rounded-lg h-9 sm:h-10 md:h-11 lg:h-10 xl:h-11 px-3 sm:px-4 md:px-5 lg:px-4 xl:px-5 w-full text-xs sm:text-sm md:text-base lg:text-sm xl:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                       v-model="displayPhoneNumber"
                       autocomplete="tel"
                       pattern="[0-9+\-]*"
@@ -799,15 +807,15 @@
                   </div>
 
                   <!-- NAMA PENGGUNA -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6">
-                    <label for="nama-pengguna" class="font-medium text-xs sm:text-sm md:text-base text-gray-700"
+                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
+                    <label for="nama-pengguna" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700"
                       >Nama Pengguna <span class="text-red-500">*</span></label
                     >
                     <input
                       type="text"
                       id="nama-pengguna"
                       placeholder="Masukkan Nama Pengguna"
-                      class="border-2 border-gray-300 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      class="border-2 border-gray-300 rounded-lg h-9 sm:h-10 md:h-11 lg:h-10 xl:h-11 px-3 sm:px-4 md:px-5 lg:px-4 xl:px-5 w-full text-xs sm:text-sm md:text-base lg:text-sm xl:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                       v-model="namaPengguna"
                       autocomplete="username"
                       required
@@ -815,8 +823,8 @@
                   </div>
 
                   <!-- PASSWORD -->
-                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6">
-                    <label for="password" class="font-medium text-xs sm:text-sm md:text-base text-gray-700">
+                  <div class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4">
+                    <label for="password" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700">
                       Password <span class="text-red-500">*</span>
                       <span
                         v-if="props.id && !isPasswordChanged"
@@ -840,27 +848,27 @@
                             ? 'Edit password atau biarkan sama'
                             : 'Masukkan Password'
                         "
-                        class="border-2 border-gray-300 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full pr-10 sm:pr-12 text-xs sm:text-sm md:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        class="border-2 border-gray-300 rounded-lg h-9 sm:h-10 md:h-11 lg:h-10 xl:h-11 px-3 sm:px-4 md:px-5 lg:px-4 xl:px-5 w-full pr-10 sm:pr-12 lg:pr-10 xl:pr-12 text-xs sm:text-sm md:text-base lg:text-sm xl:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                         v-model="password"
                         autocomplete="current-password"
                         required
                       />
                       <span
-                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
+                        class="absolute right-2 sm:right-3 lg:right-2 xl:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
                         @click="togglePasswordVisibility"
                       >
-                        <PasswordShowElement v-if="!showPassword" class="w-4 h-4 sm:w-5 sm:h-5" />
-                        <PasswordHideElement v-else class="w-4 h-4 sm:w-5 sm:h-5" />
+                        <PasswordShowElement v-if="!showPassword" class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        <PasswordHideElement v-else class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                       </span>
                     </div>
                   </div>
 
                   <!-- PASSWORD CONFIRMATION -->
                   <div
-                    class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6"
+                    class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-4"
                     v-if="shouldShowPasswordConfirmation"
                   >
-                    <label for="password-confirmation" class="font-medium text-xs sm:text-sm md:text-base text-gray-700">
+                    <label for="password-confirmation" class="font-medium text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-gray-700">
                       Konfirmasi Password <span class="text-red-500">*</span>
                       <span v-if="props.id" class="text-orange-500 text-xs sm:text-sm block sm:inline">
                         (ulangi password baru)
@@ -871,27 +879,28 @@
                         :type="showPasswordConfirmation ? 'text' : 'password'"
                         id="password-confirmation"
                         placeholder="Ulangi Password"
-                        class="border-2 border-gray-300 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full pr-10 sm:pr-12 text-xs sm:text-sm md:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        class="border-2 border-gray-300 rounded-lg h-9 sm:h-10 md:h-11 lg:h-10 xl:h-11 px-3 sm:px-4 md:px-5 lg:px-4 xl:px-5 w-full pr-10 sm:pr-12 lg:pr-10 xl:pr-12 text-xs sm:text-sm md:text-base lg:text-sm xl:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                         v-model="passwordConfirmation"
                         autocomplete="new-password"
                         required
                       />
                       <span
-                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
+                        class="absolute right-2 sm:right-3 lg:right-2 xl:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
                         @click="togglePasswordConfirmationVisibility"
                       >
-                        <PasswordShowElement v-if="!showPasswordConfirmation" class="w-4 h-4 sm:w-5 sm:h-5" />
-                        <PasswordHideElement v-else class="w-4 h-4 sm:w-5 sm:h-5" />
+                        <PasswordShowElement v-if="!showPasswordConfirmation" class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        <PasswordHideElement v-else class="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
             </form>
-          </div>        </section>
+          </div>
+        </section>
 
-        <!-- BUTTON -->
-        <section class="mt-6 sm:mt-8 md:mt-10 px-3 sm:px-4 md:px-6 lg:px-0">
+        <!-- ✅ Button section with controlled height -->
+        <section class="flex-shrink-0 mt-4 sm:mt-6 md:mt-8 lg:mt-6 px-3 sm:px-4 md:px-6 lg:px-0 pb-4 lg:pb-2">
           <ButtonElement
             left-label="Back"
             :show-delete="showDeleteButton"
@@ -902,7 +911,9 @@
           />
         </section>
       </div>
-    </MainElement>    <!-- Cropper Modal -->
+    </MainElement>
+
+    <!-- Cropper Modal -->
     <div
       v-if="showCropper"
       class="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 p-3 sm:p-4 md:p-6"
