@@ -108,25 +108,85 @@
         timer: 2000,
         showConfirmButton: false,
         timerProgressBar: true,
-      })
-    } catch (error) {
+      })    } catch (error) {
+      let errorTitle = 'Error!'
       let errorMsg = 'Terjadi kesalahan saat menyimpan data'
-      if (error.response && error.response.status === 422) {
-        const errors = error.response.data.errors
-        if (errors) {
-          errorMsg = Object.values(errors).flat().join('\n')
-        } else if (error.response.data.message) {
-          errorMsg = error.response.data.message
+      let errorIcon = 'error'
+
+      if (error.response) {
+        const status = error.response.status
+        const responseData = error.response.data
+
+        switch (status) {
+          case 422:
+            // Validation errors
+            errorTitle = 'Validasi Gagal!'
+            if (responseData.errors) {
+              // Format validation errors with field names
+              const errorDetails = Object.entries(responseData.errors)
+                .map(([field, messages]) => {
+                  const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+                  return `${fieldName}: ${Array.isArray(messages) ? messages.join(', ') : messages}`
+                })
+                .join('\n')
+              errorMsg = errorDetails
+            } else if (responseData.message) {
+              errorMsg = responseData.message
+            }
+            break
+
+          case 409:
+            // Conflict errors (duplicate data)
+            errorTitle = 'Data Duplikat!'
+            errorMsg = responseData.message || 'Data yang Anda masukkan sudah ada dalam sistem'
+            errorIcon = 'warning'
+            break
+
+          case 404:
+            // Not found errors
+            errorTitle = 'Data Tidak Ditemukan!'
+            errorMsg = responseData.message || 'Data yang diminta tidak ditemukan'
+            errorIcon = 'info'
+            break
+
+          case 403:
+            // Forbidden/unauthorized
+            errorTitle = 'Akses Ditolak!'
+            errorMsg = 'Anda tidak memiliki izin untuk melakukan aksi ini'
+            errorIcon = 'warning'
+            break
+
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            // Server errors
+            errorTitle = 'Kesalahan Server!'
+            errorMsg = 'Terjadi kesalahan pada server. Silakan coba lagi nanti'
+            break
+
+          default:
+            // Other HTTP errors
+            errorMsg = responseData.message || `Terjadi kesalahan (Kode: ${status})`
         }
+      } else if (error.request) {
+        // Network errors
+        errorTitle = 'Koneksi Gagal!'
+        errorMsg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda'
+        errorIcon = 'warning'
       } else if (error.message) {
+        // Other errors
         errorMsg = error.message
       }
 
       Swal.fire({
-        title: 'Error!',
+        title: errorTitle,
         text: errorMsg,
-        icon: 'error',
+        icon: errorIcon,
         confirmButtonColor: '#d33',
+        customClass: {
+          content: 'text-left',
+        },
       })
     } finally {
       isSubmitting.value = false
