@@ -234,26 +234,21 @@
         </div>
 
         <!-- FORM -->
-        <div v-else class="flex-1 py-2 sm:py-4 lg:py-6">
-          <div class="max-w-full mx-auto">
-            <FormElement
-              ref="formRef"
-              :is-edit-mode="true"
-              @form-changed="handleFormChanged"
-            />
-          </div>
-        </div>
+        <FormElement
+          v-if="!isLoading"
+          ref="formRef"
+          :is-edit-mode="true"
+          @form-changed="handleFormChanged"
+        />
 
         <!-- BUTTON -->
-        <div class="mt-4 sm:mt-6 lg:mt-8 px-0 sm:px-4 lg:px-0">
-          <ButtonElement
-            @onClickLeft="handleLeft"
-            @onClickRight="handleRight"
-            :rightLoading="isSubmitting || pengadaanStore.isLoading"
-            rightLabel="Update"
-            leftLabel="Back"
-          />
-        </div>
+        <ButtonElement
+          @onClickLeft="handleLeft"
+          @onClickRight="handleRight"
+          :rightLoading="isSubmitting || pengadaanStore.isLoading"
+          rightLabel="Update"
+          leftLabel="Back"
+        />
       </section>
     </MainElement>
   </SuperAdminLayout>
