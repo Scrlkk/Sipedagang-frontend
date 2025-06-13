@@ -77,7 +77,7 @@
 
     <!-- Right Button (Save/Submit) -->
     <button
-      type="button"
+      type="button" 
       :disabled="rightLoading"
       class="bg-[#0099FF] text-white rounded-lg h-10 px-20 font-semibold cursor-pointer hover:scale-95 disabled:bg-blue-300 disabled:cursor-not-allowed disabled:hover:scale-100 focus:ring-2 focus:ring-offset-2 focus:ring-[#0099FF] transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
       @click="$emit('onClickRight')"

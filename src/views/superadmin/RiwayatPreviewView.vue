@@ -45,30 +45,52 @@
 <template>
   <div
     v-if="isLoading"
-    class="fixed inset-0 bg-white z-50 flex items-center justify-center"
+    class="fixed inset-0 bg-white z-50 flex items-center justify-center px-4"
   >
-    <div class="text-center">
-      <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"
-      ></div>
-      <div class="text-lg font-medium text-gray-700">
+    <div class="text-center max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
+      <div class="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-blue-500 mx-auto mb-3 sm:mb-4"></div>
+      <div class="text-sm sm:text-base lg:text-lg font-medium text-gray-700">
         Memuat data dokumen...
+      </div>
+      <div class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2">
+        Mohon tunggu sebentar
+      </div>
+      <div class="mt-3 sm:mt-4">
+        <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
+          <div
+            class="bg-blue-600 h-1.5 sm:h-2 rounded-full animate-pulse"
+            style="width: 45%"
+          ></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div v-else>
-    <ButtonPrintElement @toggle-view="handleToggleView" />
-    <section class="m-[10mm]">
-      <div v-if="currentView === 'surat' && pengadaan">
-        <SuratPermohonan :item="pengadaan" />
-        <div class="page-break">
-          <SuratDetailPengadaan :item="pengadaan" />
-        </div>
+  <div v-else class="min-h-screen bg-gray-50 print:bg-white">
+    <div class="print:hidden">
+      <div class="sticky top-0 z-40 bg-white shadow-sm border-b">
+        <ButtonPrintElement @toggle-view="handleToggleView" />
       </div>
-      <div v-if="currentView === 'kuitansi' && pengadaan">
-        <div class="kuitansi-container kuitansi-page">
-          <SuratKwitansi :item="pengadaan" />
+    </div>
+
+    <section class="m-2 sm:m-4 lg:m-[8mm] xl:m-[10mm] print:m-[10mm]">
+      <div class="bg-white print:bg-transparent rounded-lg print:rounded-none shadow-sm print:shadow-none border print:border-none overflow-hidden">
+        <div
+          v-if="currentView === 'surat' && pengadaan"
+          class="space-y-4 lg:space-y-0 p-4 sm:p-6 lg:p-8 print:p-0"
+        >
+          <SuratPermohonan :item="pengadaan" />
+          <div class="page-break">
+            <SuratDetailPengadaan :item="pengadaan" />
+          </div>
+        </div>
+        <div
+          v-if="currentView === 'kuitansi' && pengadaan"
+          class="p-4 sm:p-6 lg:p-8 print:p-0"
+        >
+          <div class="kuitansi-container kuitansi-page">
+            <SuratKwitansi :item="pengadaan" />
+          </div>
         </div>
       </div>
     </section>
@@ -100,6 +122,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .kuitansi-container {
       transform: none !important;
       margin: 0 !important;
@@ -110,11 +133,33 @@
     .kuitansi-page section {
       margin: 0 !important;
     }
+
     .fixed {
       display: none !important;
     }
   }
-  .kuitansi-container {
-    transform: scale(0.7);
+
+  @media screen and (max-width: 1280px) {
+    .kuitansi-container {
+      transform: scale(0.7);
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    .kuitansi-container {
+      transform: scale(0.6);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .kuitansi-container {
+      transform: scale(0.5);
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .kuitansi-container {
+      transform: scale(0.4);
+    }
   }
 </style>

@@ -56,278 +56,300 @@
     // Fallback ke UI-Avatars seperti komponen lainnya
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'Pengguna')}&background=0099FF&color=fff&size=128`
   })
+
+  const sidebarOpen = ref(false)
+
+  const toggleSidebar = () => {
+    sidebarOpen.value = !sidebarOpen.value
+  }
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex h-screen overflow-hidden">
     <!-- SIDEBAR -->
     <div
-      class="flex h-screen w-72 py-14 px-5 justify-center shadow-xl outline-gray-200 outline-1"
+      class="fixed lg:relative inset-y-0 left-0 z-50 flex h-full transition-transform duration-300 ease-in-out lg:translate-x-0"
+      :class="
+        [
+          'w-64 sm:w-72',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',      ]
+      "
     >
-      <div class="flex flex-col gap-4 items-center justify-between">
-        <div class="flex flex-col items-center">
-          <!-- LOGO -->
-          <img
-            loading="lazy"
-            :src="Bulog"
-            alt="Bulog Logo"
-            class="w-38 -ml-1"
-          />
+      <div class="flex w-full py-8 lg:py-14 px-3 sm:px-5 justify-center shadow-xl outline-gray-200 outline-1 bg-white/80 backdrop-blur-sm h-full overflow-y-auto">
+        <div class="flex flex-col gap-4 items-center justify-between w-full">
+          <div class="flex flex-col items-center w-full">
+            <!-- LOGO -->
+            <img
+              loading="lazy"
+              :src="Bulog"
+              alt="Bulog Logo"
+              class="w-32 sm:w-38 -ml-1"
+            />
 
-          <div class="flex flex-col gap-4">
-            <!-- DASHBOARD -->
-            <RouterLink
-              to="/superadmin/dashboard"
-              class="group flex px-7 w-55 h-12 mt-16 rounded-xl transition-all duration-300 ease-in-out"
-              :class="[
-                isHovered.dashboard || route.path === '/superadmin/dashboard'
-                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
-              ]"
-              @mouseenter="isHovered.dashboard = true"
-              @mouseleave="isHovered.dashboard = false"
-            >
-              <div class="flex items-center gap-3">
-                <DashboardIconElement
-                  :color="
-                    isHovered.dashboard ||
-                    route.path === '/superadmin/dashboard'
-                      ? '#ffff'
-                      : '#9BA1AA'
-                  "
-                />
-                <div
-                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
-                  :class="
-                    isHovered.dashboard ||
-                    route.path === '/superadmin/dashboard'
-                      ? 'text-white'
-                      : 'group-hover:text-white'
-                  "
-                >
-                  Dashboard
+            <div class="flex flex-col gap-3 sm:gap-4 w-full">
+              <!-- DASHBOARD -->              <RouterLink
+                to="/superadmin/dashboard"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 mt-8 sm:mt-16 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
+                :class="[
+                  isHovered.dashboard || route.path === '/superadmin/dashboard'
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
+                ]"
+                @mouseenter="isHovered.dashboard = true"
+                @mouseleave="isHovered.dashboard = false"
+                @click="sidebarOpen = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <DashboardIconElement
+                    :color="
+                      isHovered.dashboard ||
+                      route.path === '/superadmin/dashboard'
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
+                    :class="
+                      isHovered.dashboard ||
+                      route.path === '/superadmin/dashboard'
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Dashboard
+                  </div>
                 </div>
-              </div>
-            </RouterLink>
+              </RouterLink>
 
-            <!-- INPUT -->
-            <RouterLink
-              to="/superadmin/input"
-              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
-              :class="[
-                isHovered.input || route.path === '/superadmin/input'
-                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
-              ]"
-              @mouseenter="isHovered.input = true"
-              @mouseleave="isHovered.input = false"
-            >
-              <div class="flex items-center gap-3">
-                <InputIconElement
-                  :color="
-                    isHovered.input || route.path === '/superadmin/input'
-                      ? '#ffff'
-                      : '#9BA1AA'
-                  "
-                  :innerColor="
-                    isHovered.input || route.path === '/superadmin/input'
-                      ? '#0099FF'
-                      : '#ffff'
-                  "
-                />
-                <div
-                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
-                  :class="
-                    isHovered.input || route.path === '/superadmin/input'
-                      ? 'text-white'
-                      : 'group-hover:text-white'
-                  "
-                >
-                  Input
+              <!-- INPUT -->              <RouterLink
+                to="/superadmin/input"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
+                :class="[
+                  isHovered.input || route.path === '/superadmin/input'
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
+                ]"
+                @mouseenter="isHovered.input = true"
+                @mouseleave="isHovered.input = false"
+                @click="sidebarOpen = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <InputIconElement
+                    :color="
+                      isHovered.input || route.path === '/superadmin/input'
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                    :innerColor="
+                      isHovered.input || route.path === '/superadmin/input'
+                        ? '#0099FF'
+                        : '#ffff'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
+                    :class="
+                      isHovered.input || route.path === '/superadmin/input'
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Input
+                  </div>
                 </div>
-              </div>
-            </RouterLink>
-
-            <!-- RIWAYAT -->
-            <RouterLink
-              to="/superadmin/riwayat"
-              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
-              :class="[
-                isHovered.riwayat ||
-                route.path === '/superadmin/riwayat' ||
-                route.path.startsWith('/superadmin/riwayat-edit') ||
-                route.path.startsWith('/superadmin/riwayat-preview')
-                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
-              ]"
-              @mouseenter="isHovered.riwayat = true"
-              @mouseleave="isHovered.riwayat = false"
-            >
-              <div class="flex items-center gap-3">
-                <RiwayatIconElement
-                  :color="
-                    isHovered.riwayat ||
-                    route.path === '/superadmin/riwayat' ||
-                    route.path.startsWith('/superadmin/riwayat-edit') ||
-                    route.path.startsWith('/superadmin/riwayat-preview')
-                      ? '#ffff'
-                      : '#9BA1AA'
-                  "
-                />
-                <div
-                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
-                  :class="
-                    isHovered.riwayat ||
-                    route.path === '/superadmin/riwayat' ||
-                    route.path.startsWith('/superadmin/riwayat-edit') ||
-                    route.path.startsWith('/superadmin/riwayat-preview')
-                      ? 'text-white'
-                      : 'group-hover:text-white'
-                  "
-                >
-                  Riwayat
+              </RouterLink>              <!-- RIWAYAT -->
+              <RouterLink
+                to="/superadmin/riwayat"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
+                :class="[
+                  isHovered.riwayat ||
+                  route.path === '/superadmin/riwayat' ||
+                  route.path.startsWith('/superadmin/riwayat-edit') ||
+                  route.path.startsWith('/superadmin/riwayat-preview')
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
+                ]"
+                @mouseenter="isHovered.riwayat = true"
+                @mouseleave="isHovered.riwayat = false"
+                @click="sidebarOpen = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <RiwayatIconElement
+                    :color="
+                      isHovered.riwayat ||
+                      route.path === '/superadmin/riwayat' ||
+                      route.path.startsWith('/superadmin/riwayat-edit') ||
+                      route.path.startsWith('/superadmin/riwayat-preview')
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
+                    :class="
+                      isHovered.riwayat ||
+                      route.path === '/superadmin/riwayat' ||
+                      route.path.startsWith('/superadmin/riwayat-edit') ||
+                      route.path.startsWith('/superadmin/riwayat-preview')
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Riwayat
+                  </div>
                 </div>
-              </div>
-            </RouterLink>
-
-            <!-- STAFF -->
-            <RouterLink
-              to="/superadmin/staff"
-              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out"
-              :class="[
-                isHovered.staff ||
-                route.path === '/superadmin/staff' ||
-                route.path === '/superadmin/staff-add' ||
-                route.path.startsWith('/superadmin/staff-edit')
-                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
-              ]"
-              @mouseenter="isHovered.staff = true"
-              @mouseleave="isHovered.staff = false"
-            >
-              <div class="flex items-center gap-3">
-                <StaffIconElement
-                  :color="
-                    isHovered.staff ||
-                    route.path === '/superadmin/staff' ||
-                    route.path === '/superadmin/staff-add' ||
-                    route.path.startsWith('/superadmin/staff-edit')
-                      ? '#ffff'
-                      : '#9BA1AA'
-                  "
-                  :stroke="
-                    isHovered.staff ||
-                    route.path === '/superadmin/staff' ||
-                    route.path === '/superadmin/staff-add' ||
-                    route.path.startsWith('/superadmin/staff-edit')
-                      ? '#0099FF'
-                      : '#ffff'
-                  "
-                />
-                <div
-                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
-                  :class="
-                    isHovered.staff ||
-                    route.path === '/superadmin/staff' ||
-                    route.path === '/superadmin/staff-add' ||
-                    route.path.startsWith('/superadmin/staff-edit')
-                      ? 'text-white'
-                      : 'group-hover:text-white'
-                  "
-                >
-                  Staff
+              </RouterLink>              <!-- STAFF -->
+              <RouterLink
+                to="/superadmin/staff"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
+                :class="[
+                  isHovered.staff ||
+                  route.path === '/superadmin/staff' ||
+                  route.path === '/superadmin/staff-add' ||
+                  route.path.startsWith('/superadmin/staff-edit')
+                    ? 'scale-90 bg-[#0099FF]/90 shadow-lg backdrop-blur-md'
+                    : 'hover:scale-90 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
+                ]"
+                @mouseenter="isHovered.staff = true"
+                @mouseleave="isHovered.staff = false"
+                @click="sidebarOpen = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <StaffIconElement
+                    :color="
+                      isHovered.staff ||
+                      route.path === '/superadmin/staff' ||
+                      route.path === '/superadmin/staff-add' ||
+                      route.path.startsWith('/superadmin/staff-edit')
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                    :stroke="
+                      isHovered.staff ||
+                      route.path === '/superadmin/staff' ||
+                      route.path === '/superadmin/staff-add' ||
+                      route.path.startsWith('/superadmin/staff-edit')
+                        ? '#0099FF'
+                        : '#ffff'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
+                    :class="
+                      isHovered.staff ||
+                      route.path === '/superadmin/staff' ||
+                      route.path === '/superadmin/staff-add' ||
+                      route.path.startsWith('/superadmin/staff-edit')
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Staff
+                  </div>
                 </div>
-              </div>
-            </RouterLink>
-
-            <!-- REKAP DATA -->
-            <RouterLink
-              to="/superadmin/rekapdata"
-              class="group flex px-7 w-55 h-12 rounded-xl transition-all duration-300 ease-in-out invisible"
-              :class="[
-                isHovered.rekap || route.path === '/superadmin/rekapdata'
-                  ? 'scale-90 bg-[#0099FF] shadow-md/20'
-                  : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
-              ]"
-              @mouseenter="isHovered.rekap = true"
-              @mouseleave="isHovered.rekap = false"
-            >
-              <div class="flex items-center gap-3">
-                <RekapIconElement
-                  :color="
-                    isHovered.rekap || route.path === '/superadmin/rekapdata'
-                      ? '#ffff'
-                      : '#9BA1AA'
-                  "
-                  :stroke="
-                    isHovered.rekap || route.path === '/superadmin/rekapdata'
-                      ? '#0099FF'
-                      : '#ffff'
-                  "
-                />
-                <div
-                  class="font-poppins font-medium text-[#9BA1AA] text-sm"
-                  :class="
-                    isHovered.rekap || route.path === '/superadmin/rekapdata'
-                      ? 'text-white'
-                      : 'group-hover:text-white'
-                  "
-                >
-                  Rekap Data
-                </div>
-              </div>
-            </RouterLink>
+              </RouterLink>
+              <!-- REKAP DATA -->
+              <RouterLink
+                to="/superadmin/rekapdata"
+                class="group hidden flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
+                :class="[
+                  isHovered.rekap || route.path === '/superadmin/rekapdata'
+                    ? 'scale-90 bg-[#0099FF] shadow-md/20'
+                    : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
+                ]"
+                @mouseenter="isHovered.rekap = true"
+                @mouseleave="isHovered.rekap = false"
+                @click="sidebarOpen = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <RekapIconElement
+                    :color="
+                      isHovered.rekap || route.path === '/superadmin/rekapdata'
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                    :stroke="
+                      isHovered.rekap || route.path === '/superadmin/rekapdata'
+                        ? '#0099FF'
+                        : '#ffff'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
+                    :class="
+                      isHovered.rekap || route.path === '/superadmin/rekapdata'
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Rekap Data
+                  </div>
+              </RouterLink>
+            </div>
           </div>
-        </div>
 
-        <!-- LOGOUT -->
-        <button
-          @click="handleLogout"
-          class="group flex bottom-0 h-fit gap-3 items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out cursor-pointer"
-          @mouseenter="isHovered.signout = true"
-          @mouseleave="isHovered.signout = false"
-        >
-          <div
-            class="text-hover font-poppins font-medium text-[#9BA1AA] group-hover:text-[#0099FF]"
+          <!-- LOGOUT -->
+          <button
+            @click="handleLogout"
+            class="group flex bottom-0 h-fit gap-2 sm:gap-3 items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out cursor-pointer"
+            @mouseenter="isHovered.signout = true"
+            @mouseleave="isHovered.signout = false"
           >
-            Log out
-          </div>
-          <SignOutIconElement
-            :color="isHovered.signout ? '#0099FF' : '#9BA1AA'"
-          />
-        </button>
+            <div
+              class="text-hover font-poppins font-medium text-[#9BA1AA] group-hover:text-[#0099FF] text-xs sm:text-sm"
+            >
+              Log out
+            </div>
+            <SignOutIconElement
+              :color="isHovered.signout ? '#0099FF' : '#9BA1AA'"
+            />
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- NAVBAR -->
-    <div class="w-full h-full">
+    <div class="flex-1 min-w-0 lg:ml-0 flex flex-col h-full">
       <div>
         <div
-          class="flex bg-[#0099FF] h-18 w-full items-center px-12 justify-end gap-5"
+          class="flex bg-[#0099FF] h-16 sm:h-18 w-full items-center px-4 sm:px-12 justify-between lg:justify-end gap-3 sm:gap-5 flex-shrink-0"
         >
-          <!-- <NotifIconElement /> -->
-          <div class="-mr-2">
-            <img
-              loading="lazy"
-              :src="profilePhoto"
-              :alt="userName"
-              class="w-11 h-11 rounded-full object-cover outline outline-white"
-              @error="
-                (e) => {
-                  // Fallback ke UI-Avatars jika gambar gagal dimuat
-                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
-                }
-              "
-            />
-          </div>
-          <div class="font-poppins font-medium text-white">
-            {{ userName }}
+          <!-- Mobile Menu Button -->
+          <button
+            @click="toggleSidebar"
+            class="lg:hidden p-2 text-white hover:bg-blue-600 rounded-md transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          <div class="flex items-center gap-3 sm:gap-5">
+            <div class="-mr-1 sm:-mr-2">
+              <img
+                loading="lazy"
+                :src="profilePhoto"
+                :alt="userName"
+                class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover outline outline-white"
+                @error="
+                  (e) => {
+                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
+                  }
+                "
+              />
+            </div>
+            <div class="font-poppins font-medium text-white text-sm sm:text-base truncate max-w-32 sm:max-w-none">
+              {{ userName }}
+            </div>
           </div>
         </div>
       </div>
 
       <!-- MAIN CONTENT -->
-      <slot />
+      <div class="flex-1 overflow-y-auto">
+        <slot />
+      </div>
     </div>
   </div>
 </template>

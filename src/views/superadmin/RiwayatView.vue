@@ -5,6 +5,7 @@
   import RiwayatElement from '@/components/RiwayatElement.vue'
   import PageElement from '@/components/PageElement.vue'
   import { usePengadaanStore } from '@/stores/pengadaanStore'
+  import Swal from 'sweetalert2'
 
   const pengadaanStore = usePengadaanStore()
   const data = ref([])
@@ -49,106 +50,284 @@
       fetchData(1)
     }, 500)
   })
+
+  // Add delete handler for mobile view
+  const handleDelete = async (item) => {
+    const result = await Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Data yang dihapus tidak dapat dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal',
+    })
+
+    if (result.isConfirmed) {
+      try {
+        await pengadaanStore.deletePengadaan(item.id)
+
+        Swal.fire({
+          title: 'Berhasil!',
+          text: 'Data berhasil dihapus',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        })
+        
+        // Refresh data after delete
+        fetchData(currentPage.value)
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: error.message || 'Terjadi kesalahan saat menghapus data',
+          icon: 'error',
+          confirmButtonColor: '#d33',
+        })
+      }
+    }
+  }
 </script>
 
 <template>
   <SuperAdminLayout>
     <MainElement>
-      <section class="flex flex-col justify-between h-full">
+      <section class="flex flex-col justify-between h-full px-2 sm:px-4 lg:px-0">
         <div>
           <!-- Search -->
-          <section class="grid grid-cols-2">
-            <div
-              class="font-semibold text-lg text-[#0099FF] underline underline-offset-8"
-            >
+          <section class="flex flex-col lg:grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+            <div class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8 text-center lg:text-left">
               Riwayat Pengadaan
             </div>
-            <div class="flex justify-end mt-1 gap-4">
+            <div class="flex flex-col sm:flex-row justify-center lg:justify-end gap-2 sm:gap-3 lg:gap-4">
               <input
                 type="text"
-                placeholder="Search"
+                placeholder="Cari data..."
                 v-model="searchText"
-                class="border border-[#D9D9D9] rounded-md h-8 px-5 text-sm focus:outline-[#0099ff]"
+                class="border border-[#D9D9D9] rounded-lg h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0099ff] focus:border-[#0099ff] transition-all duration-200 w-full sm:w-auto sm:min-w-[200px]"
               />
               <input
                 type="month"
                 v-model="searchMonth"
-                class="border border-[#D9D9D9] rounded-md h-8 px-5 text-sm focus:outline-[#0099ff]"
+                class="border border-[#D9D9D9] rounded-lg h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0099ff] focus:border-[#0099ff] transition-all duration-200 w-full sm:w-auto"
                 title="Filter berdasarkan bulan"
               />
             </div>
           </section>
 
-          <!-- Table -->
-          <section
-            class="relative mt-4.5 text-sm overflow-x-auto overflow-y-auto pr-1.5 h-[62.8dvh]"
-          >
-            <div
-              v-if="pengadaanStore.isLoading"
-              class="flex justify-center items-center h-full"
-            >
-              <div class="text-gray-500">Memuat data...</div>
-            </div>
-            <div
-              v-else-if="pengadaanStore.hasError"
-              class="flex justify-center items-center h-full"
-            >
-              <div class="text-red-500 text-center">
-                <p>{{ pengadaanStore.error }}</p>
-                <button
-                  @click="fetchData(currentPage)"
-                  class="mt-2 px-4 py-2 bg-[#0099ff] text-white rounded hover:bg-blue-600"
-                >
-                  Coba Lagi
-                </button>
+          <!-- Table Container -->
+          <section class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200">
+            <!-- Mobile Card View (xs to md) -->
+            <div class="block lg:hidden">
+              <div
+                v-if="pengadaanStore.isLoading"
+                class="flex justify-center items-center h-64 bg-white"
+              >
+                <div class="text-center">
+                  <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                  <div class="text-gray-500 text-xs sm:text-sm">Memuat data...</div>
+                </div>
               </div>
-            </div>
-            <table v-else class="w-full">
-              <thead class="sticky top-0">
-                <tr class="bg-gray-100 text-gray-700 text-sm text-center">
-                  <th class="px-5 py-3 rounded-tl-xl">Jenis Pengadaan</th>
-                  <th class="px-4 py-3">No Preorder</th>
-                  <th class="px-4 py-3">Supplier</th>
-                  <th class="px-4 py-3">Perusahaan</th>
-                  <th class="px-4 py-3">Admin</th>
-                  <th class="px-4 py-3">Kuantum</th>
-                  <th class="px-4 py-3">Tanggal</th>
-                  <th class="px-4 py-3 rounded-tr-xl">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
+              <div
+                v-else-if="pengadaanStore.hasError"
+                class="flex justify-center items-center h-64 bg-white"
+              >
+                <div class="text-red-500 text-center p-4">
+                  <div class="text-red-400 mb-2">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <p class="text-sm mb-3">{{ pengadaanStore.error }}</p>
+                  <button
+                    @click="fetchData(currentPage)"
+                    class="px-4 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 text-xs sm:text-sm transition-colors duration-200"
+                  >
+                    Coba Lagi
+                  </button>
+                </div>
+              </div>
+              <div v-else class="bg-gray-50">
                 <template v-if="data.length === 0">
-                  <tr>
-                    <td
-                      colspan="8"
-                      class="py-8 text-center text-[16px] text-gray-400"
-                    >
-                      {{
-                        pengadaanStore.isLoading
-                          ? 'Memuat data...'
-                          : 'Tidak ada data yang sesuai'
-                      }}
-                    </td>
-                  </tr>
+                  <div class="py-16 text-center text-gray-400 bg-white">
+                    <div class="text-gray-300 mb-3">
+                      <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <p class="text-sm sm:text-base">Tidak ada data yang sesuai</p>
+                    <p class="text-xs text-gray-300 mt-1">Coba ubah kata kunci pencarian</p>
+                  </div>
                 </template>
                 <template v-else>
-                  <RiwayatElement
-                    v-for="(item, index) in data"
-                    :key="item.id || index"
-                    :item="item"
-                    :class="[
-                      index % 2 === 0 ? 'bg-[#efefef]' : 'bg-[#f5f5f540]',
-                      'text-center',
-                    ]"
-                  />
+                  <div class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-320px)] sm:max-h-[calc(100vh-300px)] overflow-y-auto">
+                    <div
+                      v-for="(item, index) in data"
+                      :key="item.id || index"
+                      class="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
+                    >
+                      <!-- Header with actions -->
+                      <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1 min-w-0">
+                          <h4 class="font-medium text-sm sm:text-base text-gray-900 mb-1 truncate">
+                            {{ item.jenis_pengadaan_barang || '-' }}
+                          </h4>
+                          <p class="text-xs sm:text-sm text-gray-600 font-mono">
+                            No: {{ item.no_preorder || '-' }}
+                          </p>
+                        </div>
+                        <div class="flex space-x-1 sm:space-x-2 ml-2">
+                          <button
+                            @click="() => window.open(`/surat-preview/${item.id}`, '_blank')"
+                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors duration-200"
+                            title="Cetak"
+                          >
+                            <svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                            </svg>
+                          </button>
+                          <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
+                            <button class="p-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors duration-200" title="Edit">
+                              <svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                              </svg>
+                            </button>
+                          </RouterLink>
+                          <button
+                            @click="handleDelete(item)"
+                            class="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors duration-200"
+                            title="Hapus"
+                          >
+                            <svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Content Grid -->
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+                        <div class="space-y-1">
+                          <span class="text-gray-500 font-medium">Supplier:</span>
+                          <p class="font-medium text-gray-900 truncate">{{ item.nama_suplier || '-' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                          <span class="text-gray-500 font-medium">Perusahaan:</span>
+                          <p class="font-medium text-gray-900 truncate">{{ item.nama_perusahaan || '-' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                          <span class="text-gray-500 font-medium">Admin:</span>
+                          <p class="font-medium text-gray-900 truncate">{{ item.user?.name || 'Unknown' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                          <span class="text-gray-500 font-medium">Kuantum:</span>
+                          <p class="font-medium text-gray-900">{{ item.kuantum || '-' }}</p>
+                        </div>
+                      </div>
+
+                      <!-- Footer -->
+                      <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                        <div class="text-xs sm:text-sm text-gray-500">
+                          {{ new Date(item.tanggal_pengadaan || item.tanggal).toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          }) || '-' }}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                            {{ index + 1 }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </template>
-              </tbody>
-            </table>
+              </div>
+            </div>
+
+            <!-- Desktop Table View (lg and up) -->
+            <div class="hidden lg:block">
+              <div class="overflow-x-auto">
+                <div
+                  v-if="pengadaanStore.isLoading"
+                  class="flex justify-center items-center h-64"
+                >
+                  <div class="text-center">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"></div>
+                    <div class="text-gray-500">Memuat data...</div>
+                  </div>
+                </div>
+                <div
+                  v-else-if="pengadaanStore.hasError"
+                  class="flex justify-center items-center h-64"
+                >
+                  <div class="text-red-500 text-center">
+                    <div class="text-red-400 mb-3">
+                      <svg class="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <p class="mb-4">{{ pengadaanStore.error }}</p>
+                    <button
+                      @click="fetchData(currentPage)"
+                      class="px-6 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                    >
+                      Coba Lagi
+                    </button>
+                  </div>
+                </div>
+                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
+                  <table class="w-full min-w-[900px] xl:min-w-[1000px]">
+                    <thead class="sticky top-0 z-10">
+                      <tr class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200">
+                        <th class="px-3 xl:px-4 py-4 rounded-tl-xl text-left font-semibold">Jenis Pengadaan</th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">No Preorder</th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">Supplier</th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">Perusahaan</th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">Admin</th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">Kuantum</th>
+                        <th class="px-2 xl:px-3 py-4 font-semibold">Tanggal</th>
+                        <th class="px-2 xl:px-3 py-4 rounded-tr-xl font-semibold">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template v-if="data.length === 0">
+                        <tr>
+                          <td colspan="8" class="py-16 text-center text-gray-400 bg-gray-50">
+                            <div class="text-gray-300 mb-3">
+                              <svg class="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd" />
+                              </svg>
+                            </div>
+                            <p class="text-base">Tidak ada data yang sesuai</p>
+                            <p class="text-sm text-gray-300 mt-2">Coba ubah kata kunci pencarian atau filter</p>
+                          </td>
+                        </tr>
+                      </template>
+                      <template v-else>
+                        <RiwayatElement
+                          v-for="(item, index) in data"
+                          :key="item.id || index"
+                          :item="item"
+                          :class=" [
+                            index % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50/50 hover:bg-gray-100/50',
+                            'text-center transition-colors duration-150',
+                          ]"
+                        />
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-center mt-5">
+        <div class="flex items-center justify-center mt-4 sm:mt-6 lg:mt-8">
           <PageElement
             :current-page="currentPage"
             :total-pages="totalPages"

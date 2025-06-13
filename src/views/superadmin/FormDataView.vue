@@ -1,6 +1,5 @@
 <script setup>
-  import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-  import { useRouter, onBeforeRouteLeave } from 'vue-router'
+  import { ref, computed } from 'vue'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormElement from '@/components/FormElement.vue'
@@ -135,20 +134,13 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
-    <MainElement>
-      <section class="flex flex-col justify-between h-full">
+  <SuperAdminLayout>    <MainElement>
+      <section class="flex flex-col justify-between h-full px-2 sm:px-0">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-lg text-[#0099FF] underline underline-offset-8 relative"
+          class="text-center font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-8"
         >
           Form Input Data
-          <!-- ✅ Indikator unsaved changes -->
-          <span
-            v-if="hasUnsavedChanges"
-            class="absolute -top-1 -right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"
-            title="Ada perubahan yang belum disimpan"
-          ></span>
         </div>
 
         <!-- NAV -->
@@ -164,7 +156,7 @@
             />
             <div
               :class="[
-                'text-sm font-poppins font-medium',
+                'text-xs sm:text-sm font-poppins font-medium',
                 iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
               ]"
             >
@@ -175,13 +167,13 @@
           <div class="mt-0.5">
             <ArrowIconElement />
           </div>
-          <div class="text-[#9BA1AA] text-sm font-poppins font-medium">
+          <div class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium">
             Input Data
           </div>
         </div>
 
         <!-- FORM -->
-        <FormElement ref="formRef" @form-changed="handleFormChanged" />
+        <FormElement ref="formRef" />
 
         <!-- BUTTON -->
         <ButtonElement

@@ -34,15 +34,14 @@
   }
 </script>
 
-<template>
-  <div
+<template>  <div
     @click="keHalamanStaff"
-    class="w-full cursor-pointer flex bg-[#F7F8FA] py-5 px-7 rounded-lg shadow-lg/25 h-[98%] hover:scale-95 hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
+    class="w-full cursor-pointer flex flex-col bg-[#F7F8FA] py-2 sm:py-3 px-3 sm:px-4 rounded-lg shadow-md/25 min-h-[90px] sm:min-h-[100px] hover:scale-[0.98] hover:bg-[#E4E7EC] transition-all duration-200 ease-in-out relative"
   >
     <!-- Gambar Profil -->
     <div class="relative flex-shrink-0">
       <div
-        class="w-16 h-16 sm:w-12 sm:h-12 lg:w-[4.5rem] lg:h-[4.5rem] rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0"
+        class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0"
       >
         <img
           :src="fotoStaff"
@@ -59,25 +58,21 @@
             }
           "
         />
-      </div>
-
-      <!-- Indikator status -->
+      </div>      <!-- Indikator status -->
       <div
         :class="[
-          'absolute bottom-1 right-0 w-4 h-4 rounded-full border-2 border-white',
+          'absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white',
           person.status === 'active' ? 'bg-green-500' : 'bg-red-500',
         ]"
         :title="person.status === 'active' ? 'Aktif' : 'Tidak Aktif'"
       ></div>
-    </div>
-
-    <!-- Konten Teks dengan lebar tetap -->
+    </div>    <!-- Konten Teks dengan lebar responsif -->
     <div
-      class="flex flex-col justify-center ml-4 flex-1 min-w-0 max-w-[calc(100%-95px)]"
+      class="flex flex-col justify-center ml-3 sm:ml-4 flex-1 min-w-0 pr-8 sm:pr-10"
     >
       <div
         :class="[
-          'font-bold text-sm md:text-base lg:text-lg truncate',
+          'font-semibold text-sm sm:text-base md:text-lg leading-tight break-words',
           person.status === 'inactive' ? 'text-gray-500' : 'text-black',
         ]"
         :title="person.nama"
@@ -86,7 +81,7 @@
       </div>
       <p
         :class="[
-          'text-xs md:text-sm truncate',
+          'text-xs sm:text-sm md:text-base leading-tight mt-1 break-words',
           person.status === 'inactive' ? 'text-gray-400' : 'text-gray-600',
         ]"
         :title="person.nama_pengguna"
@@ -95,11 +90,10 @@
       </p>
     </div>
 
-    <!-- Ikon SVG dengan posisi absolute -->
-    <div class="absolute right-5 bottom-5 flex-shrink-0">
+    <!-- Ikon SVG dengan posisi responsive -->
+    <div class="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 flex-shrink-0">
       <svg
-        width="26"
-        height="25"
+        class="w-5 h-5 sm:w-6 sm:h-6"
         viewBox="0 0 26 25"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

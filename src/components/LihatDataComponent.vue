@@ -329,26 +329,20 @@
   })
 </script>
 
-<template>
-  <!-- ✅ Container utama dengan overflow tersembunyi - padding lebih kecil -->
-  <div class="flex items-center justify-center">
-    <!-- ✅ Container tabel dengan lebar maksimal dan tinggi terbatas - WIDTH DITAMBAH -->
-    <div class="w-full max-w-6xl h-[72dvh] mx-auto">
-      <!-- ⭐ HIGHLIGHT: Diubah dari max-w-6xl ke max-w-7xl -->
-      <div
-        class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-100 flex flex-col h-full"
-      >
-        <!-- ✅ Header tetap dengan flex-shrink-0 - padding dikurangi -->
+<template>  <!-- ✅ Container utama tanpa scrolling - menggunakan height yang tersedia -->
+  <div class="flex items-center justify-center min-h-0 flex-1">    <!-- ✅ Container tabel dengan lebar maksimal dan height fleksibel -->
+    <div class="w-full max-w-7xl mx-auto p-1 sm:p-2 md:p-4 flex flex-col min-h-0 flex-1"><div
+        class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-100 flex flex-col min-h-0 flex-1"
+      ><!-- ✅ Header tetap dengan flex-shrink-0 - padding optimized -->
         <div
-          class="bg-[#0099FF]/10 p-2 sm:p-4 md:p-6 border-b border-gray-200 rounded-t-lg sm:rounded-t-xl flex-shrink-0"
+          class="bg-[#0099FF]/10 p-3 sm:p-4 border-b border-gray-200 rounded-t-lg sm:rounded-t-xl flex-shrink-0"
         >
           <!-- Header content - spacing dikurangi -->
           <div
             class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4"
-          >
-            <!-- Title - ukuran font dikurangi -->
+          >            <!-- Title - ukuran font optimized -->
             <h2
-              class="text-lg sm:text-xl md:text-2xl font-bold text-[#0099FF] mb-1 sm:mb-0 flex items-center"
+              class="text-base sm:text-lg md:text-xl font-bold text-[#0099FF] mb-1 sm:mb-0 flex items-center"
             >
               <div
                 class="p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-[#0099FF] text-white mr-2 sm:mr-3 shadow-md"
@@ -593,14 +587,10 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- ✅ Container tabel dengan scroll internal - margin dikurangi -->
-        <div class="flex-1 overflow-hidden">
-          <div
-            class="h-full overflow-auto scrollbar-fancy m-1 sm:m-2 px-1 sm:px-2"
-          >
-            <table class="min-w-full table-fixed">
+        </div>        <!-- ✅ Container tabel tanpa scroll - menggunakan space yang tersedia -->
+        <div class="flex-1 min-h-0">
+          <div class="max-h-full">
+            <table class="min-w-full table-auto">
               <!-- ✅ Thead sticky - padding dikurangi -->
               <thead
                 class="bg-[#0099FF]/10 sticky top-0 z-20 shadow-sm border-b border-gray-100"
