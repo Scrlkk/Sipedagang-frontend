@@ -42,7 +42,7 @@
 
   const data = ref([
     {
-      title: 'Total Pengadaan',
+      title: 'Total Stock Gudang',
       desc: '-',
     },
     {
@@ -50,7 +50,7 @@
       desc: '-',
     },
     {
-      title: 'Kontrak Aktif',
+      title: 'Total Anggaran Gudang',
       desc: '-',
     },
     {
