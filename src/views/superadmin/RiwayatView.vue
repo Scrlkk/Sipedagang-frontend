@@ -348,11 +348,9 @@
                   </div>
                 </template>
               </div>
-            </div>
-
-            <!-- Desktop Table View -->
+            </div>            <!-- Desktop Table View -->
             <div class="hidden lg:block">
-              <div class="overflow-x-auto">
+              <div class="">
                 <div
                   v-if="pengadaanStore.isLoading"
                   class="flex justify-center items-center h-64"
@@ -390,32 +388,30 @@
                       Coba Lagi
                     </button>
                   </div>
-                </div>
-                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
-                  <table class="w-full min-w-[900px] xl:min-w-[1000px]">
+                </div>                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)]">
+                  <table class="w-full table-fixed">
                     <thead class="sticky top-0 z-10">
                       <tr
                         class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200"
-                      >
-                        <th
-                          class="px-3 xl:px-4 py-4 rounded-tl-xl text-left font-semibold"
+                      >                        <th
+                          class="px-2 lg:px-3 py-4 rounded-tl-xl text-left font-semibold w-[18%]"
                         >
                           Jenis Pengadaan
                         </th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">
+                        <th class="px-1 lg:px-2 py-4 font-semibold w-[15%]">
                           No Preorder
                         </th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">
+                        <th class="px-1 lg:px-2 py-4 font-semibold w-[12%]">
                           Supplier
                         </th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">
+                        <th class="px-1 lg:px-2 py-4 font-semibold w-[12%]">
                           Perusahaan
                         </th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">Admin</th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">Kuantum</th>
-                        <th class="px-2 xl:px-3 py-4 font-semibold">Tanggal</th>
+                        <th class="px-1 lg:px-2 py-4 font-semibold w-[10%]">Admin</th>
+                        <th class="px-1 lg:px-2 py-4 font-semibold w-[10%]">Kuantum</th>
+                        <th class="px-1 lg:px-2 py-4 font-semibold w-[10%]">Tanggal</th>
                         <th
-                          class="px-2 xl:px-3 py-4 rounded-tr-xl font-semibold"
+                          class="px-1 lg:px-2 py-4 rounded-tr-xl font-semibold w-[13%]"
                         >
                           Aksi
                         </th>
