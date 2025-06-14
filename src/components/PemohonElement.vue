@@ -232,13 +232,6 @@
     if (!namaSupplier.value) errors.push('Nama Supplier harus diisi')
     if (!namaPerusahaan.value) errors.push('Nama Perusahaan harus diisi')
     if (!jenisBank.value) errors.push('Jenis Bank harus diisi')
-    else if (
-      !['MANDIRI', 'BCA', 'BRI', 'BANK JATENG', 'BNI'].includes(
-        jenisBank.value.toUpperCase(),
-      )
-    ) {
-      errors.push('Jenis Bank harus MANDIRI, BCA, BRI, BANK JATENG, atau BNI')
-    }
     if (!nomorRekening.value) errors.push('Nomor Rekening harus diisi')
     if (!nomorPO.value) errors.push('Nomor PO harus diisi')
     if (!tanggalPengadaan.value) errors.push('Tanggal Pengadaan harus diisi')
@@ -247,9 +240,6 @@
     if (!jumlahPembayaran.value || jumlahPembayaran.value <= 0) {
       errors.push('Jumlah Pembayaran harus diisi dan lebih dari 0')
     }
-    // ✅ Hapus validasi required untuk SPP
-    // if (!jumlahSPP.value) errors.push('Jumlah SPP harus diisi')
-
     return errors
   }
 
@@ -455,36 +445,17 @@
           Jenis Bank <span class="text-red-500">*</span>
         </label>
         <div class="relative w-full">
-          <select
+          <input
+            type="text"
             id="jenis-bank"
+            placeholder="Masukkan jenis bank"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full bg-white appearance-none cursor-pointer text-sm sm:text-base"
             v-model="jenisBank"
             required
-          >
-            <option value="">Pilih jenis bank</option>
-            <option value="MANDIRI">MANDIRI</option>
-            <option value="BCA">BCA</option>
-            <option value="BRI">BRI</option>
-            <option value="BANK JATENG">BANK JATENG</option>
-            <option value="BNI">BNI</option>
-          </select>
+          />
           <div
             class="absolute inset-y-0 right-2 sm:right-3 flex items-center pointer-events-none"
-          >
-            <svg
-              class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </div>
+          ></div>
         </div>
       </div>
 
@@ -506,259 +477,22 @@
           required
         />
       </div>
-    </div>
-
-    <!-- DETAIL PURCHASING ORDER -->
-    <div class="font-bold text-lg sm:text-xl mt-4">Detail Purchasing Order</div>
-    <div class="flex flex-col gap-4 sm:gap-6">
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
         <label
-          for="nomor-po"
+          for="atas-nama-rekening"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Nomor PO <span class="text-red-500">*</span>
+          Atas Nama Rekening <span class="text-red-500">*</span>
         </label>
         <input
           type="text"
-          id="nomor-po"
-          placeholder="Masukkan nomor purchasing order"
+          id="atas-nama-rekening"
+          placeholder="Masukkan nama pemilik rekening"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
-          v-model="nomorPO"
           required
         />
-      </div>
-
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="tanggal-pengadaan"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-        >
-          Tanggal Pengadaan <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="date"
-          id="tanggal-pengadaan"
-          class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
-          v-model="tanggalPengadaan"
-          required
-        />
-      </div>
-
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jenis-pengadaan"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-        >
-          Jenis Pengadaan <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          id="jenis-pengadaan"
-          placeholder="Masukkan jenis pengadaan (Beras, Gabah, Minyak, atau lainnya)"
-          class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
-          v-model="jenisPengadaan"
-          required
-        />
-      </div>
-
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="kuantum"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-        >
-          Kuantum <span class="text-red-500">*</span>
-        </label>
-        <div class="relative w-full">
-          <input
-            type="number"
-            id="kuantum"
-            placeholder="Masukkan kuantum"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            v-model="kuantum"
-            required
-          />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
-            <select
-              v-model="satuanKuantum"
-              class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
-            >
-              <option value="KG">KG</option>
-              <option value="PCS">PCS</option>
-              <option value="LITER">LITER</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DATA IN -->
-    <div class="font-bold text-lg sm:text-xl mt-4 flex gap-x-2 items-center">
-      <div>Data IN</div>
-      <div class="text-xs sm:text-sm font-normal text-gray-500">(Opsional)</div>
-    </div>
-    <div class="flex flex-col gap-4 sm:gap-6">
-      <div
-        v-for="(row, idx) in dataInList"
-        :key="idx"
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-x-3"
-      >
-        <!-- Nomor IN manual -->
-        <input
-          type="number"
-          v-model="row.no_in"
-          min="1"
-          class="w-full sm:w-20 md:w-24 h-10 sm:h-12 border-[2.2px] border-[#D9D9D9] rounded-lg px-2 text-center text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          placeholder="No"
-          required
-        />
-        <input
-          type="date"
-          v-model="row.tanggal"
-          class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
-        />
-        <div class="relative w-full">
-          <input
-            type="number"
-            v-model="row.jumlah"
-            placeholder="Masukkan jumlah (opsional)"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
-            <select
-              v-model="row.satuan"
-              class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
-            >
-              <option value="KG">KG</option>
-              <option value="PCS">PCS</option>
-              <option value="LITER">LITER</option>
-            </select>
-          </div>
-        </div>
-        <button
-          type="button"
-          class="ml-0 sm:ml-2 p-2 rounded hover:bg-red-100 transition self-center sm:self-auto"
-          @click="removeDataInRow(idx)"
-          v-if="dataInList.length > 1"
-          title="Hapus baris"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4 sm:w-5 sm:h-5 text-red-500 hover:text-red-700"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div class="flex justify-center w-full">
-        <button
-          type="button"
-          class="mt-2 px-3 sm:px-4 py-2 hover:bg-blue-500 text-white rounded bg-[#0099FF] transition-all duration-200 ease-in-out w-fit text-sm sm:text-base"
-          @click="addDataInRow"
-          :disabled="dataInList.length >= maxDataIn"
-        >
-          + Tambah Data IN
-        </button>
-      </div>
-
-      <div
-        v-if="dataInList.length >= maxDataIn"
-        class="text-gray-400 text-center text-sm"
-      >
-        Maksimal 10 baris Data IN.
-      </div>
-    </div>
-
-    <!-- JUMLAH PEMBAYARAN -->
-    <div class="font-bold text-lg sm:text-xl mt-4">Informasi Pembayaran</div>
-    <div class="flex flex-col gap-4 sm:gap-6">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jumlah-pembayaran"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-        >
-          Jumlah Pembayaran <span class="text-red-500">*</span>
-        </label>
-        <div class="relative w-full">
-          <input
-            type="number"
-            id="jumlah-pembayaran"
-            placeholder="Masukkan jumlah pembayaran"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            v-model="jumlahPembayaran"
-            required
-          />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
-            <select
-              v-model="satuanJumlahPembayaran"
-              class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
-            >
-              <option value="KG">KG</option>
-              <option value="PCS">PCS</option>
-              <option value="LITER">LITER</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- ✅ Field SPP tanpa required -->
-      <div
-        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
-      >
-        <label
-          for="jumlah-spp"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
-        >
-          Jumlah SPP
-          <span class="text-xs sm:text-sm font-normal text-gray-500"
-            >(Opsional)</span
-          >
-        </label>
-        <div class="relative w-full">
-          <input
-            type="number"
-            id="jumlah-spp"
-            placeholder="Masukkan jumlah SPP (opsional)"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            v-model="jumlahSPP"
-          />
-          <div
-            class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-1 border-[#D9D9D9] my-0.5 pl-2"
-          >
-            <select
-              v-model="satuanJumlahSPP"
-              class="text-center text-sm sm:text-md px-1 sm:px-2.5 appearance-none [&::-ms-expand]:hidden [&_::-webkit-select-placeholder]:hidden"
-            >
-              <option value="KG">KG</option>
-              <option value="PCS">PCS</option>
-              <option value="LITER">LITER</option>
-            </select>
-          </div>
-        </div>
       </div>
     </div>
   </section>

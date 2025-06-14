@@ -8,7 +8,7 @@
   import InputIconElement from '@/components/InputIconElement.vue'
   import RiwayatIconElement from '@/components/RiwayatIconElement.vue'
   import StaffIconElement from '@/components/StaffIconElement.vue'
-  import RekapIconElement from '@/components/RekapIconElement.vue'
+  import PemohonIconElement from '@/components/PemohonIconElement.vue'
   import SignOutIconElement from '@/components/SignOutIconElement.vue'
   import NotifIconElement from '@/components/NotifIconElement.vue'
   import DashboardIconElement from '@/components/DashboardIconElement.vue'
@@ -22,7 +22,7 @@
     input: false,
     riwayat: false,
     staff: false,
-    rekap: false,
+    pemohon: false,
     signout: false,
   })
 
@@ -254,28 +254,31 @@
                   </div>
                 </div>
               </RouterLink>
-              <!-- REKAP DATA -->
+
+              <!-- Data Pemohon -->
               <RouterLink
-                to="/superadmin/rekapdata"
-                class="group hidden px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
+                to="/superadmin/datapemohon"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out"
                 :class="[
-                  isHovered.rekap || route.path === '/superadmin/rekapdata'
+                  isHovered.pemohon || route.path === '/superadmin/datapemohon'
                     ? 'scale-90 bg-[#0099FF] shadow-md/20'
                     : 'hover:scale-90 hover:bg-[#0099FF] hover:shadow-md/20',
                 ]"
-                @mouseenter="isHovered.rekap = true"
-                @mouseleave="isHovered.rekap = false"
+                @mouseenter="isHovered.pemohon = true"
+                @mouseleave="isHovered.pemohon = false"
                 @click="sidebarOpen = false"
               >
                 <div class="flex items-center gap-2 sm:gap-3">
-                  <RekapIconElement
+                  <PemohonIconElement
                     :color="
-                      isHovered.rekap || route.path === '/superadmin/rekapdata'
+                      isHovered.pemohon ||
+                      route.path === '/superadmin/datapemohon'
                         ? '#ffff'
                         : '#9BA1AA'
                     "
                     :stroke="
-                      isHovered.rekap || route.path === '/superadmin/rekapdata'
+                      isHovered.pemohon ||
+                      route.path === '/superadmin/datapemohon'
                         ? '#0099FF'
                         : '#ffff'
                     "
@@ -283,12 +286,13 @@
                   <div
                     class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm"
                     :class="
-                      isHovered.rekap || route.path === '/superadmin/rekapdata'
+                      isHovered.pemohon ||
+                      route.path === '/superadmin/datapemohon'
                         ? 'text-white'
                         : 'group-hover:text-white'
                     "
                   >
-                    Rekap Data
+                    Data Pemohon
                   </div>
                 </div>
               </RouterLink>

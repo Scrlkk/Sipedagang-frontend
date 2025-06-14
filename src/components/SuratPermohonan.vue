@@ -95,7 +95,7 @@
           tersebut di atas dapat dibayar / dipindahbukukan ke rekening Kami Bank
           {{ item.jenis_bank }}
           sebagaimana No Rekening {{ item.no_rekening }} Sesuai PO No
-          {{ item.no_preorder }} {{ tanggalFormatSurat }}
+          {{ item.no_preorder }} a.n. {{ item.atasnama_rekening }} {{ tanggalFormatSurat }}
         </div>
 
         <!-- 3 -->

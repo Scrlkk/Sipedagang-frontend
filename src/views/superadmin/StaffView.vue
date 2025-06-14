@@ -93,7 +93,7 @@
         <div class="flex flex-col h-full">
           <!-- ATAS -->
           <section
-            class="flex flex-col sm:flex-row sm:justify-between px-2 sm:items-center gap-2 sm:gap-3 mb-3 flex-shrink-0"
+            class="flex flex-col sm:flex-row sm:justify-between px-2 sm:px-4 sm:items-center gap-2 sm:gap-3 mb-3 flex-shrink-0"
           >
             <!-- TITLE -->
             <div
@@ -146,7 +146,7 @@
           </section>
           <!-- STAFF -->
           <section
-            class="flex-1 px-1 sm:px-2 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] pb-2"
+            class="flex-1 px-2 sm:px-4 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] pb-2"
           >
             <div
               v-if="adminStore.loading"

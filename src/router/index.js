@@ -13,7 +13,7 @@ import RiwayatEditView from '@/views/superadmin/RiwayatEditView.vue'
 import Staff from '@/views/superadmin/StaffView.vue'
 import FormDataView from '@/views/superadmin/FormDataView.vue'
 import StaffAddEditView from '@/views/superadmin/StaffAddEditView.vue'
-import RekapDataView from '@/views/superadmin/RekapDataView.vue'
+import DataPemohonView from '@/views/superadmin/DataPemohonView.vue'
 import RiwayatPreviewView from '@/views/superadmin/RiwayatPreviewView.vue'
 import NotFound from '@/views/login/NotFound.vue'
 
@@ -157,9 +157,9 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'superadmin' }, // ✅ Protection
     },
     {
-      path: '/superadmin/rekapdata',
+      path: '/superadmin/datapemohon',
       name: 'rekap data',
-      component: RekapDataView,
+      component: DataPemohonView,
       meta: { requiresAuth: true, role: 'superadmin' }, // ✅ Protection
     },
     {
