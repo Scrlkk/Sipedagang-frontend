@@ -71,23 +71,29 @@
       <div class="sticky top-0 z-40 bg-white shadow-sm border-b">
         <ButtonPrintElement @toggle-view="handleToggleView" />
       </div>
-    </div>
-
-    <section class="m-2 sm:m-4 lg:m-[8mm] xl:m-[10mm] print:m-[10mm]">
+    </div>    <!-- Section untuk Surat Permohonan dan Detail -->
+    <section 
+      v-if="currentView === 'surat' && pengadaan"
+      class="surat-section m-2 sm:m-4 lg:m-[8mm] xl:m-[10mm] print:m-[10mm]">
       <div class="bg-white print:bg-transparent rounded-lg print:rounded-none shadow-sm print:shadow-none border print:border-none overflow-hidden">
-        <div
-          v-if="currentView === 'surat' && pengadaan"
-          class="space-y-4 lg:space-y-0 p-4 sm:p-6 lg:p-8 print:p-0"
-        >
+        <div class="space-y-4 lg:space-y-0 p-4 sm:p-6 lg:p-8 print:p-0">
           <SuratPermohonan :item="pengadaan" />
           <div class="page-break">
             <SuratDetailPengadaan :item="pengadaan" />
           </div>
+          <div class="page-break kuitansi-container kuitansi-page">
+            <SuratKwitansi :item="pengadaan" />
+          </div>
         </div>
-        <div
-          v-if="currentView === 'kuitansi' && pengadaan"
-          class="p-4 sm:p-6 lg:p-8 print:p-0"
-        >
+      </div>
+    </section>
+
+    <!-- Section khusus untuk Kuitansi -->
+    <section 
+      v-if="currentView === 'kuitansi' && pengadaan"
+      class="kuitansi-section print:m-0">
+      <div class="bg-white print:bg-transparent rounded-lg print:rounded-none shadow-sm print:shadow-none border print:border-none overflow-hidden">
+        <div class="p-4 sm:p-6 lg:p-8 print:p-0">
           <div class="kuitansi-container kuitansi-page">
             <SuratKwitansi :item="pengadaan" />
           </div>
@@ -102,12 +108,9 @@
     @page {
       size: A4;
       margin: 0mm;
-    }
-
-    @page kuitansi {
-      size: A4 Landscape;
+    }    @page kuitansi {
+      size: A4 landscape;
       margin: 0mm;
-      padding-top: 0mm;
     }
 
     .page-break {
@@ -115,27 +118,52 @@
     }
 
     .kuitansi-page {
-      page: kuitansi;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    page: kuitansi;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+  }
 
     .kuitansi-container {
-      transform: none !important;
-      margin: 0 !important;
-      margin-top: -17px !important;
-      padding: 0 !important;
-    }
+    transform: none !important;
+    width: 1122px !important;
+    height: 794px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
 
     .kuitansi-page section {
       margin: 0 !important;
     }
 
+    /* Ensure kuitansi fits within landscape page */
+    .kuitansi-page .w-\[1147px\] {
+      width: 1147px !important;
+      max-width: none !important;
+    }
+
+    .kuitansi-page .h-\[706px\] {
+      height: 706px !important;
+    }
+
     .fixed {
       display: none !important;
+    }    /* Ensure each page breaks properly */
+    .page-break:last-child {
+      page-break-after: auto;
+    }
+
+    /* Section-specific styles for print */
+    .surat-section {
+      margin: 10mm !important;
+    }
+
+    .kuitansi-section {
+      margin: 0 !important;
+      padding: 0 !important;
     }
   }
 
