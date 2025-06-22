@@ -1,16 +1,20 @@
 <script setup>
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, onMounted, onUnmounted } from 'vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { useDashboardStore } from '@/stores/dashboardStore'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
-  import IndexElement from '@/components/IndexElement.vue'
+  import CategoryPieChart from '@/components/CategoryPieChart.vue'
 
   const auth = useAuthStore()
+  const dashboard = useDashboardStore()
+
   const userName = computed(
     () => auth.user?.name || auth.user?.nama_pengguna || 'Admin',
   )
 
-  // Unified time system for both greeting and clock
+  // Optimized time system with cleanup
   const currentTime = ref(new Date())
+  let timeInterval = null
 
   const timeBasedGreeting = computed(() => {
     const hour = currentTime.value.getHours()
@@ -24,50 +28,64 @@
       .replace(/\./g, ':')
 
     let greeting = ''
-    if (hour < 12) greeting = 'Selamat Pagi'
-    else if (hour < 16) greeting = 'Selamat Siang'
-    else if (hour < 18) greeting = 'Selamat Sore'
-    else greeting = 'Selamat Malam'
+    let icon = ''
+    if (hour < 12) {
+      greeting = 'Selamat Pagi'
+      icon = '🌅'
+    } else if (hour < 16) {
+      greeting = 'Selamat Siang'
+      icon = '☀️'
+    } else if (hour < 18) {
+      greeting = 'Selamat Sore'
+      icon = '🌤️'
+    } else {
+      greeting = 'Selamat Malam'
+      icon = '🌙'
+    }
 
+    return { greeting, clock, icon }
+  })
+
+  // Enhanced current month with day
+  const currentPeriod = computed(() => {
+    const now = currentTime.value
     return {
-      greeting,
-      clock,
+      month: now.toLocaleDateString('id-ID', {
+        month: 'long',
+        year: 'numeric',
+      }),
+      day: now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric' }),
+      fullDate: now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
     }
   })
 
-  // Current month computed property
-  const currentMonth = computed(() => {
-    return currentTime.value.toLocaleDateString('id-ID', {
-      month: 'long',
-      year: 'numeric',
-    })
-  })
+  // Enhanced loading states
+  const isLoading = computed(() => dashboard.loading)
+  const hasError = computed(() => dashboard.error)
 
-  // Update time every second for synchronized greeting and clock
-  onMounted(() => {
-    setInterval(() => {
+  // Refresh functionality
+  const refreshData = async () => {
+    await dashboard.fetchDashboardData()
+  }
+
+  onMounted(async () => {
+    timeInterval = setInterval(() => {
       currentTime.value = new Date()
     }, 1000)
+
+    await refreshData()
   })
 
-  const data = ref([
-    {
-      title: 'Total Stock Gudang',
-      desc: '-',
-    },
-    {
-      title: 'Total Anggaran',
-      desc: '-',
-    },
-    {
-      title: 'Total Anggaran Gudang',
-      desc: '-',
-    },
-    {
-      title: 'Admin',
-      desc: '-',
-    },
-  ])
+  onUnmounted(() => {
+    if (timeInterval) {
+      clearInterval(timeInterval)
+    }
+  })
 </script>
 
 <template>
@@ -75,7 +93,7 @@
     <div
       class="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50"
     >
-      <!-- Hero Section with Enhanced Welcome -->
+      <!-- ✅ Hero Section with Enhanced Welcome (RESTORED) -->
       <div
         class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800"
       >
@@ -129,7 +147,9 @@
                 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight px-2"
               >
                 {{ timeBasedGreeting.greeting }}, {{ userName }}!
-                <span class="inline-block animate-bounce">👋</span>
+                <span class="inline-block animate-bounce ml-2">{{
+                  timeBasedGreeting.icon
+                }}</span>
               </h1>
 
               <p
@@ -183,45 +203,19 @@
       <!-- Main Dashboard Content -->
       <div class="relative px-3 sm:px-4 md:px-8 lg:px-12 py-6 sm:py-8 lg:py-12">
         <div class="max-w-7xl mx-auto">
-          <!-- Section Header -->
-          <div class="text-center mb-8 sm:mb-12">
-            <!-- Icon and Title -->
-            <div class="flex justify-center mb-4 sm:mb-6">
-              <div
-                class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg"
-              >
-                <svg
-                  class="w-6 h-6 sm:w-8 sm:h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <!-- Title -->
-            <h2
-              class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-3 sm:mb-4"
+          <!-- Header -->
+          <div class="text-center mb-8">
+            <h1
+              class="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-4"
             >
               Ringkasan Dashboard
-            </h2>
-
-            <!-- Description -->
-            <p
-              class="text-gray-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed mb-6 sm:mb-8"
-            >
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-600 mb-6">
               Overview data utama sistem pengadaan untuk monitoring dan analisis
               performa
             </p>
 
-            <!-- Period Filter -->
+            <!-- Current Period Display -->
             <div
               class="flex items-center justify-center space-x-3 sm:space-x-4"
             >
@@ -244,34 +238,397 @@
               <div
                 class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-xl font-semibold text-sm shadow-lg border border-blue-300/20 backdrop-blur-sm"
               >
-                {{ currentMonth }}
+                {{ currentPeriod.month }}
               </div>
             </div>
           </div>
 
-          <!-- Enhanced Stats Grid -->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-10 px-2 sm:px-0"
-          >
-            <IndexElement
-              v-for="(item, index) in data"
-              :key="index"
-              :item="item"
-            />
+          <!-- Loading Indicator -->
+          <div v-if="isLoading" class="text-center py-8">
+            <div class="inline-flex items-center space-x-2">
+              <div
+                class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"
+              ></div>
+              <span class="text-gray-600">Memuat data statistik...</span>
+            </div>
           </div>
 
-          <!-- Additional Info Section -->
-          <div class="mt-12 sm:mt-16 text-center px-2">
+          <!-- Enhanced Stats Grid with Full Circle Pie Charts -->
+          <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+            <!-- Pengadaan Categories Pie Chart (Filtered by current month) -->
+            <CategoryPieChart
+              title="Distribusi Jenis Pengadaan"
+              :data="dashboard.pengadaanCategories"
+              type="pengadaan"
+              :loading="dashboard.loading"
+            />
+
+            <!-- Admin Status Pie Chart (Total, not filtered) -->
+            <CategoryPieChart
+              title="Status Admin"
+              :data="{
+                'Admin Aktif': dashboard.adminStats.active,
+                'Admin Nonaktif': dashboard.adminStats.inactive,
+              }"
+              type="admin"
+              :loading="dashboard.loading"
+            />
+          </div>
+          <!-- Period Info -->
+          <div v-if="!isLoading" class="mt-12 text-center">
+            <p class="text-sm text-gray-500">
+              Data pengadaan ditampilkan untuk bulan
+              <span class="font-semibold">{{ currentPeriod.month }}</span> •
+              Data admin menampilkan total keseluruhan
+            </p>
+          </div>
+          <div class="mt-12 px-2">
+            <!-- Summary Cards Section -->
+            <div v-if="!isLoading" class="mb-12">
+              <div class="max-w-6xl mx-auto">
+                <!-- Section Title -->
+                <div class="text-center mb-8">
+                  <h3 class="text-2xl font-bold text-slate-800 mb-2">
+                    Ringkasan Statistik
+                  </h3>
+                  <p class="text-gray-600">
+                    Data terkini sistem pengadaan dan manajemen admin
+                  </p>
+                </div>
+                <!-- Cards Grid -->
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                >
+                  <!-- Pengadaan Card -->
+                  <div
+                    class="group relative bg-gradient-to-br from-blue-50 to-blue-100/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                  >
+                    <!-- Background Pattern -->
+                    <div
+                      class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+                    >
+                      <svg
+                        class="w-full h-full"
+                        viewBox="0 0 100 100"
+                        fill="currentColor"
+                      >
+                        <pattern
+                          id="blue-pattern"
+                          patternUnits="userSpaceOnUse"
+                          width="20"
+                          height="20"
+                        >
+                          <circle cx="10" cy="10" r="2" fill="currentColor" />
+                        </pattern>
+                        <rect
+                          width="100"
+                          height="100"
+                          fill="url(#blue-pattern)"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Icon -->
+                    <div
+                      class="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                    >
+                      <svg
+                        class="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="relative">
+                      <div
+                        class="text-3xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors"
+                      >
+                        {{ dashboard.stats.totalPengadaan }}
+                      </div>
+                      <div class="text-sm font-medium text-gray-700">
+                        Pengadaan {{ currentPeriod.month }}
+                      </div>
+                      <div class="text-xs text-gray-500 mt-1">
+                        Data bulan berjalan
+                      </div>
+                    </div>
+
+                    <!-- Shine Effect -->
+                    <div
+                      class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
+                    ></div>
+                  </div>
+
+                  <!-- Total Admin Card -->
+                  <div
+                    class="group relative bg-gradient-to-br from-gray-50 to-gray-100/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                  >
+                    <!-- Background Pattern -->
+                    <div
+                      class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+                    >
+                      <svg
+                        class="w-full h-full"
+                        viewBox="0 0 100 100"
+                        fill="currentColor"
+                      >
+                        <pattern
+                          id="gray-pattern"
+                          patternUnits="userSpaceOnUse"
+                          width="20"
+                          height="20"
+                        >
+                          <rect
+                            x="8"
+                            y="8"
+                            width="4"
+                            height="4"
+                            fill="currentColor"
+                          />
+                        </pattern>
+                        <rect
+                          width="100"
+                          height="100"
+                          fill="url(#gray-pattern)"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Icon -->
+                    <div
+                      class="relative w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                    >
+                      <svg
+                        class="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="relative">
+                      <div
+                        class="text-3xl font-bold text-gray-700 mb-1 group-hover:text-gray-800 transition-colors"
+                      >
+                        {{ dashboard.stats.totalAdmin }}
+                      </div>
+                      <div class="text-sm font-medium text-gray-700">
+                        Total Admin
+                      </div>
+                      <div class="text-xs text-gray-500 mt-1">
+                        Seluruh pengguna admin
+                      </div>
+                    </div>
+
+                    <!-- Shine Effect -->
+                    <div
+                      class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
+                    ></div>
+                  </div>
+
+                  <!-- Admin Aktif Card -->
+                  <div
+                    class="group relative bg-gradient-to-br from-green-50 to-green-100/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-green-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                  >
+                    <!-- Background Pattern -->
+                    <div
+                      class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+                    >
+                      <svg
+                        class="w-full h-full"
+                        viewBox="0 0 100 100"
+                        fill="currentColor"
+                      >
+                        <pattern
+                          id="green-pattern"
+                          patternUnits="userSpaceOnUse"
+                          width="15"
+                          height="15"
+                        >
+                          <polygon
+                            points="7.5,2 12,12 3,12"
+                            fill="currentColor"
+                            opacity="0.3"
+                          />
+                        </pattern>
+                        <rect
+                          width="100"
+                          height="100"
+                          fill="url(#green-pattern)"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Icon -->
+                    <div
+                      class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                    >
+                      <svg
+                        class="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="relative">
+                      <div
+                        class="text-3xl font-bold text-green-600 mb-1 group-hover:text-green-700 transition-colors"
+                      >
+                        {{ dashboard.adminStats.active }}
+                      </div>
+                      <div class="text-sm font-medium text-gray-700">
+                        Admin Aktif
+                      </div>
+                      <div class="text-xs text-gray-500 mt-1">Status aktif</div>
+                    </div>
+
+                    <!-- Pulse Indicator -->
+                    <div
+                      class="absolute top-4 right-4 w-3 h-3 bg-green-400 rounded-full animate-pulse"
+                    ></div>
+
+                    <!-- Shine Effect -->
+                    <div
+                      class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
+                    ></div>
+                  </div>
+
+                  <!-- Admin Nonaktif Card -->
+                  <div
+                    class="group relative bg-gradient-to-br from-red-50 to-red-100/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-red-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                  >
+                    <!-- Background Pattern -->
+                    <div
+                      class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+                    >
+                      <svg
+                        class="w-full h-full"
+                        viewBox="0 0 100 100"
+                        fill="currentColor"
+                      >
+                        <pattern
+                          id="red-pattern"
+                          patternUnits="userSpaceOnUse"
+                          width="18"
+                          height="18"
+                        >
+                          <line
+                            x1="4"
+                            y1="4"
+                            x2="14"
+                            y2="14"
+                            stroke="currentColor"
+                            stroke-width="1"
+                            opacity="0.3"
+                          />
+                          <line
+                            x1="14"
+                            y1="4"
+                            x2="4"
+                            y2="14"
+                            stroke="currentColor"
+                            stroke-width="1"
+                            opacity="0.3"
+                          />
+                        </pattern>
+                        <rect
+                          width="100"
+                          height="100"
+                          fill="url(#red-pattern)"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Icon -->
+                    <div
+                      class="relative w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                    >
+                      <svg
+                        class="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="relative">
+                      <div
+                        class="text-3xl font-bold text-red-600 mb-1 group-hover:text-red-700 transition-colors"
+                      >
+                        {{ dashboard.adminStats.inactive }}
+                      </div>
+                      <div class="text-sm font-medium text-gray-700">
+                        Admin Nonaktif
+                      </div>
+                      <div class="text-xs text-gray-500 mt-1">
+                        Status nonaktif
+                      </div>
+                    </div>
+
+                    <!-- Warning Indicator -->
+                    <div
+                      class="absolute top-4 right-4 w-3 h-3 bg-red-400 rounded-full"
+                    ></div>
+
+                    <!-- Shine Effect -->
+                    <div
+                      class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Info Section with Summary Cards -->
+        <div class="mt-12 sm:mt-16 px-2">
+          <!-- Super Admin Info Card -->
+          <div class="text-center">
             <div
-              class="bg-white/60 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/50 shadow-xl"
+              class="bg-white/60 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300"
             >
-              <div class="flex items-center justify-center mb-3 sm:mb-4">
-                <div class="flex -space-x-1 sm:-space-x-2">
+              <div class="flex items-center justify-center mb-4">
+                <div class="flex -space-x-2">
                   <div
-                    class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center"
+                    class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   >
                     <svg
-                      class="w-4 h-4 sm:w-5 sm:h-5 text-white"
+                      class="w-5 h-5 text-white"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -283,10 +640,10 @@
                     </svg>
                   </div>
                   <div
-                    class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center"
+                    class="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   >
                     <svg
-                      class="w-4 h-4 sm:w-5 sm:h-5 text-white"
+                      class="w-5 h-5 text-white"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -298,10 +655,10 @@
                     </svg>
                   </div>
                   <div
-                    class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center"
+                    class="w-10 h-10 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   >
                     <svg
-                      class="w-4 h-4 sm:w-5 sm:h-5 text-white"
+                      class="w-5 h-5 text-white"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -314,12 +671,8 @@
                   </div>
                 </div>
               </div>
-              <h3
-                class="text-lg sm:text-xl font-semibold text-gray-800 mb-1 sm:mb-2"
-              >
-                Super Admin
-              </h3>
-              <p class="text-gray-600 text-sm sm:text-base">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">Super Admin</h3>
+              <p class="text-gray-600">
                 Mengelola sistem pengadaan secara efisien
               </p>
             </div>

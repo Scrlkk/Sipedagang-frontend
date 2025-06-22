@@ -8,7 +8,8 @@ export const getPengadaan = (
   page = 1,
   perPage = 10,
   search = '',
-  bulan = '',
+  tanggalAwal = '',
+  tanggalAkhir = '',
 ) => {
   const params = new URLSearchParams()
   params.append('page', page)
@@ -18,8 +19,12 @@ export const getPengadaan = (
     params.append('search', search.trim())
   }
 
-  if (bulan && bulan.trim()) {
-    params.append('bulan', bulan.trim())
+  if (tanggalAwal && tanggalAwal.trim()) {
+    params.append('tanggal_awal', tanggalAwal.trim())
+  }
+
+  if (tanggalAkhir && tanggalAkhir.trim()) {
+    params.append('tanggal_akhir', tanggalAkhir.trim())
   }
 
   const url = `/pengadaan?${params.toString()}`
@@ -32,49 +37,15 @@ export const getPengadaanById = (id) => {
 }
 
 export const updatePengadaan = (id, data) => {
-  const formData = new FormData()
-
-  // Handle different data types
-  if (data instanceof FormData) {
-    // If already FormData, copy all entries
-    for (let [key, value] of data.entries()) {
-      formData.append(key, value)
-    }
-  } else {
-    // If regular object, append each property
-    Object.keys(data).forEach((key) => {
-      const value = data[key]
-      if (value !== null && value !== undefined) {
-        // Handle arrays (like detail_pengadaan)
-        if (Array.isArray(value)) {
-          value.forEach((item, index) => {
-            if (typeof item === 'object') {
-              Object.keys(item).forEach((subKey) => {
-                formData.append(`${key}[${index}][${subKey}]`, item[subKey])
-              })
-            } else {
-              formData.append(`${key}[${index}]`, item)
-            }
-          })
-        } else if (typeof value === 'object' && !(value instanceof File)) {
-          // Handle nested objects
-          Object.keys(value).forEach((subKey) => {
-            formData.append(`${key}[${subKey}]`, value[subKey])
-          })
-        } else {
-          // Handle primitive values and files
-          formData.append(key, value)
-        }
-      }
-    })
+  const requestData = {
+    _method: 'PUT',
+    ...data,
   }
 
-  // Add method override for Laravel
-  formData.append('_method', 'PUT')
-
-  return api.post(`/pengadaan/${id}`, formData, {
+  return api.post(`/pengadaan/${id}`, requestData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
+      'X-HTTP-Method-Override': 'PUT',
     },
   })
 }

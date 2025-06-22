@@ -76,15 +76,27 @@ export const usePengadaanStore = defineStore('pengadaan', {
       }
     },
 
-    async fetchPengadaan(page = 1, perPage = 10, search = '', bulan = '') {
+    async fetchPengadaan(
+      page = 1,
+      perPage = 10,
+      search = '',
+      tanggalAwal = '',
+      tanggalAkhir = '',
+    ) {
       this.loading = true
       this.error = null
 
       try {
         // ✅ Simpan parameter pencarian terakhir untuk operasi refresh
-        this.lastSearchParams = { search, bulan }
+        this.lastSearchParams = { search, tanggalAwal, tanggalAkhir }
 
-        const response = await getPengadaan(page, perPage, search, bulan)
+        const response = await getPengadaan(
+          page,
+          perPage,
+          search,
+          tanggalAwal,
+          tanggalAkhir,
+        )
 
         this.pengadaanList = response.data.data || []
 
@@ -99,9 +111,18 @@ export const usePengadaanStore = defineStore('pengadaan', {
         }
 
         // ✅ Validasi ulang jika halaman saat ini melebihi total halaman
-        if (this.pagination.currentPage > this.pagination.lastPage && this.pagination.lastPage > 0) {
+        if (
+          this.pagination.currentPage > this.pagination.lastPage &&
+          this.pagination.lastPage > 0
+        ) {
           // Recursive call untuk ke halaman terakhir yang valid
-          return await this.fetchPengadaan(this.pagination.lastPage, perPage, search, bulan)
+          return await this.fetchPengadaan(
+            this.pagination.lastPage,
+            perPage,
+            search,
+            tanggalAwal,
+            tanggalAkhir,
+          )
         }
 
         return response.data
@@ -140,9 +161,18 @@ export const usePengadaanStore = defineStore('pengadaan', {
 
         this.success = 'Data pengadaan berhasil diperbarui'
 
+        // ✅ Update dengan parameter yang sudah diubah
+        const params = this.lastSearchParams || {
+          search: '',
+          tanggalAwal: '',
+          tanggalAkhir: '',
+        }
         await this.fetchPengadaan(
           this.pagination.currentPage,
           this.pagination.perPage,
+          params.search,
+          params.tanggalAwal,
+          params.tanggalAkhir,
         )
 
         this.currentPengadaan = response.data.data || response.data
@@ -167,31 +197,33 @@ export const usePengadaanStore = defineStore('pengadaan', {
         // ✅ Hitung sisa data setelah delete
         const remainingItems = this.pagination.total - 1
         const maxPage = Math.ceil(remainingItems / this.pagination.perPage) || 1
-        
+
         // ✅ Tentukan halaman yang akan dituju
         let targetPage = this.pagination.currentPage
-        
+
         // Jika halaman saat ini melebihi halaman maksimum, pindah ke halaman terakhir
         if (targetPage > maxPage) {
           targetPage = maxPage
         }
-        
+
         // ✅ Update pagination state terlebih dahulu sebelum fetch
         this.pagination.currentPage = targetPage
-        
+
         // ✅ Fetch data dengan halaman yang sudah disesuaikan
         const currentFilter = {
           page: targetPage,
           perPage: this.pagination.perPage,
           search: this.lastSearchParams?.search || '',
-          bulan: this.lastSearchParams?.bulan || ''
+          tanggalAwal: this.lastSearchParams?.tanggalAwal || '',
+          tanggalAkhir: this.lastSearchParams?.tanggalAkhir || '',
         }
 
         await this.fetchPengadaan(
           currentFilter.page,
           currentFilter.perPage,
           currentFilter.search,
-          currentFilter.bulan
+          currentFilter.tanggalAwal,
+          currentFilter.tanggalAkhir,
         )
 
         return response.data
@@ -203,14 +235,19 @@ export const usePengadaanStore = defineStore('pengadaan', {
       }
     },
 
-    // ✅ Tambah method untuk refresh dengan parameter yang sama
+    // ✅ Update method untuk refresh dengan parameter yang baru
     async refreshCurrentData() {
-      const params = this.lastSearchParams || { search: '', bulan: '' }
+      const params = this.lastSearchParams || {
+        search: '',
+        tanggalAwal: '',
+        tanggalAkhir: '',
+      }
       await this.fetchPengadaan(
         this.pagination.currentPage,
         this.pagination.perPage,
         params.search,
-        params.bulan
+        params.tanggalAwal,
+        params.tanggalAkhir,
       )
     },
   },

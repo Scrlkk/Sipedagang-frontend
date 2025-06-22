@@ -170,3 +170,19 @@ export const setAdminActive = async (id) => {
     throw error
   }
 }
+
+// Tambahkan fungsi untuk mendapatkan statistik admin
+export const fetchAdminStats = async () => {
+  try {
+    const response = await fetchAdminList()
+    return {
+      total: response.length || 0,
+      active: response.filter((admin) => admin.status === 'active').length || 0,
+      inactive:
+        response.filter((admin) => admin.status === 'inactive').length || 0,
+    }
+  } catch (error) {
+    console.error('fetchAdminStats error:', error)
+    throw error
+  }
+}

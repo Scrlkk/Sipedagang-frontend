@@ -201,7 +201,7 @@
       <section class="flex flex-col justify-between h-full px-2 sm:px-4">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative"
+          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative pb-2"
         >
           Form Input Data
           <!-- ✅ Dot indikator perubahan -->

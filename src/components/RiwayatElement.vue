@@ -73,21 +73,23 @@
       .join(' ')
   }
 
-  // Computed properties untuk format Title Case seperti di SuratPermohonan.vue
+  // ✅ MODIFIED: Hanya jenis pengadaan yang menggunakan Title Case
   const jenisPengadaanFormatted = computed(() => {
     const str =
       props.item.jenis_pengadaan_barang || props.item.jenisPengadaan || ''
     return toTitleCase(str)
   })
 
+  // ✅ MODIFIED: Supplier tanpa Title Case - tampilkan original
   const supplierFormatted = computed(() => {
     const str = props.item.nama_suplier || props.item.supplier || ''
-    return toTitleCase(str)
+    return str || '-'
   })
 
+  // ✅ MODIFIED: Perusahaan tanpa Title Case - tampilkan original
   const perusahaanFormatted = computed(() => {
     const str = props.item.nama_perusahaan || props.item.perusahaan || ''
-    return toTitleCase(str)
+    return str || '-'
   })
 
   const userFormatted = computed(() => {

@@ -129,6 +129,11 @@
     try {
       isSubmitting.value = true
 
+      // 🔍 Debug: Log data sebelum update
+      const formData = formRef.value.getFormData()
+      console.log('Form data before update:', formData)
+      console.log('Pengadaan ID:', pengadaanId)
+
       await formRef.value.updateForm(pengadaanId)
 
       hasUnsavedChanges.value = false
@@ -147,6 +152,10 @@
         router.push('/superadmin/riwayat')
       }, 2000)
     } catch (error) {
+      // 🔍 Enhanced error logging
+      console.error('Update error:', error)
+      console.error('Error response:', error.response)
+
       let errorMessage = 'Terjadi kesalahan saat memperbarui data'
 
       if (error.response?.status === 422) {
@@ -159,6 +168,9 @@
         } else if (error.response.data.message) {
           errorMessage = error.response.data.message
         }
+      } else if (error.response?.status === 400) {
+        // 🔍 Handle bad request specifically
+        errorMessage = `Bad Request: ${error.response.data.message || 'Request tidak valid'}`
       } else if (error.message) {
         errorMessage = error.message
       }
@@ -184,7 +196,7 @@
       <section class="flex flex-col justify-between h-full px-2 sm:px-4">
         <!-- TITLE -->
         <div
-          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative"
+          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative pb-2"
         >
           Edit Data {{ noPreorder }}
           <!-- ✅ Dot indikator perubahan -->
