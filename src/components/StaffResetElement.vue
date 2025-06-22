@@ -8,6 +8,10 @@
       type: Boolean,
       required: true,
     },
+    isInline: {
+      type: Boolean,
+      default: false,
+    },
   })
   const emit = defineEmits(['close'])
 
@@ -43,11 +47,126 @@
   )
 </script>
 
-<template>  <section
-    v-if="show"
+<template>
+  <!-- Mode Inline (digunakan di dalam popup parent) -->
+  <div v-if="isInline" class="flex-1 flex flex-col min-h-0">
+    <!-- Error State -->
+    <div
+      v-if="resetStore.adminError && !isRefreshing"
+      class="flex-1 flex items-center justify-center p-4 sm:p-6"
+    >
+      <div class="text-center max-w-md">
+        <div
+          class="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 sm:h-8 sm:w-8 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+        </div>
+        <p class="text-red-600 font-medium mb-2 text-sm sm:text-base">
+          Gagal memuat data
+        </p>
+        <p class="text-gray-600 text-xs sm:text-sm mb-4">
+          {{ resetStore.adminError }}
+        </p>
+        <button
+          @click="handleRefresh"
+          class="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+        >
+          Coba Lagi
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      v-else-if="
+        resetStore.resetRequests.length === 0 &&
+        !resetStore.adminLoading &&
+        !isRefreshing
+      "
+      class="flex-1 flex items-center justify-center p-4 sm:p-6"
+    >
+      <div class="text-center max-w-md">
+        <div
+          class="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 sm:h-8 sm:w-8 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+        </div>
+        <p class="text-gray-500 font-medium mb-2 text-sm sm:text-base">
+          Tidak ada permintaan
+        </p>
+        <p class="text-gray-400 text-xs sm:text-sm">
+          Belum ada permintaan reset password
+        </p>
+      </div>
+    </div>
+
+    <!-- Data List with Loading Overlay -->
+    <div v-else class="flex-1 overflow-hidden flex flex-col relative">
+      <!-- Loading Overlay -->
+      <div
+        v-if="resetStore.adminLoading || isRefreshing"
+        class="absolute inset-0 bg-white bg-opacity-80 z-10 flex items-center justify-center"
+      >
+        <div class="flex flex-col items-center gap-3">
+          <div class="relative">
+            <div
+              class="w-12 h-12 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600"
+            ></div>
+          </div>
+          <p class="text-blue-600 font-medium">
+            {{ isRefreshing ? 'Memperbarui data...' : 'Memuat data...' }}
+          </p>
+        </div>
+      </div>
+      <div
+        class="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 transition-opacity duration-300"
+        :class="{ 'opacity-40': resetStore.adminLoading || isRefreshing }"
+      >
+        <!-- Actual Data -->
+        <div class="space-y-4">
+          <StaffResetCardElement
+            v-for="person in resetStore.resetRequests"
+            :key="person.id"
+            :person="person"
+            @refresh="fetchList"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode Full Screen (mode original) -->
+  <section
+    v-else-if="show"
     class="fixed inset-0 flex justify-center items-center z-50 p-4 sm:p-6 md:p-8"
   >
-    <div class="w-full h-full bg-black opacity-50 absolute"></div>
+    <div class="w-full h-full bg-black opacity-10 absolute"></div>
     <div
       @click="handleClose"
       class="absolute inset-0 flex justify-center items-center p-4 sm:p-6 md:p-8"
@@ -55,7 +174,8 @@
       <div
         @click.stop
         class="relative bg-white rounded-lg shadow-xl w-full max-w-[95vw] sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl h-full max-h-[90vh] sm:max-h-[85vh] md:max-h-[80vh] flex flex-col"
-      >        <!-- Header -->
+      >
+        <!-- Header -->
         <div
           class="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-6 border-b border-gray-200 gap-3 sm:gap-4"
         >
@@ -122,7 +242,8 @@
         </div>
 
         <!-- Content -->
-        <div class="flex-1 flex flex-col min-h-0">          <!-- Error State -->
+        <div class="flex-1 flex flex-col min-h-0">
+          <!-- Error State -->
           <div
             v-if="resetStore.adminError && !isRefreshing"
             class="flex-1 flex items-center justify-center p-4 sm:p-6"
@@ -146,10 +267,13 @@
                   />
                 </svg>
               </div>
-              <p class="text-red-600 font-medium mb-2 text-sm sm:text-base">Gagal memuat data</p>
+              <p class="text-red-600 font-medium mb-2 text-sm sm:text-base">
+                Gagal memuat data
+              </p>
               <p class="text-gray-600 text-xs sm:text-sm mb-4">
                 {{ resetStore.adminError }}
-              </p>              <button
+              </p>
+              <button
                 @click="handleRefresh"
                 class="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
               >
@@ -186,7 +310,9 @@
                   />
                 </svg>
               </div>
-              <p class="text-gray-500 font-medium mb-2 text-sm sm:text-base">Tidak ada permintaan</p>
+              <p class="text-gray-500 font-medium mb-2 text-sm sm:text-base">
+                Tidak ada permintaan
+              </p>
               <p class="text-gray-400 text-xs sm:text-sm">
                 Belum ada permintaan reset password
               </p>
@@ -210,7 +336,8 @@
                   {{ isRefreshing ? 'Memperbarui data...' : 'Memuat data...' }}
                 </p>
               </div>
-            </div>            <div
+            </div>
+            <div
               class="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 transition-opacity duration-300"
               :class="{ 'opacity-40': resetStore.adminLoading || isRefreshing }"
             >

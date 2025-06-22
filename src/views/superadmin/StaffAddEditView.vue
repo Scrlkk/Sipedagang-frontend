@@ -314,11 +314,15 @@
     window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
-  const togglePasswordVisibility = () => {
+  const togglePasswordVisibility = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
     showPassword.value = !showPassword.value
   }
 
-  const togglePasswordConfirmationVisibility = () => {
+  const togglePasswordConfirmationVisibility = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
     showPasswordConfirmation.value = !showPasswordConfirmation.value
   }
 
@@ -618,7 +622,7 @@
           <!-- NAV -->
           <RouterLink
             to="/superadmin/admin"
-            class="flex gap-1.5 sm:gap-2 items-center px-3 sm:px-4 md:px-0 mt-3 sm:mt-4 md:mt-6 lg:mt-4"
+            class="flex gap-1.5 pb-4 mx-3 sm:mx-4 md:mx-12 lg:mx-0 xl:mx-0 sm:gap-2 items-center px-3 sm:px-4 md:px-0 mt-3 sm:mt-4 md:mt-6 lg:mt-4"
           >
             <div
               @mouseenter="iconHover = true"
@@ -656,9 +660,7 @@
           class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-3 sm:px-4 md:px-6 lg:px-0"
         >
           <!-- FORM -->
-          <div
-            class="mt-4 sm:mt-6 md:mt-8 lg:mt-10 px-3 sm:px-4 md:px-6 lg:px-0"
-          >
+          <div class="px-3 sm:px-4 md:px-6 lg:px-0">
             <form @submit.prevent="handleRight">
               <div
                 class="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 xl:gap-16 w-full"
@@ -724,7 +726,9 @@
                   </div>
                 </div>
                 <!-- INPUT FIELDS -->
-                <div class="flex-1 w-full min-w-0">
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-6 w-full min-w-0"
+                >
                   <!-- NAMA Staff -->
                   <div
                     class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6"
@@ -825,19 +829,22 @@
                         autocomplete="current-password"
                         required
                       />
-                      <span
-                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
+                      <button
+                        type="button"
+                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1 z-10"
                         @click="togglePasswordVisibility"
+                        @mousedown.prevent
+                        tabindex="-1"
                       >
                         <PasswordShowElement
                           v-if="!showPassword"
-                          class="w-4 h-4 sm:w-5 sm:h-5"
+                          class="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none"
                         />
                         <PasswordHideElement
                           v-else
-                          class="w-4 h-4 sm:w-5 sm:h-5"
+                          class="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none"
                         />
-                      </span>
+                      </button>
                     </div>
                   </div>
 
@@ -868,19 +875,22 @@
                         autocomplete="new-password"
                         required
                       />
-                      <span
-                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1"
+                      <button
+                        type="button"
+                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors p-1 z-10"
                         @click="togglePasswordConfirmationVisibility"
+                        @mousedown.prevent
+                        tabindex="-1"
                       >
                         <PasswordShowElement
                           v-if="!showPasswordConfirmation"
-                          class="w-4 h-4 sm:w-5 sm:h-5"
+                          class="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none"
                         />
                         <PasswordHideElement
                           v-else
-                          class="w-4 h-4 sm:w-5 sm:h-5"
+                          class="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none"
                         />
-                      </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1039,5 +1049,27 @@
     .form-grid {
       gap: 1rem;
     }
+  }
+
+  input[type='password']::-ms-reveal,
+  input[type='password']::-ms-clear {
+    display: none;
+  }
+
+  input[type='password']::-webkit-textfield-decoration-container,
+  input[type='password']::-webkit-reveal {
+    display: none;
+  }
+
+  /* For newer Edge versions */
+  input[type='password']::-webkit-credentials-auto-fill-button {
+    display: none;
+  }
+
+  .cropper-container {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
   }
 </style>

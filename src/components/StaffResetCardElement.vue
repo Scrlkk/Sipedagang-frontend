@@ -82,12 +82,15 @@
   }
 </script>
 
-<template>  <div
+<template>
+  <div
     class="flex flex-col sm:flex-row bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out gap-4 sm:gap-6"
     :class="{ 'opacity-70': isProcessing || person.status !== 'pending' }"
   >
     <!-- Avatar Section -->
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 w-full sm:w-auto">
+    <div
+      class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 flex-1"
+    >
       <div class="relative flex-shrink-0">
         <img
           :src="getPhotoUrl"
@@ -109,7 +112,8 @@
             'bg-green-500': person.status === 'approved',
             'bg-red-500': person.status === 'declined',
           }"
-        >          <svg
+        >
+          <svg
             v-if="person.status === 'approved'"
             xmlns="http://www.w3.org/2000/svg"
             class="h-2 w-2 sm:h-3 sm:w-3 text-white"
@@ -139,40 +143,51 @@
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-          <div v-else class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"></div>
+          <div
+            v-else
+            class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"
+          ></div>
         </div>
       </div>
 
       <!-- User Info -->
-      <div class="flex flex-col justify-center flex-1 min-w-0 text-center sm:text-left">
-        <h3 class="font-bold text-base sm:text-lg text-gray-900 mb-1 truncate">
+      <div
+        class="flex flex-col justify-center flex-1 min-w-0 text-center sm:text-left"
+      >
+        <h3
+          class="font-bold text-base sm:text-lg text-gray-900 mb-1 break-words sm:truncate"
+        >
           {{ person.nama || 'Nama tidak tersedia' }}
         </h3>
-        <p class="text-sm text-gray-600 mb-2 truncate">
+        <p class="text-sm text-gray-600 mb-2 break-words sm:truncate">
           @{{ person.nama_pengguna || 'Username tidak tersedia' }}
         </p>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 justify-center sm:justify-start">
-          <p class="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-3 w-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            {{ formatDate(person.requested_at) }}
-          </p>
 
-          <!-- Status Badge -->
+        <!-- Date -->
+        <p
+          class="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1 mb-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-3 w-3 flex-shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="break-words">{{ formatDate(person.requested_at) }}</span>
+        </p>
+
+        <!-- Status Badge -->
+        <div class="flex justify-center sm:justify-start">
           <span
-            class="inline-flex items-center px-2 sm:px-2.5 py-1 rounded-full text-xs font-semibold"
+            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit"
             :class="{
               'bg-yellow-100 text-yellow-800 border border-yellow-200':
                 person.status === 'pending',
@@ -197,16 +212,16 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex items-center justify-center sm:justify-end gap-3 flex-shrink-0 w-full sm:w-auto">
+    <div
+      class="flex items-center justify-center sm:justify-end gap-3 flex-shrink-0"
+    >
       <!-- Accept Button -->
       <button
         @click="handleApprove"
         :disabled="isProcessing || person.status !== 'pending'"
         class="relative group flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 rounded-full transition-all duration-200 shadow-sm hover:shadow-md disabled:cursor-not-allowed"
         :title="
-          person.status !== 'pending'
-            ? 'Sudah diproses'
-            : 'Setujui permintaan'
+          person.status !== 'pending' ? 'Sudah diproses' : 'Setujui permintaan'
         "
       >
         <!-- Loading spinner -->

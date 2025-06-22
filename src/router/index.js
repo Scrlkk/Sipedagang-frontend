@@ -15,6 +15,9 @@ import FormDataView from '@/views/superadmin/FormDataView.vue'
 import StaffAddEditView from '@/views/superadmin/StaffAddEditView.vue'
 import DataPemohonView from '@/views/superadmin/DataPemohonView.vue'
 import RiwayatPreviewView from '@/views/superadmin/RiwayatPreviewView.vue'
+import LihatDataPemohonView from '@/views/superadmin/LihatDataPemohonView.vue'
+import SettingPengadaanView from '@/views/superadmin/SettingPengadaanView.vue'
+import LihatSettingPengadaanView from '@/views/superadmin/LihatSettingPengadaanView.vue'
 import NotFound from '@/views/login/NotFound.vue'
 
 const router = createRouter({
@@ -161,6 +164,36 @@ const router = createRouter({
       name: 'rekap data',
       component: DataPemohonView,
       meta: { requiresAuth: true, role: 'superadmin' }, // ✅ Protection
+    },
+    {
+      path: '/superadmin/datapemohon-list',
+      name: 'list pemohon',
+      component: LihatDataPemohonView,
+      meta: { requiresAuth: true, role: 'superadmin' },
+    },
+    {
+      path: '/superadmin/datapemohon-edit/:id',
+      name: 'edit pemohon',
+      component: DataPemohonView,
+      meta: { requiresAuth: true, role: 'superadmin' },
+    },
+    {
+      path: '/superadmin/settingpengadaan',
+      name: 'setting pengadaan',
+      component: SettingPengadaanView,
+      meta: { requiresAuth: true, role: 'superadmin' },
+    },
+    {
+      path: '/superadmin/settingpengadaan-list',
+      name: 'setting pengadaan list',
+      component: LihatSettingPengadaanView,
+      meta: { requiresAuth: true, role: 'superadmin' },
+    },
+    {
+      path: '/superadmin/settingpengadaan-edit/:id',
+      name: 'setting pengadaan edit',
+      component: SettingPengadaanView,
+      meta: { requiresAuth: true, role: 'superadmin' },
     },
     {
       path: '/superadmin',

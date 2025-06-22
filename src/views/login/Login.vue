@@ -8,6 +8,7 @@
   const auth = useAuthStore()
   const nama_pengguna = ref('')
   const password = ref('')
+  const rememberMe = ref(false) // ✅ Tambah remember me state
   const isLoading = ref(false)
   const errorMessage = ref('')
   const showPassword = ref(false)
@@ -44,7 +45,12 @@
     isLoading.value = true
 
     try {
-      await auth.login(nama_pengguna.value.trim(), password.value)
+      // ✅ Pass remember me value to login
+      await auth.login(
+        nama_pengguna.value.trim(),
+        password.value,
+        rememberMe.value,
+      )
 
       // Redirect based on role
       const role = auth.user?.role
@@ -68,6 +74,9 @@
 
   // Check if already authenticated
   onMounted(() => {
+    // ✅ Initialize auth state
+    auth.initializeAuth()
+
     if (auth.isAuthenticated) {
       const role = auth.userRole
       if (role === 'admin') {
@@ -83,7 +92,7 @@
   <GuestLayout>
     <div class="flex items-center justify-center min-h-screen px-4">
       <!-- Login Card -->
-      <div class="bg-white rounded-lg w-full max-w-md shadow-2xl p-8">
+      <div class="bg-white rounded-lg w-full max-w-md shadow-xl p-8">
         <!-- Logo and Title -->
         <div class="text-center mb-8 font-poppins">
           <h1
@@ -183,11 +192,24 @@
             </div>
           </div>
 
+          <!-- ✅ Remember Me Checkbox -->
+          <div class="flex items-center">
+            <input
+              id="remember-me"
+              type="checkbox"
+              v-model="rememberMe"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+              Ingat saya
+            </label>
+          </div>
+
           <!-- Login button -->
           <div>
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer"
+              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer disabled:opacity-50"
               :disabled="isLoading"
             >
               <div v-if="isLoading">Loading...</div>
@@ -209,3 +231,26 @@
     </div>
   </GuestLayout>
 </template>
+
+<style scoped>
+  input[type='password']::-ms-reveal,
+  input[type='password']::-ms-clear {
+    display: none;
+  }
+
+  input[type='password']::-webkit-textfield-decoration-container,
+  input[type='password']::-webkit-reveal {
+    display: none;
+  }
+
+  input[type='password']::-webkit-credentials-auto-fill-button {
+    display: none;
+  }
+
+  .cropper-container {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+  }
+</style>

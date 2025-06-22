@@ -1,12 +1,23 @@
 import { defineStore } from 'pinia'
-import { loginUser, logoutUser, getCurrentUser } from '@/services/authService'
+import { 
+  loginUser, 
+  logoutUser, 
+  getCurrentUser,
+  setAuthToken,
+  getAuthToken,
+  getAuthUser,
+  getTokenExpiresAt,
+  isRememberMeActive,
+  clearAuthData
+} from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: localStorage.getItem('token') || null,
-    user: JSON.parse(localStorage.getItem('user') || 'null'),
+    token: getAuthToken() || null,
+    user: getAuthUser() || null,
     loading: false,
     error: null,
+    rememberMe: isRememberMeActive(),
   }),
 
   getters: {
@@ -15,7 +26,8 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async login(nama_pengguna, password) {
+    // ✅ Login dengan opsi Remember Me
+    async login(nama_pengguna, password, rememberMe = false) {
       this.loading = true
       this.error = null
       try {
@@ -25,17 +37,21 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('Invalid response format')
         }
 
+        // ✅ Simpan token berdasarkan Remember Me
+        setAuthToken(
+          response.data.token,
+          response.data.user,
+          response.data.expires_at,
+          rememberMe
+        )
+
+        // Update state
         this.token = response.data.token
         this.user = response.data.user
-
-        localStorage.setItem('token', this.token)
-        localStorage.setItem('user', JSON.stringify(this.user))
-
-        if (response.data.expires_at) {
-          localStorage.setItem('token_expires_at', response.data.expires_at)
-        }
-
+        this.rememberMe = rememberMe
         this.error = null
+
+        return response.data
       } catch (err) {
         this.clearAuth()
 
@@ -63,8 +79,15 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await getCurrentUser()
         if (!response.data) throw new Error('User data not found')
+        
         this.user = response.data
-        localStorage.setItem('user', JSON.stringify(this.user))
+        
+        // ✅ Update storage berdasarkan remember me status
+        if (this.rememberMe) {
+          localStorage.setItem('user', JSON.stringify(this.user))
+        } else {
+          sessionStorage.setItem('user', JSON.stringify(this.user))
+        }
       } catch (err) {
         console.error('Refresh user error:', err)
       }
@@ -86,13 +109,12 @@ export const useAuthStore = defineStore('auth', {
       this.token = null
       this.user = null
       this.error = null
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      localStorage.removeItem('token_expires_at')
+      this.rememberMe = false
+      clearAuthData()
     },
 
     checkTokenExpiration() {
-      const expiresAt = localStorage.getItem('token_expires_at')
+      const expiresAt = getTokenExpiresAt()
       if (expiresAt && new Date() > new Date(expiresAt)) {
         this.clearAuth()
         return false
@@ -100,14 +122,17 @@ export const useAuthStore = defineStore('auth', {
       return true
     },
 
+    // ✅ Initialize auth dari storage yang tersedia
     initializeAuth() {
-      const token = localStorage.getItem('token')
-      const user = localStorage.getItem('user')
+      const token = getAuthToken()
+      const user = getAuthUser()
+      const rememberMe = isRememberMeActive()
 
       if (token && user) {
         if (this.checkTokenExpiration()) {
           this.token = token
-          this.user = JSON.parse(user)
+          this.user = user
+          this.rememberMe = rememberMe
         }
       }
     },
