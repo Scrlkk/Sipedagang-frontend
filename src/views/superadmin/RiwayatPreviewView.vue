@@ -118,23 +118,27 @@
       page-break-after: always;
     }    .kuitansi-page {
       page: kuitansi;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
+      display: block !important;
       min-height: 297mm;
       width: 210mm;
-      padding: 10mm 5mm 10mm 15mm;
+      padding-top: 40mm !important;
+      padding-left: 15mm !important;
+      padding-right: 5mm !important;
+      padding-bottom: 10mm !important;
       box-sizing: border-box;
     }
 
     .kuitansi-container {
-      /* Perkecil dan geser ke kiri */
+      /* Perkecil dan posisi di kiri atas dengan jarak dari atas yang jelas */
       transform: scale(0.6) !important;
       width: 1147px !important;
       height: 706px !important;
       margin: 0 !important;
       padding: 0 !important;
-      transform-origin: left center !important;
+      transform-origin: left top !important;
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
     }
 
     .kuitansi-page section {
