@@ -18,6 +18,7 @@ import RiwayatPreviewView from '@/views/superadmin/RiwayatPreviewView.vue'
 import LihatDataPemohonView from '@/views/superadmin/LihatDataPemohonView.vue'
 import SettingPengadaanView from '@/views/superadmin/SettingPengadaanView.vue'
 import LihatSettingPengadaanView from '@/views/superadmin/LihatSettingPengadaanView.vue'
+import EditProfileView from '@/views/superadmin/EditProfileView.vue'
 import NotFound from '@/views/login/NotFound.vue'
 
 const router = createRouter({
@@ -195,6 +196,13 @@ const router = createRouter({
       component: SettingPengadaanView,
       meta: { requiresAuth: true, role: 'superadmin' },
     },
+    {
+      path: '/superadmin/editprofile',
+      name: 'edit profile superadmin',
+      component: EditProfileView,
+      meta: { requiresAuth: true, role: 'superadmin' },
+    },
+
     {
       path: '/superadmin',
       redirect: '/superadmin/dashboard',

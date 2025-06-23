@@ -1,20 +1,20 @@
 import { defineStore } from 'pinia'
-import { 
-  loginUser, 
-  logoutUser, 
-  getCurrentUser,
+import api from '@/services/authService'
+import {
+  loginUser,
+  logoutUser,
   setAuthToken,
   getAuthToken,
   getAuthUser,
   getTokenExpiresAt,
   isRememberMeActive,
-  clearAuthData
+  clearAuthData,
 } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: getAuthToken() || null,
-    user: getAuthUser() || null,
+    user: getAuthUser() || null, // ✅ TETAP: Untuk backward compatibility
     loading: false,
     error: null,
     rememberMe: isRememberMeActive(),
@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
           response.data.token,
           response.data.user,
           response.data.expires_at,
-          rememberMe
+          rememberMe,
         )
 
         // Update state
@@ -71,25 +71,6 @@ export const useAuthStore = defineStore('auth', {
         throw err
       } finally {
         this.loading = false
-      }
-    },
-
-    async refreshUser() {
-      if (!this.token) return
-      try {
-        const response = await getCurrentUser()
-        if (!response.data) throw new Error('User data not found')
-        
-        this.user = response.data
-        
-        // ✅ Update storage berdasarkan remember me status
-        if (this.rememberMe) {
-          localStorage.setItem('user', JSON.stringify(this.user))
-        } else {
-          sessionStorage.setItem('user', JSON.stringify(this.user))
-        }
-      } catch (err) {
-        console.error('Refresh user error:', err)
       }
     },
 

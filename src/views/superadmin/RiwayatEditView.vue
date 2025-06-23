@@ -107,11 +107,38 @@
     window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
-  watch([isLoading, formRef, currentData], ([loading, form, data]) => {
-    if (!loading && form && form.populateForm && data) {
-      form.populateForm(data)
-    }
-  })
+  // ✅ IMPROVED: Watch dengan better error handling
+  watch(
+    [isLoading, formRef, currentData],
+    ([loading, form, data]) => {
+      if (!loading && form && data) {
+        try {
+          console.log('Attempting to populate form with data:', data)
+
+          if (form.populateForm && typeof form.populateForm === 'function') {
+            form.populateForm(data)
+            console.log('Form populated successfully')
+          } else {
+            console.error('populateForm method not available on form ref')
+          }
+        } catch (error) {
+          console.error('Error populating form:', error)
+
+          Swal.fire({
+            title: 'Error!',
+            text: `Gagal memuat data ke form: ${error.message}`,
+            icon: 'error',
+            confirmButtonColor: '#d33',
+            customClass: {
+              popup: 'rounded-xl',
+              confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
+            },
+          })
+        }
+      }
+    },
+    { immediate: true },
+  )
 
   async function handleLeft() {
     const canLeave = await confirmLeave()
@@ -122,19 +149,29 @@
   }
 
   async function handleRight() {
-    if (!formRef.value || !formRef.value.updateForm) {
+    if (!formRef.value) {
+      console.error('Form ref not available')
       return
     }
 
     try {
       isSubmitting.value = true
 
-      // 🔍 Debug: Log data sebelum update
-      const formData = formRef.value.getFormData()
-      console.log('Form data before update:', formData)
-      console.log('Pengadaan ID:', pengadaanId)
+      // ✅ FIXED: Get form data dan kirim sebagai parameter
+      if (typeof formRef.value.getFormData === 'function') {
+        const formData = formRef.value.getFormData()
+        console.log('Form data before update:', formData)
+        console.log('Pengadaan ID:', pengadaanId)
 
-      await formRef.value.updateForm(pengadaanId)
+        // ✅ FIXED: Call updateForm dengan data yang lengkap
+        if (typeof formRef.value.updateForm === 'function') {
+          await formRef.value.updateForm(pengadaanId, formData)
+        } else {
+          throw new Error('updateForm method tidak tersedia pada form')
+        }
+      } else {
+        throw new Error('getFormData method tidak tersedia pada form')
+      }
 
       hasUnsavedChanges.value = false
       bypassConfirmation.value = true
@@ -146,13 +183,15 @@
         timer: 2000,
         showConfirmButton: false,
         timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-xl',
+        },
       })
 
       setTimeout(() => {
         router.push('/superadmin/riwayat')
       }, 2000)
     } catch (error) {
-      // 🔍 Enhanced error logging
       console.error('Update error:', error)
       console.error('Error response:', error.response)
 
@@ -162,14 +201,16 @@
         const validationErrors = error.response.data.errors
         if (validationErrors) {
           const errorList = Object.entries(validationErrors)
-            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+            .map(([field, messages]) => {
+              const msgArray = Array.isArray(messages) ? messages : [messages]
+              return `${field}: ${msgArray.join(', ')}`
+            })
             .join('\n')
           errorMessage = `Validation Error:\n${errorList}`
         } else if (error.response.data.message) {
           errorMessage = error.response.data.message
         }
       } else if (error.response?.status === 400) {
-        // 🔍 Handle bad request specifically
         errorMessage = `Bad Request: ${error.response.data.message || 'Request tidak valid'}`
       } else if (error.message) {
         errorMessage = error.message
@@ -182,6 +223,8 @@
         confirmButtonColor: '#d33',
         customClass: {
           content: 'whitespace-pre-line',
+          popup: 'rounded-xl',
+          confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
         },
       })
     } finally {

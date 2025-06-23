@@ -1,6 +1,7 @@
 <script setup>
   import { RouterLink, useRoute, useRouter } from 'vue-router'
-  import { reactive, ref, onMounted, onUnmounted } from 'vue'
+  import { reactive, ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+  import { useUserStore } from '@/stores/userStore'
   import { useAuthStore } from '@/stores/authStore'
   import { computed } from 'vue'
   import { config } from '@/config/env'
@@ -13,9 +14,73 @@
   import DashboardIconElement from '@/components/DashboardIconElement.vue'
   import PengadaanIconElement from '@/components/PengadaanIconElement.vue'
 
+  const userStore = useUserStore()
   const auth = useAuthStore()
   const router = useRouter()
-  const userName = computed(() => auth.user?.name || 'Pengguna')
+  const route = useRoute()
+
+  // ✅ ENHANCED: userName dengan animasi loading
+  const userName = computed(() => {
+    const user = userStore.user
+    if (!user || (!user.name && !user.nama_pengguna)) {
+      return '...'
+    }
+    return user.name || user.nama_pengguna || '...'
+  })
+
+  // ✅ NEW: State untuk animasi userName
+  const isUserNameLoading = computed(() => {
+    return (
+      isUpdatingAfterEdit.value ||
+      userStore.isLoading ||
+      userName.value === '...'
+    )
+  })
+
+  // ✅ NEW: Animated userName dengan typing effect
+  const animatedUserName = ref('')
+  const isTyping = ref(false)
+
+  // ✅ NEW: Function untuk typing animation
+  const typewriterEffect = async (text) => {
+    if (isTyping.value) return
+
+    isTyping.value = true
+    animatedUserName.value = ''
+
+    // Clear old text first
+    await new Promise((resolve) => setTimeout(resolve, 200))
+
+    // Type new text character by character
+    for (let i = 0; i <= text.length; i++) {
+      animatedUserName.value = text.slice(0, i)
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    }
+
+    isTyping.value = false
+  }
+
+  // ✅ NEW: Watch userName changes untuk trigger typing animation
+  watch(
+    userName,
+    async (newName, oldName) => {
+      if (newName !== oldName && newName !== '...' && !isTyping.value) {
+        await typewriterEffect(newName)
+      } else if (newName === '...') {
+        animatedUserName.value = newName
+      }
+    },
+    { immediate: true },
+  )
+
+  // ✅ PERBAIKAN: Pisahkan loading state untuk refresh dari edit profile
+  const isRefreshingAfterEdit = ref(false)
+
+  // ✅ SIMPLIFIED: Loading state dari userStore (untuk keperluan umum)
+  const isRefreshing = computed(() => userStore.isLoading)
+
+  // ✅ NEW: Loading state khusus untuk setelah edit profile
+  const isUpdatingAfterEdit = computed(() => isRefreshingAfterEdit.value)
 
   const isHovered = reactive({
     dashboard: false,
@@ -25,12 +90,12 @@
     pemohon: false,
     pengadaan: false,
     signout: false,
+    profile: false,
   })
 
-  const route = useRoute()
   const sidebarOpen = ref(false)
 
-  // Handle logout
+  // Handle logout - tetap gunakan authStore
   const handleLogout = async () => {
     try {
       await auth.logout()
@@ -42,21 +107,111 @@
     }
   }
 
-  // Profile photo
+  // ✅ TAMBAHAN: Navigate to edit profile
+  const goToEditProfile = () => {
+    router.push('/superadmin/editprofile')
+  }
+
+  // ✅ SIMPLIFIED: Method untuk refresh data user
+  const refreshUserData = async () => {
+    try {
+      console.log('🔄 SuperAdminLayout: Refreshing user data...')
+      await userStore.fetchCurrentUser()
+      console.log('✅ SuperAdminLayout: User data refreshed successfully')
+    } catch (error) {
+      console.error('❌ SuperAdminLayout: Failed to refresh user data:', error)
+    }
+  }
+
+  // ✅ EXPOSE method untuk dipanggil dari luar
+  defineExpose({
+    refreshUserData,
+  })
+
+  // ✅ SIMPLIFIED: Profile photo dari userStore
   const profilePhoto = computed(() => {
+    const user = userStore.user
     const foto =
-      auth.user?.profile_photo ||
-      auth.user?.foto ||
-      auth.user?.img ||
-      auth.user?.gambar ||
-      auth.user?.photo
+      user?.profile_photo ||
+      user?.foto ||
+      user?.img ||
+      user?.gambar ||
+      user?.photo
 
     if (foto) {
-      return config.getStorageUrl(foto)
+      const url = config.getStorageUrl(foto)
+      return url
     }
 
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'Pengguna')}&background=0099FF&color=fff&size=128`
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'Pengguna')}&background=0099FF&color=fff&size=128`
   })
+
+  // ✅ NEW: Watch route changes untuk detect kembali dari edit profile
+  // ✅ ALTERNATIF: Gunakan flag untuk mencegah double refresh
+  const isRefreshingFromEdit = ref(false)
+
+  // ✅ PERBAIKAN: Watch route changes dengan loading state khusus
+  watch(
+    () => route.path,
+    async (newPath, oldPath) => {
+      // ✅ KONDISI: Kembali dari edit profile dan ada flag
+      if (
+        oldPath === '/superadmin/editprofile' &&
+        sessionStorage.getItem('profileUpdated')
+      ) {
+        console.log('🔄 SuperAdminLayout: Detected return from edit profile')
+
+        // ✅ LANGSUNG set loading state tanpa delay
+        isRefreshingAfterEdit.value = true
+        sessionStorage.removeItem('profileUpdated')
+
+        try {
+          console.log('🔄 SuperAdminLayout: Starting profile refresh...')
+
+          // ✅ PERBAIKAN: Refresh data dan tunggu sampai selesai
+          await refreshUserData()
+
+          console.log('✅ SuperAdminLayout: Profile refreshed successfully')
+
+          // ✅ TAMBAHAN: Tunggu sampai Vue reactivity selesai update UI
+          await nextTick()
+
+          // ✅ TAMBAHAN: Delay tambahan untuk memastikan UI ter-render
+          await new Promise((resolve) => setTimeout(resolve, 500))
+        } catch (error) {
+          console.error('❌ SuperAdminLayout: Refresh failed:', error)
+        } finally {
+          // ✅ CLEAR loading state setelah semua selesai
+          isRefreshingAfterEdit.value = false
+        }
+      }
+    },
+  )
+
+  // ✅ TAMBAHAN: Watch perubahan data user untuk memastikan UI ter-update
+  watch(
+    () => userStore.user,
+    (newUser, oldUser) => {
+      if (newUser && oldUser && isRefreshingAfterEdit.value) {
+        // ✅ Jika data sudah berubah dan masih dalam state refreshing
+        if (
+          newUser.name !== oldUser.name ||
+          newUser.profile_photo !== oldUser.profile_photo
+        ) {
+          console.log(
+            '🔄 SuperAdminLayout: User data updated, extending loading...',
+          )
+
+          // ✅ Tambah delay untuk memastikan UI ter-render dengan data baru
+          setTimeout(() => {
+            isRefreshingAfterEdit.value = false
+            console.log('✅ SuperAdminLayout: Loading cleared after UI update')
+          }, 800)
+        }
+      }
+    },
+    { deep: true },
+  )
 
   // Toggle sidebar
   const toggleSidebar = () => {
@@ -93,9 +248,20 @@
     }
   }
 
-  onMounted(() => {
+  onMounted(async () => {
     document.addEventListener('click', handleClickOutside)
     document.addEventListener('keydown', handleEscape)
+
+    // ✅ PERBAIKAN: Hanya fetch jika benar-benar diperlukan
+    if (!userStore.user || !userStore.user.name) {
+      console.log('🏗️ SuperAdminLayout mounted: Fetching initial user data...')
+      await refreshUserData()
+    } else {
+      console.log(
+        '🏗️ SuperAdminLayout mounted: Using existing user data:',
+        userStore.user.name,
+      )
+    }
   })
 
   onUnmounted(() => {
@@ -462,9 +628,9 @@
       <!-- NAVBAR -->
       <div class="flex-shrink-0">
         <div
-          class="flex bg-[#0099FF] h-16 sm:h-18 w-full items-center px-4 sm:px-12 justify-between lg:justify-end gap-3 sm:gap-5"
+          class="flex bg-[#0099FF] h-16 sm:h-18 w-full items-center px-4 sm:px-7 justify-between lg:justify-end gap-3 sm:gap-5"
         >
-          <!-- Mobile Menu Button with Hamburger Animation -->
+          <!-- Mobile Menu Button -->
           <button
             id="menu-button"
             @click="toggleSidebar"
@@ -492,26 +658,112 @@
             </div>
           </button>
 
-          <!-- User Profile -->
-          <div class="flex items-center gap-3 sm:gap-5">
-            <div class="-mr-1 sm:-mr-2">
-              <img
-                loading="lazy"
-                :src="profilePhoto"
-                :alt="userName"
-                class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover outline outline-white transition-transform duration-200 hover:scale-105"
-                @error="
-                  (e) => {
-                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
-                  }
-                "
-              />
-            </div>
+          <!-- ✅ Profile Button dengan loading yang lebih spesifik -->
+          <div class="relative">
+            <!-- Loading Overlay - HANYA untuk setelah edit profile -->
             <div
-              class="font-poppins font-medium text-white text-sm sm:text-base truncate max-w-32 sm:max-w-none"
+              v-if="isUpdatingAfterEdit"
+              class="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-md flex items-center justify-center z-10"
             >
-              {{ userName }}
+              <div class="flex items-center gap-2 text-white">
+                <div
+                  class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"
+                ></div>
+                <span class="text-sm font-medium">Updating...</span>
+              </div>
             </div>
+
+            <!-- Profile Button -->
+            <button
+              @click="goToEditProfile"
+              @mouseenter="isHovered.profile = true"
+              @mouseleave="isHovered.profile = false"
+              class="group relative flex items-center gap-3 sm:gap-5 py-2 px-6 rounded-md transition-all duration-300 ease-in-out hover:shadow-lg overflow-hidden"
+              :class="{ 'opacity-70': isUpdatingAfterEdit }"
+              :disabled="isUpdatingAfterEdit"
+            >
+              <!-- Profile Photo -->
+              <div class="-mr-1 sm:-mr-2">
+                <img
+                  loading="lazy"
+                  :src="profilePhoto"
+                  :alt="userName"
+                  class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover outline outline-white transition-transform duration-200 group-hover:scale-105"
+                  @error="
+                    (e) => {
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
+                    }
+                  "
+                />
+              </div>
+
+              <!-- User Name -->
+              <!-- ✅ ENHANCED: User Name dengan animasi loading dan typing effect -->
+              <div class="relative">
+                <!-- ✅ Skeleton loading saat data belum ada -->
+                <div
+                  v-if="isUserNameLoading && userName === '...'"
+                  class="h-5 sm:h-6 w-24 sm:w-32 bg-white/30 rounded animate-pulse"
+                ></div>
+                
+                <!-- ✅ Loading dots animation saat updating -->
+                <div
+                  v-else-if="isUpdatingAfterEdit"
+                  class="font-poppins font-medium text-white text-sm sm:text-base flex items-center gap-1"
+                >
+                  <span>{{ animatedUserName || 'Updating' }}</span>
+                  <div class="flex gap-1 ml-1">
+                    <div class="w-1 h-1 bg-white rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                    <div class="w-1 h-1 bg-white rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                    <div class="w-1 h-1 bg-white rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                  </div>
+                </div>
+
+                <!-- ✅ Normal state dengan typing effect -->
+                <div
+                  v-else
+                  class="font-poppins font-medium text-white text-sm sm:text-base truncate max-w-32 sm:max-w-none relative"
+                >
+                  <!-- ✅ Animated text dengan cursor effect -->
+                  <span class="relative">
+                    {{ animatedUserName }}
+                    <!-- ✅ Typing cursor yang muncul saat typing -->
+                    <span
+                      v-if="isTyping"
+                      class="absolute -right-1 top-0 w-0.5 h-full bg-white animate-pulse"
+                    ></span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- ✅ SHINE EFFECT hanya saat hover dan tidak sedang updating -->
+              <div
+                v-if="!isUpdatingAfterEdit"
+                class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] opacity-0 group-hover:opacity-100 group-hover:translate-x-[100%] transition-all duration-700"
+              ></div>
+
+              <!-- ✅ HOVER INDICATOR: Small edit icon yang muncul saat hover -->
+              <div
+                v-if="!isUpdatingAfterEdit"
+                class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0"
+              >
+                <div class="bg-white/20 rounded-full p-1">
+                  <svg
+                    class="w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -551,5 +803,15 @@
       transform, background-color, border-color, text-decoration-color, fill,
       stroke, opacity, box-shadow, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ✅ ENHANCED: Shine effect animation */
+  .group:hover .group-hover\:translate-x-\[100\%\] {
+    transform: translateX(100%);
+  }
+
+  /* ✅ ENHANCED: Scale animation for profile photo */
+  .group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
   }
 </style>

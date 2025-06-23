@@ -73,7 +73,7 @@
     return result
   })
 
-  // Optimized pie slice calculation dengan caching
+  // Optimized pie slice calculation dengan fix untuk single item
   const pieSlices = computed(() => {
     if (!chartData.value.length || animationProgress.value === 0) {
       cachedPieSlices.value = []
@@ -86,7 +86,7 @@
     const centerY = 100
     const animProgress = animationProgress.value
 
-    const result = chartData.value.map((item) => {
+    const result = chartData.value.map((item, index) => {
       const startAngle = cumulativeAngle
       const sliceAngle = (item.percentage / 100) * 2 * Math.PI * animProgress
       const endAngle = startAngle + sliceAngle
@@ -94,9 +94,22 @@
       let pathData = ''
 
       if (sliceAngle > 0) {
-        if (item.percentage >= 99.9) {
-          // Full circle - simplified path
-          pathData = `M ${centerX + radius} ${centerY} A ${radius} ${radius} 0 1 1 ${centerX + radius - 0.01} ${centerY} Z`
+        // Fix untuk single item atau item yang hampir 100%
+        if (chartData.value.length === 1 || item.percentage >= 99.9) {
+          // Full circle - gunakan dua arc untuk menghindari rendering error
+          const midAngle = startAngle + Math.PI
+          const x1 = centerX + radius * Math.cos(startAngle)
+          const y1 = centerY + radius * Math.sin(startAngle)
+          const x2 = centerX + radius * Math.cos(midAngle)
+          const y2 = centerY + radius * Math.sin(midAngle)
+          const x3 = centerX + radius * Math.cos(startAngle + 0.001) // Slight offset untuk menghindari overlap
+          const y3 = centerY + radius * Math.sin(startAngle + 0.001)
+
+          pathData = `M ${centerX} ${centerY} 
+                   L ${x1} ${y1} 
+                   A ${radius} ${radius} 0 0 1 ${x2} ${y2} 
+                   A ${radius} ${radius} 0 0 1 ${x3} ${y3} 
+                   Z`
         } else {
           // Normal slice - pre-calculated coordinates
           const x1 = centerX + radius * Math.cos(startAngle)
@@ -105,7 +118,10 @@
           const y2 = centerY + radius * Math.sin(endAngle)
           const largeArcFlag = sliceAngle > Math.PI ? 1 : 0
 
-          pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
+          pathData = `M ${centerX} ${centerY} 
+                   L ${x1} ${y1} 
+                   A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} 
+                   Z`
         }
       }
 
@@ -166,6 +182,11 @@
           border: 'border-green-100/50',
           text: 'group-hover:text-green-600',
         }
+  })
+
+  // Computed untuk clip path animation
+  const clipPathRadius = computed(() => {
+    return 85 * animationProgress.value
   })
 
   onMounted(async () => {
@@ -229,8 +250,21 @@
               opacity="0.3"
             />
 
-            <!-- Optimized pie slices -->
-            <g>
+            <!-- Single item dengan animasi radius scaling -->
+            <circle
+              v-if="chartData.length === 1"
+              cx="100"
+              cy="100"
+              :r="85 * animationProgress"
+              :fill="chartData[0].color"
+              stroke="white"
+              stroke-width="2"
+              class="transition-opacity duration-300 hover:opacity-90"
+              :style="`opacity: ${animationProgress}`"
+            />
+
+            <!-- Multiple items dengan pie slices -->
+            <g v-else>
               <path
                 v-for="(slice, index) in pieSlices"
                 :key="`slice-${index}`"
@@ -243,17 +277,18 @@
               />
             </g>
 
-            <!-- Center circle -->
+            <!-- Center circle dengan animasi -->
             <circle
               cx="100"
               cy="100"
-              r="45"
+              :r="45 * Math.min(animationProgress * 1.2, 1)"
               fill="white"
               stroke="#e2e8f0"
               stroke-width="1"
+              :style="`opacity: ${Math.min(animationProgress * 1.3, 1)}`"
             />
 
-            <!-- Center text -->
+            <!-- Center text dengan staggered animation -->
             <text
               x="100"
               y="92"
@@ -265,6 +300,7 @@
                   -apple-system,
                   sans-serif;
               "
+              :style="`opacity: ${Math.min(animationProgress * 1.8, 1)}`"
             >
               Total
             </text>
@@ -279,6 +315,7 @@
                   -apple-system,
                   sans-serif;
               "
+              :style="`opacity: ${Math.min(animationProgress * 1.8, 1)}`"
             >
               {{ totalValue }}
             </text>

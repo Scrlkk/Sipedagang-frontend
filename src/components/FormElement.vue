@@ -9,6 +9,7 @@
   } from 'vue'
   import { usePengadaanStore } from '@/stores/pengadaanStore'
   import api from '@/services/authService' // Import untuk API call
+  import Swal from 'sweetalert2' // ✅ Add this import
 
   const props = defineProps({
     isEditMode: {
@@ -29,10 +30,10 @@
   const tanggalPengadaan = ref('')
   const jenisPengadaan = ref('')
   const kuantum = ref('')
-  const satuanKuantum = ref('KG')
-  const satuanJumlahPembayaran = ref('KG')
-  const jumlahSPP = ref('')
-  const satuanJumlahSPP = ref('KG')
+  const satuanKuantum = ref('')
+  const satuanJumlahPembayaran = ref('')
+  const satuanJumlahSPP = ref('')
+  const jumlahSPP = ref('') // ✅ ADD: Missing jumlahSPP definition
 
   // ✅ State untuk autocomplete perusahaan
   const searchCompany = ref('')
@@ -54,8 +55,8 @@
   const hasChanges = ref(false)
   const initialFormData = ref({})
 
-  // ✅ DATA IN
-  const dataInList = ref([{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }])
+  // ✅ DATA IN dengan satuan kosong di awal
+  const dataInList = ref([{ no_in: '', tanggal: '', jumlah: '', satuan: '' }])
 
   // ✅ Computed property untuk Jumlah Pembayaran
   const jumlahPembayaran = computed(() => {
@@ -94,39 +95,38 @@
   }
 
   // ✅ MODIFIED: Function untuk search jenis pengadaan - RETURN FULL DATA
-  const searchJenisPengadaanData = async (query) => {
-    if (!query || query.trim().length < 1) {
-      jenisPengadaanResults.value = []
-      showJenisPengadaanDropdown.value = false
-      return
-    }
-
+  const searchJenisPengadaanData = async (query = '') => {
     isSearchingJenisPengadaan.value = true
     try {
       const response = await api.get('/pengaturan-pengadaan')
 
-      // Filter data berdasarkan query
+      // Filter data berdasarkan query (jika ada)
       const allData = response.data?.data || response.data || []
-      const filteredData = allData.filter(
-        (item) =>
-          item.jenis_pengadaan_barang &&
-          item.jenis_pengadaan_barang
-            .toLowerCase()
-            .includes(query.trim().toLowerCase()),
-      )
 
-      // ✅ NEW: Group by jenis_pengadaan_barang dan ambil data lengkap
+      let filteredData = allData
+
+      // ✅ NEW: Hanya filter jika ada query
+      if (query && query.trim().length > 0) {
+        filteredData = allData.filter(
+          (item) =>
+            item.jenis_pengadaan_barang &&
+            item.jenis_pengadaan_barang
+              .toLowerCase()
+              .includes(query.trim().toLowerCase()),
+        )
+      }
+
+      // ✅ Group by jenis_pengadaan_barang dan ambil data lengkap
       const groupedData = {}
       filteredData.forEach((item) => {
         const jenis = item.jenis_pengadaan_barang
         if (!groupedData[jenis]) {
           groupedData[jenis] = {
             jenis_pengadaan_barang: jenis,
-            satuan: item.satuan || 'KG', // Ambil satuan dari data
-            // Bisa tambah field lain jika diperlukan
+            satuan: item.satuan || 'KG',
             pph: item.pph,
             ppn: item.ppn,
-            fullData: item, // Simpan data lengkap untuk referensi
+            fullData: item,
           }
         }
       })
@@ -180,11 +180,11 @@
     }
   }
 
-  // ✅ NEW: Handle input search jenis pengadaan dengan debounce
+  // ✅ MODIFIED: Handle input search jenis pengadaan dengan debounce
   const handleJenisPengadaanSearchInput = (event) => {
     const query = event.target.value
     searchJenisPengadaan.value = query
-    jenisPengadaan.value = query // Update jenisPengadaan secara real-time
+    jenisPengadaan.value = query
 
     // Clear previous timeout
     if (searchJenisPengadaanTimeout.value) {
@@ -194,8 +194,8 @@
     // Reset selection jika query kosong
     if (!query || query.trim() === '') {
       selectedJenisPengadaan.value = null
-      jenisPengadaanResults.value = []
-      showJenisPengadaanDropdown.value = false
+      // ✅ NEW: Tetap tampilkan semua hasil meski query kosong
+      searchJenisPengadaanData('')
       return
     }
 
@@ -220,21 +220,14 @@
     }
   }
 
-  // ✅ NEW: Handle focus jenis pengadaan
+  // ✅ MODIFIED: Handle focus jenis pengadaan
   const handleJenisPengadaanFocus = () => {
-    if (
-      jenisPengadaanResults.value.length > 0 &&
-      !selectedJenisPengadaan.value
-    ) {
-      showJenisPengadaanDropdown.value = true
-    }
+    // ✅ NEW: Langsung tampilkan semua data ketika focus
+    searchJenisPengadaanData('')
 
-    // Jika field kosong, langsung search untuk menampilkan semua
-    if (
-      !searchJenisPengadaan.value ||
-      searchJenisPengadaan.value.trim() === ''
-    ) {
-      searchJenisPengadaanData('') // Search dengan query kosong untuk menampilkan semua
+    // Jika sudah ada hasil sebelumnya, tampilkan dropdown
+    if (jenisPengadaanResults.value.length > 0) {
+      showJenisPengadaanDropdown.value = true
     }
   }
 
@@ -316,14 +309,14 @@
     atasnamaRekening.value = ''
   }
 
-  // ✅ NEW: Clear jenis pengadaan
+  // ✅ MODIFIED: Clear jenis pengadaan - reset satuan ke kosong
   const clearJenisPengadaanData = () => {
     selectedJenisPengadaan.value = null
     searchJenisPengadaan.value = ''
     jenisPengadaan.value = ''
 
-    // ✅ Reset satuan ke default jika tidak ada jenis pengadaan
-    updateAllSatuan('KG')
+    // ✅ Reset satuan ke kosong jika tidak ada jenis pengadaan
+    updateAllSatuan('')
   }
 
   // ✅ Clear selection perusahaan
@@ -426,14 +419,18 @@
     const kuantumFormatted = kuantum.value
       ? `${kuantum.value} ${satuanKuantum.value}`
       : ''
-    const sppFormatted = jumlahSPP.value
-      ? `${jumlahSPP.value} ${satuanJumlahSPP.value}`
-      : ''
+
+    // ✅ FIXED: Handle jumlahSPP yang bisa berupa number atau string
+    const sppFormatted =
+      jumlahSPP.value && String(jumlahSPP.value).trim() !== ''
+        ? `${jumlahSPP.value} ${satuanJumlahSPP.value}`
+        : ''
+
     const jumlahPembayaranFormatted = jumlahPembayaran.value
       ? `${jumlahPembayaran.value} ${satuanJumlahPembayaran.value}`
       : ''
 
-    return {
+    const formData = {
       // Data Pemohon
       nama_suplier: namaSupplier.value,
       nama_perusahaan: namaPerusahaan.value,
@@ -453,8 +450,14 @@
 
       // Pembayaran
       jumlah_pembayaran: jumlahPembayaranFormatted,
-      spp: sppFormatted,
+      spp: sppFormatted, // ✅ FIXED: SPP dengan handling yang benar
     }
+
+    console.log('Generated form data:', formData)
+    console.log('Raw jumlahSPP value:', jumlahSPP.value, typeof jumlahSPP.value)
+    console.log('Formatted SPP:', sppFormatted)
+
+    return formData
   }
 
   // ✅ MISSING: Add other required functions
@@ -513,7 +516,18 @@
 
   const updateForm = async (id, data) => {
     try {
-      return await pengadaanStore.updatePengadaan(id, data)
+      // ✅ FIXED: Jika data tidak diberikan, ambil dari form
+      const formData = data || getFormData()
+
+      // ✅ FIXED: Pastikan ID disertakan dalam data
+      const updateData = {
+        ...formData,
+        id: id, // Tambahkan ID untuk update
+      }
+
+      console.log('Updating with data:', updateData)
+
+      return await pengadaanStore.updatePengadaan(id, updateData)
     } catch (error) {
       console.error('Update form error:', error)
       throw error
@@ -586,7 +600,7 @@
     tanggalPengadaan.value = ''
     kuantum.value = ''
     jumlahSPP.value = ''
-    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }]
+    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: '' }] // ✅ Satuan kosong
 
     // Clear store messages
     if (pengadaanStore && pengadaanStore.clearMessages) {
@@ -605,7 +619,7 @@
     })
   }
 
-  // ✅ FIXED: Force clear method untuk memastikan reset total
+  // ✅ FIXED: Force clear method dengan satuan kosong
   const forceClearForm = async () => {
     console.log('Force clearing form...')
 
@@ -624,10 +638,10 @@
     tanggalPengadaan.value = ''
     kuantum.value = ''
     jumlahSPP.value = ''
-    satuanKuantum.value = 'KG'
-    satuanJumlahPembayaran.value = 'KG'
-    satuanJumlahSPP.value = 'KG'
-    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: 'KG' }]
+    satuanKuantum.value = '' // ✅ Reset ke kosong
+    satuanJumlahPembayaran.value = '' // ✅ Reset ke kosong
+    satuanJumlahSPP.value = '' // ✅ Reset ke kosong
+    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: '' }] // ✅ Satuan kosong
     companyResults.value = []
     showDropdown.value = false
     jenisPengadaanResults.value = []
@@ -663,12 +677,14 @@
       no_in: '',
       tanggal: '',
       jumlah: '',
-      satuan: satuanKuantum.value || 'KG',
+      satuan: satuanKuantum.value || '', // ✅ Gunakan satuan saat ini atau kosong
     })
   }
 
   // ✅ NEW: populateForm — fill all refs from an incoming object
   const populateForm = (formData) => {
+    console.log('populateForm called with:', formData)
+
     // — Pemohon —
     searchCompany.value = formData.nama_perusahaan || ''
     selectedCompany.value = {
@@ -689,35 +705,173 @@
     tanggalPengadaan.value = formData.tanggal_pengadaan || ''
     jenisPengadaan.value = formData.jenis_pengadaan_barang || ''
     searchJenisPengadaan.value = jenisPengadaan.value
-    selectedJenisPengadaan.value = {
-      jenis_pengadaan_barang: jenisPengadaan.value,
-      satuan: formData.satuan || 'KG',
-      fullData: formData,
-    }
-    kuantum.value = formData.kuantum ? formData.kuantum.split(' ')[0] : ''
-    satuanKuantum.value = formData.satuan || 'KG'
-    updateAllSatuan(satuanKuantum.value)
 
-    // — Data IN —
-    dataInList.value = (formData.in_data || []).map((item) => {
-      const [j, u] = (item.kuantum_in || '').split(' ')
-      return {
-        no_in: item.no_in || '',
-        tanggal: item.tanggal_in || '',
-        jumlah: j || '',
-        satuan: u || satuanKuantum.value,
+    // ✅ FIXED: Ambil satuan dari berbagai sumber dengan prioritas
+    let actualSatuan = ''
+
+    // 1. Coba ambil dari field satuan langsung
+    if (formData.satuan) {
+      actualSatuan = formData.satuan
+    }
+    // 2. Coba ambil dari kuantum (format: "123 PCS")
+    else if (formData.kuantum && formData.kuantum.includes(' ')) {
+      const kuantumParts = formData.kuantum.split(' ')
+      actualSatuan = kuantumParts[1] || ''
+    }
+    // 3. Coba ambil dari jumlah_pembayaran (format: "123 PCS")
+    else if (
+      formData.jumlah_pembayaran &&
+      formData.jumlah_pembayaran.includes(' ')
+    ) {
+      const pembayaranParts = formData.jumlah_pembayaran.split(' ')
+      actualSatuan = pembayaranParts[1] || ''
+    }
+    // 4. Coba ambil dari spp (format: "123 PCS")
+    else if (formData.spp && formData.spp.includes(' ')) {
+      const sppParts = formData.spp.split(' ')
+      actualSatuan = sppParts[1] || ''
+    }
+    // 5. Coba ambil dari in_data jika ada
+    else if (formData.in_data) {
+      try {
+        let inDataArray = []
+        if (typeof formData.in_data === 'string') {
+          inDataArray = JSON.parse(formData.in_data)
+        } else if (Array.isArray(formData.in_data)) {
+          inDataArray = formData.in_data
+        }
+
+        if (inDataArray.length > 0 && inDataArray[0].kuantum_in) {
+          const inParts = inDataArray[0].kuantum_in.toString().split(' ')
+          actualSatuan = inParts[1] || ''
+        }
+      } catch (error) {
+        console.warn('Could not parse in_data for satuan detection:', error)
       }
+    }
+
+    console.log('Detected actualSatuan:', actualSatuan)
+    console.log('Source data:', {
+      satuan: formData.satuan,
+      kuantum: formData.kuantum,
+      jumlah_pembayaran: formData.jumlah_pembayaran,
+      spp: formData.spp,
     })
 
-    // — Pembayaran/SPP —
+    // ✅ FIXED: Set selectedJenisPengadaan dengan satuan yang terdeteksi
+    selectedJenisPengadaan.value = {
+      jenis_pengadaan_barang: jenisPengadaan.value,
+      satuan: actualSatuan, // ✅ Gunakan satuan yang terdeteksi dari data
+      fullData: formData,
+    }
+
+    kuantum.value = formData.kuantum ? formData.kuantum.split(' ')[0] : ''
+
+    // ✅ FIXED: Set semua satuan dengan nilai yang sama dari data
+    satuanKuantum.value = actualSatuan
+    satuanJumlahPembayaran.value = actualSatuan
+    satuanJumlahSPP.value = actualSatuan
+
+    console.log('Setting all satuan to:', actualSatuan)
+
+    // — Data IN — ✅ FIXED: Handle JSON string
+    try {
+      let inDataArray = []
+
+      if (formData.in_data) {
+        console.log('Raw in_data:', formData.in_data, typeof formData.in_data)
+
+        // ✅ Cek apakah in_data adalah string JSON atau sudah array
+        if (typeof formData.in_data === 'string') {
+          console.log('Parsing JSON string...')
+          inDataArray = JSON.parse(formData.in_data)
+        } else if (Array.isArray(formData.in_data)) {
+          console.log('Already an array...')
+          inDataArray = formData.in_data
+        } else {
+          console.warn('in_data format not recognized:', formData.in_data)
+          inDataArray = []
+        }
+
+        console.log('Parsed inDataArray:', inDataArray)
+      }
+
+      // ✅ Mapping dengan error handling
+      if (Array.isArray(inDataArray) && inDataArray.length > 0) {
+        dataInList.value = inDataArray.map((item, index) => {
+          console.log(`Processing item ${index}:`, item)
+
+          // ✅ Handle kuantum_in yang mungkin berupa string dengan satuan
+          let jumlah = ''
+          let satuan = actualSatuan // ✅ Gunakan satuan yang sama untuk konsistensi
+
+          if (item.kuantum_in) {
+            const parts = item.kuantum_in.toString().split(' ')
+            jumlah = parts[0] || ''
+            // ✅ FIXED: Gunakan satuan yang terdeteksi, bukan dari parts
+            // satuan tetap menggunakan actualSatuan untuk konsistensi
+          }
+
+          return {
+            no_in: item.no_in?.toString() || '',
+            tanggal: item.tanggal_in || '',
+            jumlah: jumlah,
+            satuan: satuan, // ✅ Gunakan satuan yang konsisten
+          }
+        })
+      } else {
+        console.log('No valid in_data found, using default')
+        dataInList.value = [
+          { no_in: '', tanggal: '', jumlah: '', satuan: actualSatuan }, // ✅ Gunakan satuan yang konsisten
+        ]
+      }
+
+      console.log('Final dataInList:', dataInList.value)
+    } catch (error) {
+      console.error('Error parsing in_data:', error)
+      console.error('Raw in_data that caused error:', formData.in_data)
+
+      // ✅ Fallback ke default jika parsing gagal
+      dataInList.value = [
+        { no_in: '', tanggal: '', jumlah: '', satuan: actualSatuan }, // ✅ Gunakan satuan yang konsisten
+      ]
+
+      // ✅ Show user-friendly error
+      Swal.fire({
+        title: 'Peringatan!',
+        text: 'Data IN tidak dapat dimuat dengan benar. Menggunakan data kosong.',
+        icon: 'warning',
+        timer: 3000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-xl',
+        },
+      })
+    }
+
+    // — Pembayaran/SPP — ✅ FIXED: Parse tapi tetap gunakan satuan yang konsisten
     const [jp, up] = (formData.jumlah_pembayaran || '').split(' ')
     const [sppV, sppU] = (formData.spp || '').split(' ')
-    satuanJumlahPembayaran.value = up || satuanKuantum.value
+
+    // ✅ FIXED: Gunakan actualSatuan yang sudah terdeteksi untuk konsistensi
+    // Jangan gunakan up/sppU karena bisa berbeda, harus konsisten
+    satuanJumlahPembayaran.value = actualSatuan
     jumlahSPP.value = sppV || ''
-    satuanJumlahSPP.value = sppU || satuanKuantum.value
+    satuanJumlahSPP.value = actualSatuan
 
     // mark this as the new "initial" state
-    nextTick(() => saveInitialData())
+    nextTick(() => {
+      saveInitialData()
+      console.log('Form population completed and initial data saved')
+      console.log('Final satuan values:', {
+        satuanKuantum: satuanKuantum.value,
+        satuanJumlahPembayaran: satuanJumlahPembayaran.value,
+        satuanJumlahSPP: satuanJumlahSPP.value,
+        actualSatuan: actualSatuan,
+        selectedJenisPengadaan: selectedJenisPengadaan.value,
+      })
+    })
   }
 
   // ✅ Expose the force clear method - AFTER all functions are declared
@@ -749,7 +903,7 @@
       tanggalPengadaan,
       jenisPengadaan,
       kuantum,
-      jumlahSPP,
+      jumlahSPP, // ✅ ADD: Include jumlahSPP in watch
       dataInList,
     ],
     () => {
@@ -1227,38 +1381,72 @@
             "
             class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
           >
+            <!-- ✅ NEW: Loading state -->
             <div
-              v-for="(jenisObj, index) in jenisPengadaanResults"
-              :key="index"
-              @mousedown="selectJenisPengadaan(jenisObj)"
-              class="px-4 py-3 hover:bg-green-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+              v-if="isSearchingJenisPengadaan"
+              class="px-4 py-3 text-center text-gray-500 text-sm"
             >
-              <div class="font-medium text-sm text-gray-900 flex items-center">
+              <div class="flex items-center justify-center gap-2">
                 <svg
-                  class="w-4 h-4 text-green-600 mr-2"
+                  class="animate-spin h-4 w-4 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 118-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                {{ jenisObj.jenis_pengadaan_barang }}
-                <!-- ✅ Tampilkan satuan di dropdown -->
-                <span
-                  class="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded"
+                Memuat jenis pengadaan...
+              </div>
+            </div>
+
+            <!-- ✅ Results list -->
+            <div v-else>
+              <div
+                v-for="(jenisObj, index) in jenisPengadaanResults"
+                :key="index"
+                @mousedown="selectJenisPengadaan(jenisObj)"
+                class="px-4 py-3 hover:bg-green-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+              >
+                <div
+                  class="font-medium text-sm text-gray-900 flex items-center"
                 >
-                  {{ jenisObj.satuan }}
-                </span>
+                  <svg
+                    class="w-4 h-4 text-green-600 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                  {{ jenisObj.jenis_pengadaan_barang }}
+                  <span
+                    class="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded"
+                  >
+                    {{ jenisObj.satuan }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- No results -->
+          <!-- ✅ MODIFIED: No results - hanya tampil saat search dengan query -->
           <div
             v-if="
               showJenisPengadaanDropdown &&
@@ -1272,6 +1460,34 @@
             Tidak ada jenis pengadaan ditemukan untuk "{{
               searchJenisPengadaan
             }}"
+          </div>
+
+          <!-- ✅ NEW: Empty state ketika tidak ada data sama sekali -->
+          <div
+            v-if="
+              showJenisPengadaanDropdown &&
+              jenisPengadaanResults.length === 0 &&
+              (!searchJenisPengadaan || searchJenisPengadaan.length === 0) &&
+              !isSearchingJenisPengadaan
+            "
+            class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm"
+          >
+            <div class="flex items-center justify-center gap-2 mb-2">
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m0 0V9a2 2 0 012-2h2m0 0V6a2 2 0 012-2h2.09M7 13h10v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3z"
+                />
+              </svg>
+            </div>
+            Belum ada data pengaturan pengadaan tersedia
           </div>
         </div>
       </div>
@@ -1326,14 +1542,18 @@
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
           >
-            <!-- ✅ Satuan readonly, mengikuti jenis pengadaan -->
+            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
-                selectedJenisPengadaan ? 'text-green-600' : 'text-gray-500'
+                selectedJenisPengadaan
+                  ? 'text-green-600'
+                  : satuanKuantum
+                    ? 'text-gray-500'
+                    : 'text-gray-400'
               "
             >
-              {{ satuanKuantum }}
+              {{ satuanKuantum || 'Satuan' }}
             </span>
           </div>
         </div>
@@ -1378,14 +1598,18 @@
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
           >
-            <!-- ✅ Satuan readonly, mengikuti jenis pengadaan -->
+            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
-              class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 cursor-not-allowed min-w-[60px] bg-gray-50 rounded font-medium"
+              class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
-                selectedJenisPengadaan ? 'text-green-600' : 'text-gray-500'
+                selectedJenisPengadaan
+                  ? 'text-green-600'
+                  : satuanKuantum
+                    ? 'text-gray-500'
+                    : 'text-gray-400'
               "
             >
-              {{ satuanKuantum }}
+              {{ satuanKuantum || 'Satuan' }}
             </span>
           </div>
         </div>
@@ -1456,20 +1680,24 @@
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#E5E5E5] my-0.5 pl-2"
           >
-            <!-- ✅ Satuan readonly, mengikuti jenis pengadaan -->
+            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
-                selectedJenisPengadaan ? 'text-green-600' : 'text-gray-500'
+                selectedJenisPengadaan
+                  ? 'text-green-600'
+                  : satuanJumlahPembayaran
+                    ? 'text-gray-500'
+                    : 'text-gray-400'
               "
             >
-              {{ satuanJumlahPembayaran }}
+              {{ satuanJumlahPembayaran || 'Satuan' }}
             </span>
           </div>
         </div>
       </div>
 
-      <!-- ✅ JUMLAH SPP - TETAP ADA -->
+      <!-- ✅ ADD: JUMLAH SPP - YANG HILANG -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1477,30 +1705,31 @@
           for="jumlah-spp"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Jumlah SPP
-          <span class="text-xs sm:text-sm font-normal text-gray-500"
-            >(Opsional)</span
-          >
+          Jumlah SPP <span class="text-gray-500">(Opsional)</span>
         </label>
         <div class="relative w-full">
           <input
-            type="text"
+            type="number"
             id="jumlah-spp"
-            placeholder="Masukkan jumlah SPP (opsional)"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
+            placeholder="Masukkan jumlah SPP"
+            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             v-model="jumlahSPP"
           />
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
           >
-            <!-- ✅ Satuan readonly, mengikuti jenis pengadaan -->
+            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
-                selectedJenisPengadaan ? 'text-green-600' : 'text-gray-500'
+                selectedJenisPengadaan
+                  ? 'text-green-600'
+                  : satuanJumlahSPP
+                    ? 'text-gray-500'
+                    : 'text-gray-400'
               "
             >
-              {{ satuanJumlahSPP }}
+              {{ satuanJumlahSPP || 'Satuan' }}
             </span>
           </div>
         </div>

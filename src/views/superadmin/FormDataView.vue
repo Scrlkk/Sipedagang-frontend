@@ -64,35 +64,6 @@
     window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
-  // ✅ Clear dengan konfirmasi
-  async function handleClear() {
-    if (!hasUnsavedChanges.value) {
-      if (formRef.value && formRef.value.clearForm) {
-        formRef.value.clearForm()
-      }
-      return
-    }
-
-    const result = await Swal.fire({
-      title: 'Konfirmasi Clear Form',
-      text: 'Yakin ingin menghapus semua data yang sudah diisi?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Ya, Hapus',
-      cancelButtonText: 'Batal',
-      reverseButtons: true,
-    })
-
-    if (result.isConfirmed) {
-      if (formRef.value && formRef.value.clearForm) {
-        formRef.value.clearForm()
-        hasUnsavedChanges.value = false
-      }
-    }
-  }
-
   async function handleSubmit() {
     if (!formRef.value) return
 
@@ -103,6 +74,13 @@
 
       hasUnsavedChanges.value = false
 
+      // ✅ Auto-clear form setelah berhasil submit
+      if (formRef.value && formRef.value.clearForm) {
+        await formRef.value.clearForm()
+        hasUnsavedChanges.value = false
+      }
+
+      // ✅ Sesuaikan dengan SettingPengadaanView - tanpa .then()
       Swal.fire({
         title: 'Berhasil!',
         text: 'Data pengadaan berhasil disimpan',
@@ -110,6 +88,9 @@
         timer: 2000,
         showConfirmButton: false,
         timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-xl',
+        },
       })
     } catch (error) {
       let errorTitle = 'Error!'
@@ -187,10 +168,59 @@
         confirmButtonColor: '#d33',
         customClass: {
           content: 'text-left',
+          popup: 'rounded-xl',
+          confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
         },
       })
     } finally {
       isSubmitting.value = false
+    }
+  }
+
+  // ✅ Clear dengan konfirmasi - sesuaikan dengan SettingPengadaanView
+  async function handleClear() {
+    if (!hasUnsavedChanges.value) {
+      if (formRef.value && formRef.value.clearForm) {
+        formRef.value.clearForm()
+      }
+      return
+    }
+
+    const result = await Swal.fire({
+      title: 'Konfirmasi Clear Form',
+      text: 'Yakin ingin menghapus semua data yang sudah diisi?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-xl',
+        confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
+        cancelButton: 'rounded-lg font-medium px-4 py-2 text-sm',
+      },
+    })
+
+    if (result.isConfirmed) {
+      if (formRef.value && formRef.value.clearForm) {
+        formRef.value.clearForm()
+        hasUnsavedChanges.value = false
+
+        // ✅ Show success message for clear
+        Swal.fire({
+          title: 'Berhasil!',
+          text: 'Form berhasil dibersihkan',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          customClass: {
+            popup: 'rounded-xl',
+          },
+        })
+      }
     }
   }
 </script>

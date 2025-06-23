@@ -1,15 +1,15 @@
 <script setup>
   import { ref, computed, onMounted, onUnmounted } from 'vue'
-  import { useAuthStore } from '@/stores/authStore'
+  import { useUserStore } from '@/stores/userStore'
   import { useDashboardStore } from '@/stores/dashboardStore'
   import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import CategoryPieChart from '@/components/CategoryPieChart.vue'
 
-  const auth = useAuthStore()
+  const userStore = useUserStore()
   const dashboard = useDashboardStore()
 
   const userName = computed(
-    () => auth.user?.name || auth.user?.nama_pengguna || 'Admin',
+    () => userStore.user?.name || userStore.user?.nama_pengguna || 'Superadmin',
   )
 
   // Optimized time system with cleanup
@@ -78,6 +78,11 @@
       currentTime.value = new Date()
     }, 1000)
 
+    // ✅ REMOVED: Tidak perlu fetch user data lagi di dashboard
+    // SuperAdminLayout sudah handle user data dengan optimal
+    console.log('🏗️ Dashboard mounted: Using existing user data from layout')
+
+    // Hanya refresh dashboard data
     await refreshData()
   })
 
