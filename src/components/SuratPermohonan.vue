@@ -50,7 +50,7 @@
 <template>
   <section class="flex justify-center w-full">
     <!-- SURATE -->
-    <div class="w-[210mm] h-[297mm] font-arial text-black px-7 pl-12 pt-1">
+    <div class="w-[210mm] font-arial text-black px-7 pl-12 pt-1">
       <!-- Header -->
       <div class="text-center font-times">
         <div class="m-0 font-bold uppercase leading-none text-[18px]">
@@ -95,7 +95,8 @@
           tersebut di atas dapat dibayar / dipindahbukukan ke rekening Kami Bank
           {{ item.jenis_bank }}
           sebagaimana No Rekening {{ item.no_rekening }} Sesuai PO No
-          {{ item.no_preorder }} a.n. {{ item.atasnama_rekening }} {{ tanggalFormatSurat }}
+          {{ item.no_preorder }} a.n. {{ item.atasnama_rekening }}
+          {{ tanggalFormatSurat }}
         </div>
 
         <!-- 3 -->
@@ -118,16 +119,3 @@
     </div>
   </section>
 </template>
-
-<style scoped>
-  @media print {
-    @page {
-      size: A4;
-      margin: 3rem;
-    }
-    body {
-      margin: 4rem;
-      padding: 0;
-    }
-  }
-</style>

@@ -61,9 +61,7 @@
 
   <div v-else class="min-h-screen bg-gray-50 print:bg-white">
     <div class="print:hidden">
-      <div class="sticky top-0 z-40 bg-white shadow-sm border-b">
-        <ButtonPrintElement />
-      </div>
+      <ButtonPrintElement />
     </div>
     <!-- Section untuk Surat Permohonan dan Detail -->
     <section
@@ -73,8 +71,10 @@
       <div
         class="bg-white print:bg-transparent rounded-lg print:rounded-none shadow-sm print:shadow-none border print:border-none overflow-hidden"
       >
-        <div class="space-y-4 lg:space-y-0 p-4 sm:p-6 lg:p-8 print:p-0">
-          <SuratPermohonan :item="pengadaan" />
+        <div class="space-y-42 p-4 sm:p-6 lg:p-8 print:p-0">
+          <div class="page-break">
+            <SuratPermohonan :item="pengadaan" />
+          </div>
           <div class="page-break">
             <SuratDetailPengadaan :item="pengadaan" />
           </div>
@@ -96,10 +96,6 @@
 
     .page-break {
       page-break-after: always;
-    }
-
-    .fixed {
-      display: none !important;
     }
 
     .page-break:last-child {

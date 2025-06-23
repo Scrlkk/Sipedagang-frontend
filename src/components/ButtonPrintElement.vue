@@ -10,16 +10,15 @@
 
 <template>
   <div
-    class="flex flex-col gap-y-7 fixed top-[12rem] left-15 z-50 scale-80 bg-[#9ba1aa2f] outline outline-gray-200 p-4 rounded-[5rem] shadow-lg"
+    class="fixed z-50 flex flex-row items-center gap-x-4 bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-[#9ba1aa2f] p-3 shadow-lg outline outline-gray-200 lg:flex-col lg:gap-y-4 lg:top-1/2 lg:-translate-y-1/2 lg:left-6 lg:bottom-auto lg:-translate-x-0 lg:p-4 lg:rounded-[3rem]"
   >
     <button
-      class="cursor-pointer hover:scale-75 transition-all duration-200 ease-in-out"
+      class="cursor-pointer transition-transform duration-200 ease-in-out hover:scale-90 active:scale-85"
       @click="backRoute"
     >
       <!-- back icon -->
       <svg
-        width="100"
-        height="100"
+        class="h-12 w-12 lg:h-16 lg:w-16"
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -36,13 +35,12 @@
       </svg>
     </button>
     <button
-      class="cursor-pointer hover:scale-75 transition-all duration-200 ease-in-out"
+      class="cursor-pointer transition-transform duration-200 ease-in-out hover:scale-90 active:scale-85"
       @click="printPage"
     >
       <!-- print icon -->
       <svg
-        width="100"
-        height="100"
+        class="h-12 w-12 lg:h-16 lg:w-16"
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

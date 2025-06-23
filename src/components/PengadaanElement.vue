@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch, onMounted, nextTick } from 'vue'
+  import { ref, watch, onMounted, nextTick, computed } from 'vue' // ✅ 1. Import computed
   import { useSettingPengadaanStore } from '@/stores/settingPengadaanStore'
 
   const props = defineProps({
@@ -13,12 +13,28 @@
 
   const jenisPengadaanBarang = ref('')
   const satuan = ref('')
-  const hargaPerSatuan = ref('')
-  const ppn = ref('0') // ✅ Set default value to "0"
-  const pph = ref('0') // ✅ Set default value to "0"
+  const hargaPerSatuanRaw = ref(null) // ✅ 2. Ref untuk angka mentah (raw number)
+  const ppn = ref('0')
+  const pph = ref('0')
 
-  // ✅ FIX: Use setting pengadaan store
   const settingPengadaanStore = useSettingPengadaanStore()
+
+  // ✅ 3. Computed property untuk format tampilan
+  const hargaPerSatuan = computed({
+    get() {
+      if (
+        hargaPerSatuanRaw.value === null ||
+        hargaPerSatuanRaw.value === undefined
+      ) {
+        return ''
+      }
+      return formatCurrency(hargaPerSatuanRaw.value)
+    },
+    set(newValue) {
+      const numericValue = newValue.toString().replace(/[^0-9]/g, '')
+      hargaPerSatuanRaw.value = numericValue ? parseInt(numericValue, 10) : null
+    },
+  })
 
   const hasChanges = ref(false)
   const initialFormData = ref({})
@@ -27,7 +43,7 @@
     initialFormData.value = {
       jenisPengadaanBarang: jenisPengadaanBarang.value,
       satuan: satuan.value,
-      hargaPerSatuan: hargaPerSatuan.value,
+      hargaPerSatuan: hargaPerSatuanRaw.value, // ✅ 4. Gunakan nilai mentah
       ppn: ppn.value,
       pph: pph.value,
     }
@@ -39,7 +55,7 @@
     const currentData = {
       jenisPengadaanBarang: jenisPengadaanBarang.value,
       satuan: satuan.value,
-      hargaPerSatuan: hargaPerSatuan.value,
+      hargaPerSatuan: hargaPerSatuanRaw.value, // ✅ 4. Gunakan nilai mentah
       ppn: ppn.value,
       pph: pph.value,
     }
@@ -53,9 +69,9 @@
   function clearForm() {
     jenisPengadaanBarang.value = ''
     satuan.value = ''
-    hargaPerSatuan.value = ''
-    ppn.value = '0' // ✅ Reset to default "0"
-    pph.value = '0' // ✅ Reset to default "0"
+    hargaPerSatuanRaw.value = null // ✅ 4. Gunakan nilai mentah
+    ppn.value = '0'
+    pph.value = '0'
     settingPengadaanStore.clearCurrentPengaturanPengadaan()
 
     nextTick(() => {
@@ -74,10 +90,10 @@
 
     jenisPengadaanBarang.value = data.jenis_pengadaan_barang || ''
     satuan.value = data.satuan || ''
-    // Format price for display when populating form
-    hargaPerSatuan.value = data.harga_per_satuan
-      ? formatCurrency(data.harga_per_satuan)
-      : ''
+    // ✅ FIXED: Parse the incoming value to a clean number
+    hargaPerSatuanRaw.value = data.harga_per_satuan
+      ? parseFloat(data.harga_per_satuan)
+      : null
     ppn.value =
       data.ppn !== undefined && data.ppn !== null ? data.ppn.toString() : '0' // ✅ Default to "0" if no value
     pph.value =
@@ -100,8 +116,7 @@
     const formData = {
       jenis_pengadaan_barang: jenisPengadaanBarang.value,
       satuan: satuan.value.toUpperCase(), // ✅ Convert to uppercase
-      harga_per_satuan:
-        parseFloat(hargaPerSatuan.value.replace(/[^0-9]/g, '')) || 0,
+      harga_per_satuan: hargaPerSatuanRaw.value || 0, // ✅ 4. Gunakan nilai mentah
       ppn: parseFloat(ppn.value) || 0,
       pph: parseFloat(pph.value) || 0,
     }
@@ -115,14 +130,17 @@
     if (!jenisPengadaanBarang.value)
       errors.push('Jenis Pengadaan Barang harus diisi')
     if (!satuan.value) errors.push('Satuan harus diisi')
-    if (!hargaPerSatuan.value) errors.push('Harga Per Satuan harus diisi')
-    // ✅ Remove validation for ppn and pph since they have default values
-    // if (!ppn.value) errors.push('PPN harus diisi')
-    // if (!pph.value) errors.push('PPh harus diisi')
+    if (
+      hargaPerSatuanRaw.value === null ||
+      hargaPerSatuanRaw.value === undefined
+    ) {
+      // ✅ 4. Gunakan nilai mentah
+      errors.push('Harga Per Satuan harus diisi')
+    }
 
     // Validate numeric values
-    const priceValue = parseFloat(hargaPerSatuan.value.replace(/[^0-9]/g, ''))
-    if (hargaPerSatuan.value && isNaN(priceValue)) {
+    const priceValue = hargaPerSatuanRaw.value // ✅ 4. Gunakan nilai mentah
+    if (priceValue !== null && isNaN(priceValue)) {
       errors.push('Harga Per Satuan harus berupa angka')
     }
     if (ppn.value && isNaN(parseFloat(ppn.value))) {
@@ -190,19 +208,6 @@
     // Add thousand separators
     const formatted = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
     return `Rp ${formatted}`
-  }
-
-  const handlePriceInput = (event) => {
-    let value = event.target.value
-    // Remove all non-numeric characters
-    value = value.replace(/[^0-9]/g, '')
-
-    if (value) {
-      // Format with currency
-      hargaPerSatuan.value = formatCurrency(value)
-    } else {
-      hargaPerSatuan.value = ''
-    }
   }
 
   const handlePriceKeypress = (event) => {
@@ -289,7 +294,7 @@
 
   // ✅ UPDATED: Watch with edit mode consideration
   watch(
-    [jenisPengadaanBarang, satuan, hargaPerSatuan, ppn, pph],
+    [jenisPengadaanBarang, satuan, hargaPerSatuanRaw, ppn, pph], // ✅ 4. Gunakan nilai mentah
     () => {
       // Only check for changes after form is properly initialized
       if (Object.keys(initialFormData.value).length > 0) {
@@ -376,7 +381,6 @@
             placeholder="Rp 0"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base font-mono"
             v-model="hargaPerSatuan"
-            @input="handlePriceInput"
             @keypress="handlePriceKeypress"
             autocomplete="off"
             inputmode="numeric"

@@ -37,44 +37,24 @@
     )
   })
 
-  // ✅ NEW: Animated userName dengan typing effect
+  // ✅ NEW: Animated userName (tanpa animasi ketik)
   const animatedUserName = ref('')
-  const isTyping = ref(false)
 
-  // ✅ NEW: Function untuk typing animation
-  const typewriterEffect = async (text) => {
-    if (isTyping.value) return
-
-    isTyping.value = true
-    animatedUserName.value = ''
-
-    // Clear old text first
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Type new text character by character
-    for (let i = 0; i <= text.length; i++) {
-      animatedUserName.value = text.slice(0, i)
-      await new Promise((resolve) => setTimeout(resolve, 50))
-    }
-
-    isTyping.value = false
-  }
-
-  // ✅ NEW: Watch userName changes untuk trigger typing animation
+  // ✅ NEW: Watch userName changes untuk update langsung
   watch(
     userName,
-    async (newName, oldName) => {
-      if (newName !== oldName && newName !== '...' && !isTyping.value) {
-        await typewriterEffect(newName)
-      } else if (newName === '...') {
-        animatedUserName.value = newName
-      }
+    (newName) => {
+      // Langsung set nama tanpa animasi ketik
+      animatedUserName.value = newName
     },
     { immediate: true },
   )
 
   // ✅ PERBAIKAN: Pisahkan loading state untuk refresh dari edit profile
   const isRefreshingAfterEdit = ref(false)
+
+  // ✅ NEW: Cache-busting key untuk foto profil
+  const photoCacheKey = ref(Date.now())
 
   // ✅ SIMPLIFIED: Loading state dari userStore (untuk keperluan umum)
   const isRefreshing = computed(() => userStore.isLoading)
@@ -128,7 +108,7 @@
     refreshUserData,
   })
 
-  // ✅ SIMPLIFIED: Profile photo dari userStore
+  // ✅ SIMPLIFIED: Profile photo dari userStore dengan cache busting
   const profilePhoto = computed(() => {
     const user = userStore.user
     const foto =
@@ -140,7 +120,8 @@
 
     if (foto) {
       const url = config.getStorageUrl(foto)
-      return url
+      // ✅ FIXED: Tambahkan cache-busting query parameter
+      return `${url}?v=${photoCacheKey.value}`
     }
 
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'Pengguna')}&background=0099FF&color=fff&size=128`
@@ -170,6 +151,9 @@
 
           // ✅ PERBAIKAN: Refresh data dan tunggu sampai selesai
           await refreshUserData()
+
+          // ✅ FIXED: Perbarui cache key untuk memaksa reload gambar
+          photoCacheKey.value = Date.now()
 
           console.log('✅ SuperAdminLayout: Profile refreshed successfully')
 
@@ -683,18 +667,37 @@
               :disabled="isUpdatingAfterEdit"
             >
               <!-- Profile Photo -->
-              <div class="-mr-1 sm:-mr-2">
-                <img
-                  loading="lazy"
-                  :src="profilePhoto"
-                  :alt="userName"
-                  class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover outline outline-white transition-transform duration-200 group-hover:scale-105"
-                  @error="
-                    (e) => {
-                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
-                    }
-                  "
-                />
+              <div class="relative -mr-1 sm:-mr-2">
+                <!-- ✅ NEW: Skeleton loading for initial load -->
+                <div
+                  v-if="isUserNameLoading && userName === '...'"
+                  class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/30 animate-pulse"
+                ></div>
+
+                <!-- ✅ ENHANCED: Container for photo and update overlay -->
+                <div v-else>
+                  <!-- Loading overlay for profile photo update -->
+                  <div
+                    v-if="isUpdatingAfterEdit"
+                    class="absolute inset-0 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center z-10"
+                  >
+                    <div
+                      class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"
+                    ></div>
+                  </div>
+
+                  <img
+                    loading="lazy"
+                    :src="profilePhoto"
+                    :alt="userName"
+                    class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover outline outline-white transition-transform duration-200 group-hover:scale-105"
+                    @error="
+                      (e) => {
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
+                      }
+                    "
+                  />
+                </div>
               </div>
 
               <!-- User Name -->
@@ -728,19 +731,13 @@
                   </div>
                 </div>
 
-                <!-- ✅ Normal state dengan typing effect -->
+                <!-- ✅ Normal state (tanpa animasi ketik) -->
                 <div
                   v-else
                   class="font-poppins font-medium text-white text-sm sm:text-base truncate max-w-32 sm:max-w-none relative"
                 >
-                  <!-- ✅ Animated text dengan cursor effect -->
                   <span class="relative">
                     {{ animatedUserName }}
-                    <!-- ✅ Typing cursor yang muncul saat typing -->
-                    <span
-                      v-if="isTyping"
-                      class="absolute -right-1 top-0 w-0.5 h-full bg-white animate-pulse"
-                    ></span>
                   </span>
                 </div>
               </div>

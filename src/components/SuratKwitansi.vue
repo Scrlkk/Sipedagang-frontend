@@ -98,7 +98,7 @@
 
 <template>
   <section class="flex justify-center w-full">
-    <section class="w-[210mm] h-[140mm]">
+    <section class="w-[210mm]">
       <section
         class="w-full h-full grid grid-cols-[22%_78%] px-2 font-calibri text-sm"
       >
@@ -151,7 +151,7 @@
             <div class="col-start-2 flex flex-col">
               <div class="flex justify-between">
                 <div>Kuantum</div>
-                <div>{{ item.kuantum }}</div>
+                <div>{{ item.jumlah_pembayaran }}</div>
               </div>
               <div class="flex justify-between">
                 <div>Harga</div>

@@ -16,7 +16,7 @@
           Tgl <span class="ml-2">{{ datain.tanggal_in }}</span>
         </div>
       </div>
-      <div>kuantum : {{ datain.kuantum_in }}</div>
+      <div>Kuantum : {{ datain.kuantum_in }}</div>
     </div>
   </div>
 </template>
