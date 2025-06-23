@@ -19,8 +19,8 @@ import LihatDataPemohonView from '@/views/superadmin/LihatDataPemohonView.vue'
 import SettingPengadaanView from '@/views/superadmin/SettingPengadaanView.vue'
 import LihatSettingPengadaanView from '@/views/superadmin/LihatSettingPengadaanView.vue'
 import EditProfileView from '@/views/superadmin/EditProfileView.vue'
+import DataPemohon from '../views/admin/DataPemohon.vue'
 import NotFound from '@/views/login/NotFound.vue'
-import SuratKwitansi from '../components/SuratKwitansi.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -111,6 +111,14 @@ const router = createRouter({
       name: 'LihatData',
       meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
     },
+    
+    {
+      path: '/admin/datapemohon',
+      component: DataPemohon,
+      name: 'DataPemohon',
+      meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
+    },
+    
     {
       path: '/admin',
       redirect: '/admin/dashboard',
@@ -214,13 +222,6 @@ const router = createRouter({
       path: '/surat-preview/:id',
       name: 'cetak surat',
       component: RiwayatPreviewView,
-      props: true,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/suratkwitansi',
-      name: 'kwitanis',
-      component: SuratKwitansi,
       props: true,
       meta: { requiresAuth: true },
     },

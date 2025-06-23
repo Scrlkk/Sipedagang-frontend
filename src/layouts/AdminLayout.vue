@@ -147,14 +147,15 @@
     </div>    <!-- Header -->
     <header
     >
-      <div class="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 lg:py-6">        <!-- Logo -->
-        <div
-          class="flex text-[24px] xs:text-[28px] sm:text-[32px] lg:text-[40px] xl:text-[48px] font-bold font-poppins mb-3 sm:mb-0 drop-shadow-sm"
+      <div class="flex flex-row justify-between items-center px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 lg:py-6">        <!-- Logo -->        <div
+          class="flex text-[18px] xs:text-[22px] sm:text-[28px] md:text-[32px] lg:text-[40px] xl:text-[48px] font-bold font-poppins drop-shadow-sm"
         >
           <div class="text-[#F0AB26] transition-colors duration-300">Si</div>
           <div class="text-[#176BC7] transition-colors duration-300">PEDAGANG</div>
         </div><!-- User Profile -->
         <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
+
+          
           <!-- User Avatar and Name with Dropdown -->
           <div id="profile-dropdown-container" class="relative z-[10000]">          <div
             @click="toggleProfileDropdown"
@@ -173,7 +174,8 @@
                 "
               />
             </div>            <div
-              class="text-white text-[11px] sm:text-[13px] lg:text-[14px] xl:text-[15px] font-medium font-poppins hidden xs:block profile-text-adaptive"
+              class="text-white text-[11px] sm:text-[13px] lg:text-[14px] xl:text-[15px] font-medium font-poppins hidden xs:block profile-text-adaptive truncate max-w-[120px] sm:max-w-[140px] lg:max-w-[160px] xl:max-w-[180px]"
+              :title="userName"
             >
               {{ userName }}
             </div>
@@ -197,7 +199,7 @@
             leave-to-class="transform opacity-0 scale-95"
           >            <div
               v-if="isProfileDropdownOpen"
-              class="absolute right-0 mt-3 w-48 sm:w-52 bg-white/98 rounded-2xl shadow-2xl py-3 z-[10001] origin-top-right border border-gray-200/50 ring-1 ring-black/5"
+              class="absolute right-0 mt-3 w-52 sm:w-56 bg-white/98 rounded-2xl shadow-2xl py-3 z-[10001] origin-top-right border border-gray-200/50 ring-1 ring-black/5 overflow-hidden"
             >
               <!-- Profile Info Section (Mobile Only) -->
               <div class="px-4 py-3 border-b border-gray-100 sm:hidden">
@@ -208,9 +210,8 @@
                       :alt="userName"
                       class="w-full h-full object-cover"
                     />
-                  </div>
-                  <div>
-                    <div class="text-sm font-semibold text-gray-900">{{ userName }}</div>
+                  </div>                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-gray-900 truncate" :title="userName">{{ userName }}</div>
                     <div class="text-xs text-gray-500">Administrator</div>
                   </div>
                 </div>
@@ -285,22 +286,37 @@
     min-height: 48px;
     min-width: 48px;
   }
-  
-  /* Improved dropdown positioning for mobile */
+    /* Improved dropdown positioning for mobile */
   .absolute.right-0 {
     right: 0;
     left: auto;
-    min-width: 200px;
+    min-width: 208px; /* 52 * 4 = 208px, sesuai dengan w-52 */
   }
   
-  /* Better text readability on mobile */
+  /* Better dropdown content overflow protection */
+  .absolute.right-0 > div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Better text readability on mobile - clean shadow */
   .text-white {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
   
-  /* Improved header spacing on mobile */
+  /* Profile name truncation for mobile */
+  .profile-text-adaptive {
+    max-width: 100px !important;
+  }
+  
+  /* Improved header spacing on mobile - keep horizontal layout */
   header {
     padding-bottom: 1rem !important;
+  }
+  
+  /* More compact logo for mobile horizontal layout */
+  .font-poppins {
+    letter-spacing: -0.01em;
   }
   
   /* Profile button improvements */
@@ -323,16 +339,34 @@
   }
 }
 
-/* Better visibility for very small screens */
+/* Better visibility for very small screens - clean text */
 @media (max-width: 475px) {
   .text-white {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     font-weight: 600;
   }
   
-  /* Logo adjustments for very small screens */
+  /* Logo adjustments for very small screens - horizontal layout */
   .font-poppins {
     letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  /* Profile name truncation for very small screens */
+  .profile-text-adaptive {
+    max-width: 80px !important;
+  }
+  
+  /* Ensure horizontal layout on very small screens */
+  header .flex {
+    gap: 0.5rem !important;
+  }
+  
+  /* Dropdown adjustments for very small screens */
+  #profile-dropdown-container .absolute {
+    width: calc(100vw - 1rem) !important;
+    right: 0.5rem !important;
+    max-width: 200px !important;
   }
   
   /* More prominent profile button */
@@ -343,10 +377,10 @@
   }
 }
 
-/* High contrast mode improvements */
+/* High contrast mode improvements - clean text */
 @media (prefers-contrast: high) {
   .text-white {
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   }
   
   .bg-white\/95 {
@@ -378,6 +412,23 @@
 #profile-dropdown-container {
   position: relative;
   z-index: 10000 !important;
+}
+
+/* Dropdown content overflow fixes */
+#profile-dropdown-container .absolute {
+  z-index: 10001 !important;
+  max-width: calc(100vw - 2rem); /* Prevent dropdown from going off-screen */
+}
+
+/* Ensure text fits properly in dropdown */
+#profile-dropdown-container .truncate {
+  max-width: 100%;
+}
+
+/* Better text wrapping for dropdown content */
+#profile-dropdown-container .text-sm {
+  line-height: 1.4;
+  word-break: break-word;
 }
 
 /* Override any competing z-index values */
@@ -427,53 +478,31 @@
   }
 }
 
-/* Adaptive text color for profile name - using strong contrast outline */
+/* Adaptive text color for profile name - clean white text */
 .profile-text-adaptive {
   color: white;
-  /* Strong outline effect to ensure readability on any background */
-  text-shadow: 
-    /* Multiple black shadows for strong outline */
-    -2px -2px 0 rgba(0, 0, 0, 0.9),
-    2px -2px 0 rgba(0, 0, 0, 0.9),
-    -2px 2px 0 rgba(0, 0, 0, 0.9),
-    2px 2px 0 rgba(0, 0, 0, 0.9),
-    /* Additional intermediate shadows */
-    -1px -1px 0 rgba(0, 0, 0, 0.9),
-    1px -1px 0 rgba(0, 0, 0, 0.9),
-    -1px 1px 0 rgba(0, 0, 0, 0.9),
-    1px 1px 0 rgba(0, 0, 0, 0.9),
-    /* Softer outer glow */
-    0 0 3px rgba(0, 0, 0, 0.8),
-    0 0 6px rgba(0, 0, 0, 0.6);
-  
-  /* Fallback using webkit text stroke for better support */
-  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.8);
+  /* Subtle shadow for better readability without black border */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   
   transition: all 0.3s ease;
 }
 
-/* Enhanced outline for high contrast mode */
+/* Enhanced text shadow for high contrast mode - without black border */
 @media (prefers-contrast: high) {
   .profile-text-adaptive {
-    -webkit-text-stroke: 2px rgba(0, 0, 0, 1);
-    text-shadow: 
-      -3px -3px 0 rgba(0, 0, 0, 1),
-      3px -3px 0 rgba(0, 0, 0, 1),
-      -3px 3px 0 rgba(0, 0, 0, 1),
-      3px 3px 0 rgba(0, 0, 0, 1),
-      0 0 6px rgba(0, 0, 0, 1);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
   }
 }
 
-/* Alternative approach using CSS filters for contrast */
+/* Alternative approach for better contrast - clean appearance */
 @media (prefers-contrast: high) {
   .profile-text-adaptive {
     color: white;
     text-shadow: 
-      0 0 4px rgba(0, 0, 0, 1),
-      0 0 8px rgba(0, 0, 0, 0.8),
-      2px 2px 4px rgba(0, 0, 0, 0.9);
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
+      0 1px 4px rgba(0, 0, 0, 0.9),
+      0 2px 8px rgba(0, 0, 0, 0.6);
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
   }
 }
 </style>
