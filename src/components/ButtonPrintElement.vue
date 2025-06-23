@@ -1,10 +1,4 @@
 <script setup>
-  import { ref } from 'vue'
-
-  const emit = defineEmits(['toggle-view'])
-
-  const isKuitansiMode = ref(false)
-
   const printPage = () => {
     window.print()
   }
@@ -12,17 +6,8 @@
   const backRoute = () => {
     window.close()
   }
-
-  const toggleToSuratMode = () => {
-    isKuitansiMode.value = false
-    emit('toggle-view', 'surat')
-  }
-
-  const toggleToKuitansiMode = () => {
-    isKuitansiMode.value = true
-    emit('toggle-view', 'kuitansi')
-  }
 </script>
+
 <template>
   <div
     class="flex flex-col gap-y-7 fixed top-[12rem] left-15 z-50 scale-80 bg-[#9ba1aa2f] outline outline-gray-200 p-4 rounded-[5rem] shadow-lg"
@@ -31,6 +16,7 @@
       class="cursor-pointer hover:scale-75 transition-all duration-200 ease-in-out"
       @click="backRoute"
     >
+      <!-- back icon -->
       <svg
         width="100"
         height="100"
@@ -53,6 +39,7 @@
       class="cursor-pointer hover:scale-75 transition-all duration-200 ease-in-out"
       @click="printPage"
     >
+      <!-- print icon -->
       <svg
         width="100"
         height="100"
@@ -82,78 +69,6 @@
           d="M65.5 50H65.5224"
           stroke="#F7F8FA"
           stroke-width="4"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    </button>
-    <button
-      v-if="isKuitansiMode"
-      @click="toggleToSuratMode"
-      class="cursor-pointer hover:scale-75 transition-all duration-200 ease-in-out"
-    >
-      <svg
-        width="100"
-        height="100"
-        viewBox="0 0 100 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="50" cy="50" r="50" fill="#0099FF" />
-        <path
-          d="M57.375 27.7292V31.1667C57.375 34.4076 57.375 36.028 58.3817 37.0349C59.3887 38.0417 61.0091 38.0417 64.25 38.0417H67.6875"
-          stroke="white"
-          stroke-width="3.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M32.1667 58.6666V40.3333C32.1667 33.8515 32.1667 30.6106 34.1804 28.597C36.194 26.5833 39.4349 26.5833 45.9167 26.5833H55.4767C56.4133 26.5833 56.8817 26.5833 57.3029 26.7578C57.7239 26.9322 58.0552 27.2634 58.7175 27.9257L67.491 36.6992C68.1532 37.3616 68.4846 37.6928 68.659 38.1139C68.8334 38.535 68.8334 39.0034 68.8334 39.9401V58.6666C68.8334 65.1484 68.8334 68.3893 66.8197 70.403C64.806 72.4166 61.5652 72.4166 55.0834 72.4166H45.9167C39.4349 72.4166 36.194 72.4166 34.1804 70.403C32.1667 68.3893 32.1667 65.1484 32.1667 58.6666Z"
-          stroke="white"
-          stroke-width="3.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M41.3333 47.2083H59.6666M41.3333 54.0833H59.6666M41.3333 60.9583H50.8913"
-          stroke="white"
-          stroke-width="3.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    </button>
-    <button
-      v-if="!isKuitansiMode"
-      class="cursor-pointer hover:scale-75 transition-all duration-200 ease-in-out"
-      @click="toggleToKuitansiMode"
-    >
-      <svg
-        width="100"
-        height="100"
-        viewBox="0 0 100 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="50" cy="50" r="50" fill="#F0AB26" />
-        <path
-          d="M32.1667 64.7299V40.4577C32.1667 33.9172 32.1667 30.647 34.1804 28.6152C36.194 26.5833 39.4349 26.5833 45.9167 26.5833H55.0834C61.5652 26.5833 64.806 26.5833 66.8197 28.6152C68.8334 30.647 68.8334 33.9172 68.8334 40.4577V64.7299C68.8334 68.1943 68.8334 69.9263 67.7747 70.6081C66.0447 71.7225 63.3703 69.3857 62.0251 68.5375C60.9136 67.8365 60.3581 67.4861 59.7412 67.466C59.0748 67.444 58.5092 67.7801 57.3084 68.5375L52.9292 71.2992C51.7479 72.044 51.1573 72.4166 50.5001 72.4166C49.8428 72.4166 49.2523 72.044 48.0709 71.2992L43.6918 68.5375C42.5804 67.8365 42.0247 67.4861 41.408 67.466C40.7415 67.444 40.176 67.7801 38.975 68.5375C37.63 69.3857 34.9554 71.7225 33.2254 70.6081C32.1667 69.9263 32.1667 68.1943 32.1667 64.7299Z"
-          stroke="white"
-          stroke-width="3.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M48.2083 47.2083H41.3333"
-          stroke="white"
-          stroke-width="3.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M55.0833 38.0417H41.3333"
-          stroke="white"
-          stroke-width="3.5"
           stroke-linecap="round"
           stroke-linejoin="round"
         />

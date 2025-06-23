@@ -3,7 +3,7 @@ import api from '@/services/authService'
 // Get current user profile
 export const getCurrentUser = async () => {
   try {
-    const response = await api.get('/user/')
+    const response = await api.get('/user')
     return response.data
   } catch (error) {
     console.error('getCurrentUser error:', error)

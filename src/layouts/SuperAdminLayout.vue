@@ -399,100 +399,6 @@
                 </div>
               </RouterLink>
 
-              <!-- RIWAYAT -->
-              <RouterLink
-                to="/superadmin/riwayat"
-                @click="closeSidebarOnRoute"
-                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
-                :class="[
-                  isHovered.riwayat ||
-                  route.path === '/superadmin/riwayat' ||
-                  route.path.startsWith('/superadmin/riwayat-edit') ||
-                  route.path.startsWith('/superadmin/riwayat-preview')
-                    ? 'scale-95 bg-[#0099FF]/90 shadow-lg backdrop-blur-md transform'
-                    : 'hover:scale-95 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
-                ]"
-                @mouseenter="isHovered.riwayat = true"
-                @mouseleave="isHovered.riwayat = false"
-              >
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <RiwayatIconElement
-                    :color="
-                      isHovered.riwayat ||
-                      route.path === '/superadmin/riwayat' ||
-                      route.path.startsWith('/superadmin/riwayat-edit') ||
-                      route.path.startsWith('/superadmin/riwayat-preview')
-                        ? '#ffff'
-                        : '#9BA1AA'
-                    "
-                  />
-                  <div
-                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm transition-colors duration-200"
-                    :class="
-                      isHovered.riwayat ||
-                      route.path === '/superadmin/riwayat' ||
-                      route.path.startsWith('/superadmin/riwayat-edit') ||
-                      route.path.startsWith('/superadmin/riwayat-preview')
-                        ? 'text-white'
-                        : 'group-hover:text-white'
-                    "
-                  >
-                    Riwayat
-                  </div>
-                </div>
-              </RouterLink>
-
-              <!-- STAFF -->
-              <RouterLink
-                to="/superadmin/admin"
-                @click="closeSidebarOnRoute"
-                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
-                :class="[
-                  isHovered.staff ||
-                  route.path === '/superadmin/admin' ||
-                  route.path === '/superadmin/admin-add' ||
-                  route.path.startsWith('/superadmin/admin-edit')
-                    ? 'scale-95 bg-[#0099FF]/90 shadow-lg backdrop-blur-md transform'
-                    : 'hover:scale-95 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
-                ]"
-                @mouseenter="isHovered.staff = true"
-                @mouseleave="isHovered.staff = false"
-              >
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <StaffIconElement
-                    :color="
-                      isHovered.staff ||
-                      route.path === '/superadmin/admin' ||
-                      route.path === '/superadmin/admin-add' ||
-                      route.path.startsWith('/superadmin/admin-edit')
-                        ? '#ffff'
-                        : '#9BA1AA'
-                    "
-                    :stroke="
-                      isHovered.staff ||
-                      route.path === '/superadmin/admin' ||
-                      route.path === '/superadmin/admin-add' ||
-                      route.path.startsWith('/superadmin/admin-edit')
-                        ? '#0099FF'
-                        : '#ffff'
-                    "
-                  />
-                  <div
-                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm transition-colors duration-200"
-                    :class="
-                      isHovered.staff ||
-                      route.path === '/superadmin/admin' ||
-                      route.path === '/superadmin/admin-add' ||
-                      route.path.startsWith('/superadmin/admin-edit')
-                        ? 'text-white'
-                        : 'group-hover:text-white'
-                    "
-                  >
-                    Admin
-                  </div>
-                </div>
-              </RouterLink>
-
               <!-- DATA PEMOHON -->
               <RouterLink
                 to="/superadmin/datapemohon"
@@ -597,6 +503,100 @@
                     "
                   >
                     Pengadaan
+                  </div>
+                </div>
+              </RouterLink>
+
+              <!-- RIWAYAT -->
+              <RouterLink
+                to="/superadmin/riwayat"
+                @click="closeSidebarOnRoute"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
+                :class="[
+                  isHovered.riwayat ||
+                  route.path === '/superadmin/riwayat' ||
+                  route.path.startsWith('/superadmin/riwayat-edit') ||
+                  route.path.startsWith('/superadmin/riwayat-preview')
+                    ? 'scale-95 bg-[#0099FF]/90 shadow-lg backdrop-blur-md transform'
+                    : 'hover:scale-95 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
+                ]"
+                @mouseenter="isHovered.riwayat = true"
+                @mouseleave="isHovered.riwayat = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <RiwayatIconElement
+                    :color="
+                      isHovered.riwayat ||
+                      route.path === '/superadmin/riwayat' ||
+                      route.path.startsWith('/superadmin/riwayat-edit') ||
+                      route.path.startsWith('/superadmin/riwayat-preview')
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm transition-colors duration-200"
+                    :class="
+                      isHovered.riwayat ||
+                      route.path === '/superadmin/riwayat' ||
+                      route.path.startsWith('/superadmin/riwayat-edit') ||
+                      route.path.startsWith('/superadmin/riwayat-preview')
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Riwayat
+                  </div>
+                </div>
+              </RouterLink>
+
+              <!-- STAFF -->
+              <RouterLink
+                to="/superadmin/admin"
+                @click="closeSidebarOnRoute"
+                class="group flex px-4 sm:px-7 w-full h-10 sm:h-12 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-sm"
+                :class="[
+                  isHovered.staff ||
+                  route.path === '/superadmin/admin' ||
+                  route.path === '/superadmin/admin-add' ||
+                  route.path.startsWith('/superadmin/admin-edit')
+                    ? 'scale-95 bg-[#0099FF]/90 shadow-lg backdrop-blur-md transform'
+                    : 'hover:scale-95 hover:bg-[#0099FF]/80 hover:shadow-md hover:backdrop-blur-sm',
+                ]"
+                @mouseenter="isHovered.staff = true"
+                @mouseleave="isHovered.staff = false"
+              >
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <StaffIconElement
+                    :color="
+                      isHovered.staff ||
+                      route.path === '/superadmin/admin' ||
+                      route.path === '/superadmin/admin-add' ||
+                      route.path.startsWith('/superadmin/admin-edit')
+                        ? '#ffff'
+                        : '#9BA1AA'
+                    "
+                    :stroke="
+                      isHovered.staff ||
+                      route.path === '/superadmin/admin' ||
+                      route.path === '/superadmin/admin-add' ||
+                      route.path.startsWith('/superadmin/admin-edit')
+                        ? '#0099FF'
+                        : '#ffff'
+                    "
+                  />
+                  <div
+                    class="font-poppins font-medium text-[#9BA1AA] text-xs sm:text-sm transition-colors duration-200"
+                    :class="
+                      isHovered.staff ||
+                      route.path === '/superadmin/admin' ||
+                      route.path === '/superadmin/admin-add' ||
+                      route.path.startsWith('/superadmin/admin-edit')
+                        ? 'text-white'
+                        : 'group-hover:text-white'
+                    "
+                  >
+                    Admin
                   </div>
                 </div>
               </RouterLink>
@@ -705,7 +705,7 @@
                   v-if="isUserNameLoading && userName === '...'"
                   class="h-5 sm:h-6 w-24 sm:w-32 bg-white/30 rounded animate-pulse"
                 ></div>
-                
+
                 <!-- ✅ Loading dots animation saat updating -->
                 <div
                   v-else-if="isUpdatingAfterEdit"
@@ -713,9 +713,18 @@
                 >
                   <span>{{ animatedUserName || 'Updating' }}</span>
                   <div class="flex gap-1 ml-1">
-                    <div class="w-1 h-1 bg-white rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                    <div class="w-1 h-1 bg-white rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                    <div class="w-1 h-1 bg-white rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                    <div
+                      class="w-1 h-1 bg-white rounded-full animate-bounce"
+                      style="animation-delay: 0ms"
+                    ></div>
+                    <div
+                      class="w-1 h-1 bg-white rounded-full animate-bounce"
+                      style="animation-delay: 150ms"
+                    ></div>
+                    <div
+                      class="w-1 h-1 bg-white rounded-full animate-bounce"
+                      style="animation-delay: 300ms"
+                    ></div>
                   </div>
                 </div>
 
