@@ -111,7 +111,7 @@
 
     @page kuitansi {
       size: A4 portrait;
-      margin: 0mm;
+      margin: 5mm;
     }
 
     .page-break {
