@@ -103,43 +103,45 @@
   </div>
 </template>
 
-<style>
-  @media print {
+<style>  @media print {
     @page {
-      size: A4;
+      size: A4 portrait;
       margin: 0mm;
-    }    @page kuitansi {
-      size: A4 landscape;
+    }
+
+    @page kuitansi {
+      size: A4 portrait;
       margin: 0mm;
     }
 
     .page-break {
       page-break-after: always;
+    }    .kuitansi-page {
+      page: kuitansi;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 297mm;
+      width: 210mm;
+      padding: 10mm 5mm 10mm 15mm;
+      box-sizing: border-box;
     }
 
-    .kuitansi-page {
-    page: kuitansi;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    padding: 0;
-  }
-
     .kuitansi-container {
-    transform: none !important;
-    width: 1122px !important;
-    height: 794px !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-  }
+      /* Perkecil dan geser ke kiri */
+      transform: scale(0.6) !important;
+      width: 1147px !important;
+      height: 706px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      transform-origin: left center !important;
+    }
 
     .kuitansi-page section {
       margin: 0 !important;
     }
 
-    /* Ensure kuitansi fits within landscape page */
+    /* Maintain original kuitansi dimensions but scaled down */
     .kuitansi-page .w-\[1147px\] {
       width: 1147px !important;
       max-width: none !important;
@@ -151,7 +153,9 @@
 
     .fixed {
       display: none !important;
-    }    /* Ensure each page breaks properly */
+    }
+
+    /* Ensure each page breaks properly */
     .page-break:last-child {
       page-break-after: auto;
     }
