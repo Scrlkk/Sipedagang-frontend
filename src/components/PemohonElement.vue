@@ -300,7 +300,7 @@
             type="text"
             id="jenis-bank"
             placeholder="Masukkan jenis bank"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full bg-white text-sm sm:text-base"
+            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
             v-model="jenisBank"
             required
           />

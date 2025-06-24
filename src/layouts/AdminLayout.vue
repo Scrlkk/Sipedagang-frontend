@@ -1,19 +1,41 @@
 <script setup>
-  import { ref, onMounted, onUnmounted, computed } from 'vue'
+  import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthStore } from '@/stores/authStore'
+  import { useUserStore } from '@/stores/userStore' // ✅ TAMBAH: Import userStore
   import { config } from '@/config/env'
 
   const router = useRouter()
   const auth = useAuthStore()
+  const userStore = useUserStore() // ✅ TAMBAH: Initialize userStore
 
-  // User info dari auth store
-  const userName = computed(
-    () => auth.user?.name || auth.user?.nama_pengguna || 'Admin',
-  )
+  // ✅ TAMBAH: State untuk animasi refresh
+  const isRefreshing = ref(false)
+  const profileUpdateTrigger = ref(0) // Trigger untuk force re-render
 
-  // ✅ Gunakan env.js untuk konsistensi foto profil
+  // User info dari auth store dengan reactive update
+  const userName = computed(() => {
+    // Force reactivity dengan trigger
+    profileUpdateTrigger.value
+    return auth.user?.name || auth.user?.nama_pengguna || 'Admin'
+  })
+
+  // ✅ Computed untuk role/jabatan pengguna dengan reactive update
+  const userRole = computed(() => {
+    // Force reactivity dengan trigger
+    profileUpdateTrigger.value
+    // Cek role dari berbagai kemungkinan field
+    return auth.user?.role || 
+           auth.user?.jabatan || 
+           auth.user?.level || 
+           'Administrator'
+  })
+
+  // ✅ UBAH: Gunakan reactive profile photo dengan animasi
   const profilePhoto = computed(() => {
+    // Force reactivity dengan trigger
+    profileUpdateTrigger.value
+    
     const foto =
       auth.user?.profile_photo ||
       auth.user?.foto ||
@@ -27,10 +49,69 @@
 
     // Fallback ke UI-Avatars seperti komponen lainnya
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || auth.user?.nama_pengguna || 'Admin')}&background=0099FF&color=fff&size=128`
-  }) // Track dropdown visibility
+  })
+
+  // ✅ TAMBAH: Function untuk refresh profile dengan animasi
+  const refreshProfile = async () => {
+    try {
+      isRefreshing.value = true
+      
+      // Delay untuk animasi loading
+      await new Promise(resolve => setTimeout(resolve, 300))
+      
+      // Fetch user data terbaru dari userStore
+      const updatedUser = await userStore.fetchCurrentUser()
+      
+      if (updatedUser) {
+        // Update auth store dengan data terbaru
+        auth.user = { ...auth.user, ...updatedUser }
+        
+        // Trigger reactivity
+        profileUpdateTrigger.value++
+        
+        console.log('✅ AdminLayout: Profile refreshed successfully')
+      }
+      
+    } catch (error) {
+      console.error('❌ AdminLayout: Error refreshing profile:', error)
+    } finally {
+      // Delay untuk animasi selesai
+      setTimeout(() => {
+        isRefreshing.value = false
+      }, 500)
+    }
+  }
+
+  // ✅ TAMBAH: Watch untuk sessionStorage changes
+  const checkProfileUpdate = () => {
+    const isProfileUpdated = sessionStorage.getItem('profileUpdated')
+    const isProfileUpdating = sessionStorage.getItem('profileUpdating')
+    
+    if (isProfileUpdated === 'true' && isProfileUpdating === 'true') {
+      console.log('🔄 AdminLayout: Profile update detected, refreshing...')
+      
+      // Clear flags
+      sessionStorage.removeItem('profileUpdated')
+      sessionStorage.removeItem('profileUpdating')
+      
+      // Refresh profile dengan delay untuk smooth transition
+      setTimeout(() => {
+        refreshProfile()
+      }, 100)
+    }
+  }
+
+  // ✅ TAMBAH: Watch untuk route changes
+  watch(() => router.currentRoute.value, () => {
+    nextTick(() => {
+      checkProfileUpdate()
+    })
+  })
+
+  // Track dropdown visibility
   const isProfileDropdownOpen = ref(false)
 
-  // ✅ Perbaiki typo di toggle dropdown - ganti isProfileDropdown dengan isProfileDropdownOpen
+  // ✅ PERBAIKI: Ganti isProfileDropdown dengan isProfileDropdownOpen
   const toggleProfileDropdown = () => {
     isProfileDropdownOpen.value = !isProfileDropdownOpen.value
   }
@@ -60,20 +141,32 @@
       auth.clearAuth()
       router.push('/login')
     }
-  } // Add and remove event listeners for clicking outside
+  }
+
+  // Add and remove event listeners for clicking outside
   onMounted(() => {
     document.addEventListener('click', closeDropdown)
+    
+    // ✅ TAMBAH: Check for profile update on mount
+    checkProfileUpdate()
   })
 
   onUnmounted(() => {
     document.removeEventListener('click', closeDropdown)
   })
+
+  // Add the edit profile handler
+  const handleEditProfile = () => {
+    // Close dropdown first
+    isProfileDropdownOpen.value = false
+    
+    // Navigate to edit profile page
+    router.push('/admin/editprofile') // Adjust route as needed
+  }
 </script>
 
 <template>
-  <div
-    class="min-h-screen w-full relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50"
-  >
+  <div class="min-h-screen w-full relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
     <!-- Top SVG Wave -->
     <div class="absolute top-0 left-0 right-0 z-0">
       <svg
@@ -175,6 +268,7 @@
             PEDAGANG
           </div>
         </div>
+        
         <!-- User Profile -->
         <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
           <!-- User Avatar and Name with Dropdown -->
@@ -183,31 +277,88 @@
               @click="toggleProfileDropdown"
               class="flex items-center gap-2 sm:gap-3 cursor-pointer transition-all hover:opacity-90 p-1 sm:p-2 rounded-lg hover:bg-white/10 relative z-[9999] border border-white/20 bg-white/5"
             >
+              <!-- ✅ UBAH: Avatar dengan animasi refresh -->
               <div
-                class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-white/30"
+                class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-white/30 relative"
+                :class="{ 'animate-pulse': isRefreshing }"
               >
-                <img
-                  :src="profilePhoto"
-                  :alt="userName"
-                  class="w-full h-full object-cover"
-                  @error="
-                    (e) => {
-                      // Fallback ke UI-Avatars jika gambar gagal dimuat
-                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
-                    }
-                  "
-                />
+                <!-- ✅ TAMBAH: Loading overlay saat refresh -->
+                <div
+                  v-if="isRefreshing"
+                  class="absolute inset-0 bg-white/30 flex items-center justify-center z-10 backdrop-blur-sm rounded-full"
+                >
+                  <svg
+                    class="w-4 h-4 text-white animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </div>
+                
+                <!-- ✅ UBAH: Image dengan transition -->
+                <Transition
+                  name="profile-image"
+                  mode="out-in"
+                  enter-active-class="transition-all duration-500 ease-out"
+                  leave-active-class="transition-all duration-300 ease-in"
+                  enter-from-class="opacity-0 scale-95"
+                  enter-to-class="opacity-100 scale-100"
+                  leave-from-class="opacity-100 scale-100"
+                  leave-to-class="opacity-0 scale-95"
+                >
+                  <img
+                    :key="profilePhoto" 
+                    :src="profilePhoto"
+                    :alt="userName"
+                    class="w-full h-full object-cover transition-all duration-300"
+                    @error="
+                      (e) => {
+                        // Fallback ke UI-Avatars jika gambar gagal dimuat
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0099FF&color=fff&size=128`
+                      }
+                    "
+                  />
+                </Transition>
               </div>
-              <div
-                class="text-white text-[11px] sm:text-[13px] lg:text-[14px] xl:text-[15px] font-medium font-poppins hidden xs:block profile-text-adaptive truncate max-w-[120px] sm:max-w-[140px] lg:max-w-[160px] xl:max-w-[180px]"
-                :title="userName"
+              
+              <!-- ✅ UBAH: Username dengan transition -->
+              <Transition
+                name="profile-text"
+                mode="out-in"
+                enter-active-class="transition-all duration-500 ease-out"
+                leave-active-class="transition-all duration-300 ease-in"
+                enter-from-class="opacity-0 translate-x-2"
+                enter-to-class="opacity-100 translate-x-0"
+                leave-from-class="opacity-100 translate-x-0"
+                leave-to-class="opacity-0 -translate-x-2"
               >
-                {{ userName }}
-              </div>
+                <div
+                  :key="userName"
+                  class="text-white text-[11px] sm:text-[13px] lg:text-[14px] xl:text-[15px] font-medium font-poppins hidden xs:block profile-text-adaptive truncate max-w-[120px] sm:max-w-[140px] lg:max-w-[160px] xl:max-w-[180px]"
+                  :title="userName"
+                  :class="{ 'opacity-50': isRefreshing }"
+                >
+                  {{ userName }}
+                </div>
+              </Transition>
+              
               <!-- Dropdown Arrow -->
               <svg
                 class="w-4 h-4 sm:w-5 sm:h-5 text-white transition-transform duration-300 hidden sm:block"
-                :class="{ 'rotate-180': isProfileDropdownOpen }"
+                :class="{ 'rotate-180': isProfileDropdownOpen, 'opacity-50': isRefreshing }"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -220,6 +371,7 @@
                 ></path>
               </svg>
             </div>
+            
             <!-- Animated Dropdown Menu -->
             <Transition
               enter-active-class="transition ease-out duration-200"
@@ -237,30 +389,135 @@
                 <div class="px-4 py-3 border-b border-gray-100 sm:hidden">
                   <div class="flex items-center gap-3">
                     <div
-                      class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+                      class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative"
+                      :class="{ 'animate-pulse': isRefreshing }"
                     >
-                      <img
-                        :src="profilePhoto"
-                        :alt="userName"
-                        class="w-full h-full object-cover"
-                      />
+                      <!-- ✅ TAMBAH: Loading untuk mobile avatar -->
+                      <div
+                        v-if="isRefreshing"
+                        class="absolute inset-0 bg-gray-200 flex items-center justify-center z-10 rounded-full"
+                      >
+                        <svg
+                          class="w-4 h-4 text-gray-400 animate-spin"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
+                      
+                      <Transition
+                        name="dropdown-image"
+                        mode="out-in"
+                        enter-active-class="transition-all duration-500 ease-out"
+                        leave-active-class="transition-all duration-300 ease-in"
+                        enter-from-class="opacity-0 scale-90"
+                        enter-to-class="opacity-100 scale-100"
+                        leave-from-class="opacity-100 scale-100"
+                        leave-to-class="opacity-0 scale-90"
+                      >
+                        <img
+                          :key="profilePhoto"
+                          :src="profilePhoto"
+                          :alt="userName"
+                          class="w-full h-full object-cover"
+                        />
+                      </Transition>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <div
-                        class="text-sm font-semibold text-gray-900 truncate"
-                        :title="userName"
+                      <Transition
+                        name="dropdown-text"
+                        mode="out-in"
+                        enter-active-class="transition-all duration-500 ease-out"
+                        leave-active-class="transition-all duration-300 ease-in"
+                        enter-from-class="opacity-0 translate-y-1"
+                        enter-to-class="opacity-100 translate-y-0"
+                        leave-from-class="opacity-100 translate-y-0"
+                        leave-to-class="opacity-0 -translate-y-1"
                       >
-                        {{ userName }}
-                      </div>
-                      <div class="text-xs text-gray-500">Administrator</div>
+                        <div :key="userName + userRole">
+                          <div
+                            class="text-sm font-semibold text-gray-900 truncate"
+                            :title="userName"
+                            :class="{ 'opacity-50': isRefreshing }"
+                          >
+                            {{ userName }}
+                          </div>
+                          <div 
+                            class="text-xs text-gray-500"
+                            :class="{ 'opacity-50': isRefreshing }"
+                          >
+                            {{ userRole }}
+                          </div>
+                        </div>
+                      </Transition>
                     </div>
                   </div>
                 </div>
 
+                <!-- Edit Profile Button -->
+                <button
+                  @click="handleEditProfile"
+                  :disabled="isRefreshing"
+                  class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div
+                    class="w-5 h-5 flex items-center justify-center bg-gray-100 group-hover:bg-blue-100 rounded-lg transition-colors duration-200"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="text-gray-600 group-hover:text-blue-600 transition-colors duration-200"
+                    >
+                      <path
+                        d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M15.36 10.44L16.95 12.03L21.77 7.21"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span class="font-semibold">Edit Profil</span>
+                </button>
+
+                <!-- Separator -->
+                <div class="border-t border-gray-100 my-1"></div>
+
                 <!-- Logout Button -->
                 <button
                   @click="handleLogout"
-                  class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 gap-3 group"
+                  :disabled="isRefreshing"
+                  class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div
                     class="w-5 h-5 flex items-center justify-center bg-gray-100 group-hover:bg-red-100 rounded-lg transition-colors duration-200"
@@ -297,12 +554,13 @@
                   </div>
                   <span class="font-semibold">Keluar Akun</span>
                 </button>
-              </div></Transition
-            >
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
     </header>
+    
     <!-- Main Content -->
     <main
       class="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 relative z-[1] pb-20 sm:pb-24 md:pb-28 pt-2 sm:pt-4"
@@ -313,6 +571,63 @@
 </template>
 
 <style scoped>
+  /* ✅ TAMBAH: Custom transition styles */
+  .profile-image-enter-active,
+  .profile-image-leave-active {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .profile-image-enter-from {
+    opacity: 0;
+    transform: scale(0.95) rotate(5deg);
+  }
+
+  .profile-image-leave-to {
+    opacity: 0;
+    transform: scale(0.95) rotate(-5deg);
+  }
+
+  .profile-text-enter-active,
+  .profile-text-leave-active {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .profile-text-enter-from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+
+  .profile-text-leave-to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  .dropdown-image-enter-active,
+  .dropdown-image-leave-active {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dropdown-image-enter-from,
+  .dropdown-image-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .dropdown-text-enter-active,
+  .dropdown-text-leave-active {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dropdown-text-enter-from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .dropdown-text-leave-to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
   /* Extra small screen utilities */
   @media (min-width: 475px) {
     .xs\:block {

@@ -1,7 +1,7 @@
 <script setup>
   import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
   import { useRouter } from 'vue-router'
-  import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
+    import AdminLayout from '@/layouts/AdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import PageElement from '@/components/PageElement.vue'
   import PemohonIconElement from '@/components/PemohonIconElement.vue'
@@ -59,7 +59,7 @@
   }
 
   const handleEdit = (pemohon) => {
-    router.push(`/superadmin/datapemohon-edit/${pemohon.id}`)
+    router.push(`/admin/datapemohon-edit/${pemohon.id}`)
   }
 
   const handleDelete = async (pemohon) => {
@@ -519,7 +519,7 @@
 
   // ✅ BARU: Navigate to input form
   function handleInputPemohon() {
-    router.push('/superadmin/datapemohon')
+    router.push('/admin/datapemohon')
   }
 
   // ✅ BARU: Menu handlers
@@ -568,7 +568,7 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
+  <AdminLayout>
     <MainElement>
       <section
         class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-4 pb-6 sm:pb-4"
@@ -1491,5 +1491,5 @@
         </div>
       </section>
     </MainElement>
-  </SuperAdminLayout>
+  </AdminLayout>
 </template>

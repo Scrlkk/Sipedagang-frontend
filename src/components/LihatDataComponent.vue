@@ -772,17 +772,7 @@
           <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <!-- Info dan Pagination Controls -->
             <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
-              <!-- Results Info -->
-              <div class="text-sm text-gray-600 font-medium">
-                <span class="hidden sm:inline">Menampilkan </span>
-                <span class="font-bold text-indigo-600">
-                  {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, computedFilteredData.length) }}
-                </span>
-                <span class="hidden sm:inline"> dari </span>
-                <span class="sm:hidden">/</span>
-                <span class="font-bold text-gray-900">{{ computedFilteredData.length }}</span>
-                <span class="hidden sm:inline"> data</span>
-              </div>
+              
 
               <!-- Pagination -->
               <div class="flex items-center space-x-2">

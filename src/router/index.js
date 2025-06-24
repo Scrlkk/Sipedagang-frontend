@@ -20,6 +20,8 @@ import SettingPengadaanView from '@/views/superadmin/SettingPengadaanView.vue'
 import LihatSettingPengadaanView from '@/views/superadmin/LihatSettingPengadaanView.vue'
 import EditProfileView from '@/views/superadmin/EditProfileView.vue'
 import DataPemohon from '../views/admin/DataPemohon.vue'
+import LihatDataPemohon from '../views/admin/LihatDataPemohon.vue'
+import EditProfile from '../views/admin/EditProfile.vue'
 import NotFound from '@/views/login/NotFound.vue'
 
 const router = createRouter({
@@ -111,12 +113,29 @@ const router = createRouter({
       name: 'LihatData',
       meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
     },
-    
     {
       path: '/admin/datapemohon',
+      name: 'data pemohon admin',
       component: DataPemohon,
-      name: 'DataPemohon',
       meta: { requiresAuth: true, role: 'admin' }, // ✅ Protection
+    },
+    {
+      path: '/admin/datapemohon-list',
+      name: 'data pemohon list',
+      component: LihatDataPemohon,
+      meta: { requiresAuth: true, role: 'admin' },
+    },
+    {
+      path: '/admin/datapemohon-edit/:id',
+      name: 'edit pemohon admin',
+      component: DataPemohon,
+      meta: { requiresAuth: true, role: 'admin' },
+    },
+    {
+      path: '/admin/editprofile',
+      name: 'edit profile admin',
+      component: EditProfile,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     
     {
