@@ -522,6 +522,12 @@
     router.push('/superadmin/datapemohon')
   }
 
+  // ✅ BARU: Navigate back function
+  function handleBack() {
+    // Kembali ke dashboard superadmin atau halaman sebelumnya
+    router.push('/superadmin') // atau router.back() untuk kembali ke halaman sebelumnya
+  }
+
   // ✅ BARU: Menu handlers
   const handleUploadAndClose = () => {
     handleUploadCSV()
@@ -581,9 +587,29 @@
             <!-- Title dan Action Menu untuk desktop -->
             <div
               class="hidden lg:grid lg:grid-cols-2 lg:items-center lg:justify-between"
-            >
-              <!-- Title -->
+            >              <!-- Title -->
               <div class="flex items-center gap-4">
+                <!-- Back Button Bulat -->
+                <button
+                  @click="handleBack"
+                  class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
+                  title="Kembali"
+                >
+                  <svg
+                    class="w-5 h-5 text-gray-600 group-hover:text-gray-800"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                  </svg>
+                </button>
+                
                 <div
                   class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8"
                 >
@@ -806,16 +832,37 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- ✅ BARU: Layout untuk mobile/tablet -->
+            </div>            <!-- ✅ BARU: Layout untuk mobile/tablet -->
             <div class="lg:hidden">
               <!-- Title dan Action Menu untuk mobile -->
               <div class="flex items-center justify-between mb-3">
-                <div
-                  class="font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-4"
-                >
-                  Daftar Data Pemohon
+                <div class="flex items-center gap-3">
+                  <!-- Back Button Bulat untuk Mobile -->
+                  <button
+                    @click="handleBack"
+                    class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
+                    title="Kembali"
+                  >
+                    <svg
+                      class="w-4 h-4 text-gray-600 group-hover:text-gray-800"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                      ></path>
+                    </svg>
+                  </button>
+                  
+                  <div
+                    class="font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-4"
+                  >
+                    Daftar Data Pemohon
+                  </div>
                 </div>
 
                 <!-- ✅ FIXED: Action Menu untuk mobile with separate ref -->
