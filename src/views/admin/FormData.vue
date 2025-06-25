@@ -8,7 +8,6 @@
     watch,
   } from 'vue'
   import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
-  import AdminLayout from '@/layouts/AdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormElement from '@/components/FormElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
@@ -190,20 +189,24 @@
       let errorMsg = 'Terjadi kesalahan saat menyimpan data'
 
       // Handle validation errors or other errors
-      if (error.message) {
-        errorMsg = error.message
-      } else if (error.response && error.response.status === 422) {
+      if (error.response && error.response.status === 422) {
+        // Ambil pesan error dari backend (array atau string)
         const errors = error.response.data.errors
         if (errors) {
-          errorMsg = Object.values(errors).flat().join('\n')
+          // Gabungkan semua pesan error menjadi satu string
+          errorMsg = Object.values(errors).flat().join(', ')
         } else if (error.response.data.message) {
           errorMsg = error.response.data.message
+        } else {
+          errorMsg = 'Request failed with status code 422'
         }
+      } else if (error.message) {
+        errorMsg = error.message
       }
 
       Swal.fire({
         title: 'Error!',
-        text: errorMsg,
+        html: `<div style="text-align:left">${errorMsg}</div>`, // biar rapi kiri
         icon: 'error',
         confirmButtonColor: '#d33',
       })
@@ -214,214 +217,174 @@
 </script>
 
 <template>
-  <AdminLayout class="h-screen overflow-hidden">
-    <!-- Add transition wrapper -->
-    <transition name="page" appear>
-      <div class="flex flex-col min-h-[calc(100vh-120px)]">
-        <!-- Mobile Navigation Bar (visible on small screens) -->
-        <div
-          class="lg:hidden flex justify-between items-center p-4 bg-white shadow-md z-30 border-b"
+  <!-- Add transition wrapper -->
+  <transition name="page" appear>
+    <div class="flex flex-col">
+      <!-- Mobile Navigation Bar (visible on small screens) -->
+      <div
+        class="lg:hidden flex justify-center gap-x-12 items-center p-4 z-30 -mt-2"
+      >
+        <router-link
+          to="/admin/dashboard"
+          class="bg-[#0099FF] text-white rounded-lg px-3 py-2 flex items-center space-x-2 hover:bg-[#0088EE] transition-colors text-sm"
+          aria-label="Kembali ke Dashboard"
         >
-          <router-link
-            to="/admin/dashboard"
-            class="bg-[#0099FF] text-white rounded-lg px-3 py-2 flex items-center space-x-2 hover:bg-[#0088EE] transition-colors text-sm"
-            aria-label="Kembali ke Dashboard"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            <span>Dashboard</span>
-          </router-link>
-          <router-link
-            to="/admin/lihatdata"
-            class="bg-[#0099FF] text-white rounded-lg px-3 py-2 flex items-center space-x-2 hover:bg-[#0088EE] transition-colors text-sm"
-            aria-label="Lihat Data Permohonan"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <span>Lihat Data</span>
-          </router-link>
-        </div>
-
-        <!-- Main Content Area -->
-        <div
-          class="flex-1 flex justify-center items-center py-8 px-4 lg:px-8 relative min-h-0"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          <span>Dashboard</span>
+        </router-link>
+        <router-link
+          to="/admin/lihatdata"
+          class="bg-[#0099FF] text-white rounded-lg px-3 py-2 flex items-center space-x-2 hover:bg-[#0088EE] transition-colors text-sm"
+          aria-label="Lihat Data Permohonan"
         >
-          <!-- Loading state for edit mode -->
-          <div
-            v-if="pengadaanStore.isLoading && isEditMode"
-            class="flex justify-center items-center h-full"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
           >
-            <div class="text-gray-500">Memuat data...</div>
-          </div>
-
-          <!-- Error state -->
-          <div
-            v-else-if="pengadaanStore.hasError && isEditMode"
-            class="flex justify-center items-center h-full"
-          >
-            <div class="text-red-500 text-center">
-              <p>{{ pengadaanStore.error }}</p>
-              <button
-                @click="router.push('/admin/lihatdata')"
-                class="mt-2 px-4 py-2 bg-[#0099ff] text-white rounded hover:bg-blue-600"
-              >
-                Kembali ke Lihat Data
-              </button>
-            </div>
-          </div>
-
-          <!-- Main content -->
-          <template v-else>
-            <!-- Side Navigation (hidden on small screens) -->
-            <div
-              class="hidden lg:flex fixed left-4 xl:left-8 top-1/2 transform -translate-y-1/2 flex-col space-y-4 z-20"
-            >
-              <router-link
-                to="/admin/dashboard"
-                class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
-                aria-label="Kembali ke Dashboard"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 xl:h-7 w-6 xl:w-7"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-                <!-- Tooltip -->
-                <div
-                  class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-                >
-                  Dashboard
-                </div>
-              </router-link>
-              <router-link
-                to="/admin/lihatdata"
-                class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
-                aria-label="Lihat Data Permohonan"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 xl:h-7 w-6 xl:w-7"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <!-- Tooltip -->
-                <div
-                  class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-                >
-                  Lihat Data
-                </div>
-              </router-link>
-            </div>
-
-            <!-- Form Container dengan MainElement - Diperlebar dan dipusatkan -->
-            <div
-              class="w-full max-w-7xl mx-auto flex justify-center -mt-23 scale-85"
-            >
-              <div class="w-full max-w-6xl lg:ml-16 xl:ml-20">
-                <MainElement class="w-full">
-                  <section class="flex flex-col justify-between h-full">
-                    <!-- TITLE -->
-                    <div
-                      class="text-center font-semibold text-xl text-[#0099FF] underline underline-offset-8 mb-6 relative"
-                    >
-                      {{
-                        isEditMode ? 'Edit Data Pengadaan' : 'Form Input Data'
-                      }}
-                      <!-- ✅ Indikator unsaved changes -->
-                      <span
-                        v-if="hasUnsavedChanges"
-                        class="absolute -top-1 -right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"
-                        title="Ada perubahan yang belum disimpan"
-                      ></span>
-                    </div>
-
-                    <!-- FORM -->
-                    <FormElement
-                      ref="formRef"
-                      :isEditMode="isEditMode"
-                      @form-changed="handleFormChanged"
-                    />
-
-                    <!-- BUTTON -->
-                    <ButtonElement
-                      @onClickLeft="handleClear"
-                      @onClickRight="handleSubmit"
-                      :rightLoading="isSubmitting || pengadaanStore.isLoading"
-                      :rightLabel="isEditMode ? 'Update' : 'Simpan'"
-                      leftLabel="Clear"
-                    />
-                  </section>
-                </MainElement>
-              </div>
-            </div>
-          </template>
-        </div>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          <span>Lihat Data</span>
+        </router-link>
       </div>
-    </transition>
-  </AdminLayout>
+
+      <!-- Main Content Area -->
+      <div
+        class="flex-1 flex justify-center items-center py-8 px-4 lg:px-8 relative min-h-0 -mt-3.5 xl:mt-0"
+      >
+        <!-- Loading state for edit mode -->
+        <div
+          v-if="pengadaanStore.isLoading && isEditMode"
+          class="flex justify-center items-center h-full"
+        >
+          <div class="text-gray-500">Memuat data...</div>
+        </div>
+
+        <!-- Main content -->
+        <template v-else>
+          <!-- Side Navigation (hidden on small screens) -->
+          <div
+            class="hidden lg:flex fixed left-4 xl:left-8 top-1/2 transform -translate-y-1/2 flex-col space-y-4 z-20"
+          >
+            <router-link
+              to="/admin/dashboard"
+              class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
+              aria-label="Kembali ke Dashboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 xl:h-7 w-6 xl:w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <!-- Tooltip -->
+              <div
+                class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+              >
+                Dashboard
+              </div>
+            </router-link>
+            <router-link
+              to="/admin/lihatdata"
+              class="bg-[#0099FF] text-white rounded-full w-14 xl:w-16 h-14 xl:h-16 flex items-center justify-center shadow-lg hover:bg-[#0088EE] transition-colors group"
+              aria-label="Lihat Data Permohonan"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 xl:h-7 w-6 xl:w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <!-- Tooltip -->
+              <div
+                class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+              >
+                Lihat Data
+              </div>
+            </router-link>
+          </div>
+
+          <!-- Form Container dengan MainElement - Diperlebar dan dipusatkan -->
+          <div
+            class="w-full max-w-7xl mx-auto flex justify-center -mt-23 scale-85"
+          >
+            <div class="w-full max-w-6xl lg:ml-16 xl:ml-20">
+              <MainElement class="w-full">
+                <section class="flex flex-col justify-between h-full">
+                  <!-- TITLE -->
+                  <div
+                    class="text-center font-semibold text-xl text-[#0099FF] underline underline-offset-8 mb-6 relative"
+                  >
+                    {{ isEditMode ? 'Edit Data Pengadaan' : 'Form Input Data' }}
+                    <!-- ✅ Indikator unsaved changes -->
+                    <span
+                      v-if="hasUnsavedChanges"
+                      class="absolute -top-1 -right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"
+                      title="Ada perubahan yang belum disimpan"
+                    ></span>
+                  </div>
+
+                  <!-- FORM -->
+                  <FormElement
+                    ref="formRef"
+                    :isEditMode="isEditMode"
+                    @form-changed="handleFormChanged"
+                  />
+
+                  <!-- BUTTON -->
+                  <ButtonElement
+                    @onClickLeft="handleClear"
+                    @onClickRight="handleSubmit"
+                    :rightLoading="isSubmitting || pengadaanStore.isLoading"
+                    :rightLabel="isEditMode ? 'Update' : 'Simpan'"
+                    leftLabel="Clear"
+                  />
+                </section>
+              </MainElement>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </transition>
 </template>
-
-<style scoped>
-  /* Page transition animations */
-  .page-enter-active,
-  .page-leave-active {
-    transition:
-      opacity 0.5s ease,
-      transform 0.5s ease;
-  }
-
-  .page-enter-from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  .page-leave-to {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-</style>

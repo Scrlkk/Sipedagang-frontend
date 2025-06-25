@@ -1,7 +1,6 @@
 <script setup>
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
   import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
-  import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormPengadaan from '@/components/PengadaanElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
@@ -641,7 +640,6 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
     <MainElement>
       <section class="flex flex-col justify-between h-full px-2 sm:px-4">
         <!-- HEADER WITH ACTION MENU -->
@@ -763,5 +761,4 @@
         />
       </section>
     </MainElement>
-  </SuperAdminLayout>
 </template>

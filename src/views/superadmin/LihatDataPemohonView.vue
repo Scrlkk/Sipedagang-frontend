@@ -1,7 +1,6 @@
 <script setup>
   import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
   import { useRouter } from 'vue-router'
-  import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import PageElement from '@/components/PageElement.vue'
   import PemohonIconElement from '@/components/PemohonIconElement.vue'
@@ -522,12 +521,6 @@
     router.push('/superadmin/datapemohon')
   }
 
-  // ✅ BARU: Navigate back function
-  function handleBack() {
-    // Kembali ke dashboard superadmin atau halaman sebelumnya
-    router.push('/superadmin') // atau router.back() untuk kembali ke halaman sebelumnya
-  }
-
   // ✅ BARU: Menu handlers
   const handleUploadAndClose = () => {
     handleUploadCSV()
@@ -574,29 +567,37 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
-    <MainElement>
-      <section
-        class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-4 pb-6 sm:pb-4"
-      >
-        <div>
-          <!-- ✅ PERBAIKAN: Header dengan layout responsive untuk viewport kecil -->
-          <section
-            class="flex flex-col gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8"
+  <MainElement>
+    <section
+      class="flex flex-col justify-between min-h-full px-2 sm:px-4 lg:px-4 pb-6 sm:pb-4"
+    >
+      <div>
+        <!-- ✅ PERBAIKAN: Header dengan layout responsive untuk viewport kecil -->
+        <section
+          class="flex flex-col gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8"
+        >
+          <!-- Title dan Action Menu untuk desktop -->
+          <div
+            class="hidden lg:grid lg:grid-cols-2 lg:items-center lg:justify-between"
           >
-            <!-- Title dan Action Menu untuk desktop -->
-            <div
-              class="hidden lg:grid lg:grid-cols-2 lg:items-center lg:justify-between"
-            >              <!-- Title -->
-              <div class="flex items-center gap-4">
-                <!-- Back Button Bulat -->
-                <button
-                  @click="handleBack"
-                  class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
-                  title="Kembali"
+            <!-- Title -->
+            <div class="flex items-center gap-4">
+              <div
+                class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8"
+              >
+                Daftar Data Pemohon
+              </div>
+            </div>
+
+            <!-- Search dan Action Menu untuk desktop -->
+            <div class="flex justify-end items-center gap-2 sm:gap-3 lg:gap-4">
+              <!-- Search result info compact di sebelah kiri search (desktop) -->
+              <div v-if="searchText">
+                <span
+                  class="inline-flex items-center px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-md"
                 >
                   <svg
-                    class="w-5 h-5 text-gray-600 group-hover:text-gray-800"
+                    class="w-3 h-3 mr-1 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -605,29 +606,77 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                      d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     ></path>
                   </svg>
-                </button>
-                
-                <div
-                  class="font-semibold text-base sm:text-lg lg:text-xl text-[#0099FF] underline underline-offset-4 lg:underline-offset-8"
-                >
-                  Daftar Data Pemohon
-                </div>
-              </div>
-
-              <!-- Search dan Action Menu untuk desktop -->
-              <div
-                class="flex justify-end items-center gap-2 sm:gap-3 lg:gap-4"
-              >
-                <!-- Search result info compact di sebelah kiri search (desktop) -->
-                <div v-if="searchText">
+                  <span class="truncate max-w-[120px]">
+                    "{{ searchText }}"
+                  </span>
                   <span
-                    class="inline-flex items-center px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-md"
+                    v-if="pemohonStore.pagination?.total !== undefined"
+                    class="ml-1 text-gray-600 flex-shrink-0"
+                  >
+                    ({{ pemohonStore.pagination.total }})
+                  </span>
+                  <button
+                    @click="clearSearch"
+                    class="ml-1.5 text-blue-600 hover:text-blue-800 flex-shrink-0"
+                    title="Hapus pencarian"
                   >
                     <svg
-                      class="w-3 h-3 mr-1 flex-shrink-0"
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      ></path>
+                    </svg>
+                  </button>
+                </span>
+              </div>
+
+              <!-- Container untuk Search Input dan Action Menu (desktop) -->
+              <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Search input (desktop) -->
+                <div class="relative min-w-[280px]">
+                  <input
+                    type="text"
+                    placeholder="Cari supplier, perusahaan, bank..."
+                    v-model="searchText"
+                    class="border border-[#D9D9D9] rounded-lg h-10 px-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0099ff] focus:border-[#0099ff] transition-all duration-200 w-full"
+                  />
+                  <!-- Clear search button -->
+                  <button
+                    v-if="searchText"
+                    @click="clearSearch"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      ></path>
+                    </svg>
+                  </button>
+                  <!-- Search icon -->
+                  <div
+                    v-else
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >
+                    <svg
+                      class="w-4 h-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -639,234 +688,11 @@
                         d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                       ></path>
                     </svg>
-                    <span class="truncate max-w-[120px]">
-                      "{{ searchText }}"
-                    </span>
-                    <span
-                      v-if="pemohonStore.pagination?.total !== undefined"
-                      class="ml-1 text-gray-600 flex-shrink-0"
-                    >
-                      ({{ pemohonStore.pagination.total }})
-                    </span>
-                    <button
-                      @click="clearSearch"
-                      class="ml-1.5 text-blue-600 hover:text-blue-800 flex-shrink-0"
-                      title="Hapus pencarian"
-                    >
-                      <svg
-                        class="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        ></path>
-                      </svg>
-                    </button>
-                  </span>
-                </div>
-
-                <!-- Container untuk Search Input dan Action Menu (desktop) -->
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <!-- Search input (desktop) -->
-                  <div class="relative min-w-[280px]">
-                    <input
-                      type="text"
-                      placeholder="Cari supplier, perusahaan, bank..."
-                      v-model="searchText"
-                      class="border border-[#D9D9D9] rounded-lg h-10 px-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0099ff] focus:border-[#0099ff] transition-all duration-200 w-full"
-                    />
-                    <!-- Clear search button -->
-                    <button
-                      v-if="searchText"
-                      @click="clearSearch"
-                      class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        ></path>
-                      </svg>
-                    </button>
-                    <!-- Search icon -->
-                    <div
-                      v-else
-                      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <!-- ✅ FIXED: Action Menu (desktop) with separate ref -->
-                  <div ref="dropdownDesktopRef" class="relative flex-shrink-0">
-                    <button
-                      @click="showMenu = !showMenu"
-                      class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    >
-                      <svg
-                        class="w-4 h-4 text-gray-600 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
-                        ></path>
-                      </svg>
-                      <span class="text-sm font-medium text-gray-700"
-                        >Aksi</span
-                      >
-                      <svg
-                        class="w-3 h-3 ml-1 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 9l-7 7-7-7"
-                        ></path>
-                      </svg>
-                    </button>
-
-                    <!-- Dropdown Menu -->
-                    <div
-                      v-show="showMenu"
-                      class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 transform transition-all duration-200 origin-top-right"
-                      :class="
-                        showMenu
-                          ? 'scale-100 opacity-100'
-                          : 'scale-95 opacity-0'
-                      "
-                    >
-                      <div class="py-2">
-                        <!-- Upload Excel -->
-                        <button
-                          @click="handleUploadAndClose"
-                          :disabled="isLoading || isUploadingCSV"
-                          class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <svg
-                            v-if="isUploadingCSV"
-                            class="animate-spin w-4 h-4 mr-3 text-green-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              class="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              stroke-width="4"
-                            ></circle>
-                            <path
-                              class="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          <svg
-                            v-else
-                            class="w-4 h-4 mr-3 text-green-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            ></path>
-                          </svg>
-                          Upload File Excel
-                        </button>
-
-                        <!-- Input Data Pemohon dengan PemohonIconElement -->
-                        <button
-                          @click="handleInputAndClose"
-                          :disabled="isLoading || isUploadingCSV"
-                          class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <div class="w-4 h-4 mr-3">
-                            <PemohonIconElement
-                              color="none"
-                              stroke="#0099FF"
-                              class="-ml-0.5 -mt-[2.8px]"
-                            />
-                          </div>
-                          Input Data Pemohon
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>            <!-- ✅ BARU: Layout untuk mobile/tablet -->
-            <div class="lg:hidden">
-              <!-- Title dan Action Menu untuk mobile -->
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <!-- Back Button Bulat untuk Mobile -->
-                  <button
-                    @click="handleBack"
-                    class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
-                    title="Kembali"
-                  >
-                    <svg
-                      class="w-4 h-4 text-gray-600 group-hover:text-gray-800"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                      ></path>
-                    </svg>
-                  </button>
-                  
-                  <div
-                    class="font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-4"
-                  >
-                    Daftar Data Pemohon
                   </div>
                 </div>
 
-                <!-- ✅ FIXED: Action Menu untuk mobile with separate ref -->
-                <div ref="dropdownMobileRef" class="relative flex-shrink-0">
+                <!-- ✅ FIXED: Action Menu (desktop) with separate ref -->
+                <div ref="dropdownDesktopRef" class="relative flex-shrink-0">
                   <button
                     @click="showMenu = !showMenu"
                     class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -900,10 +726,10 @@
                     </svg>
                   </button>
 
-                  <!-- Dropdown Menu untuk mobile (sama seperti desktop) -->
+                  <!-- Dropdown Menu -->
                   <div
                     v-show="showMenu"
-                    class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-20 transform transition-all duration-200 origin-top-right"
+                    class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 transform transition-all duration-200 origin-top-right"
                     :class="
                       showMenu ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
                     "
@@ -971,24 +797,211 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <!-- ✅ BARU: Layout untuk mobile/tablet -->
+          <div class="lg:hidden">
+            <!-- Title dan Action Menu untuk mobile -->
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div
+                  class="font-semibold text-base sm:text-lg text-[#0099FF] underline underline-offset-4"
+                >
+                  Daftar Data Pemohon
+                </div>
+              </div>
 
-              <!-- ✅ Search input w-full untuk mobile -->
-              <div class="space-y-2">
-                <div class="relative w-full">
-                  <input
-                    type="text"
-                    placeholder="Cari supplier, perusahaan, bank..."
-                    v-model="searchText"
-                    class="border border-[#D9D9D9] rounded-lg h-9 sm:h-10 px-3 sm:px-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0099ff] focus:border-[#0099ff] transition-all duration-200 w-full"
-                  />
-                  <!-- Clear search button -->
+              <!-- ✅ FIXED: Action Menu untuk mobile with separate ref -->
+              <div ref="dropdownMobileRef" class="relative flex-shrink-0">
+                <button
+                  @click="showMenu = !showMenu"
+                  class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-600 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+                    ></path>
+                  </svg>
+                  <span class="text-sm font-medium text-gray-700">Aksi</span>
+                  <svg
+                    class="w-3 h-3 ml-1 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    ></path>
+                  </svg>
+                </button>
+
+                <!-- Dropdown Menu untuk mobile (sama seperti desktop) -->
+                <div
+                  v-show="showMenu"
+                  class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-20 transform transition-all duration-200 origin-top-right"
+                  :class="
+                    showMenu ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+                  "
+                >
+                  <div class="py-2">
+                    <!-- Upload Excel -->
+                    <button
+                      @click="handleUploadAndClose"
+                      :disabled="isLoading || isUploadingCSV"
+                      class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <svg
+                        v-if="isUploadingCSV"
+                        class="animate-spin w-4 h-4 mr-3 text-green-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        ></circle>
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      <svg
+                        v-else
+                        class="w-4 h-4 mr-3 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        ></path>
+                      </svg>
+                      Upload File Excel
+                    </button>
+
+                    <!-- Input Data Pemohon dengan PemohonIconElement -->
+                    <button
+                      @click="handleInputAndClose"
+                      :disabled="isLoading || isUploadingCSV"
+                      class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <div class="w-4 h-4 mr-3">
+                        <PemohonIconElement
+                          color="none"
+                          stroke="#0099FF"
+                          class="-ml-0.5 -mt-[2.8px]"
+                        />
+                      </div>
+                      Input Data Pemohon
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ✅ Search input w-full untuk mobile -->
+            <div class="space-y-2">
+              <div class="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Cari supplier, perusahaan, bank..."
+                  v-model="searchText"
+                  class="border border-[#D9D9D9] rounded-lg h-9 sm:h-10 px-3 sm:px-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0099ff] focus:border-[#0099ff] transition-all duration-200 w-full"
+                />
+                <!-- Clear search button -->
+                <button
+                  v-if="searchText"
+                  @click="clearSearch"
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                </button>
+                <!-- Search icon -->
+                <div
+                  v-else
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- ✅ Search result info di bawah search input untuk mobile -->
+              <div v-if="searchText">
+                <span
+                  class="inline-flex items-center px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-md"
+                >
+                  <svg
+                    class="w-3 h-3 mr-1 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                  </svg>
+                  <span class="truncate max-w-[150px] sm:max-w-[200px]">
+                    "{{ searchText }}"
+                  </span>
+                  <span
+                    v-if="pemohonStore.pagination?.total !== undefined"
+                    class="ml-1 text-gray-600 flex-shrink-0"
+                  >
+                    ({{ pemohonStore.pagination.total }})
+                  </span>
                   <button
-                    v-if="searchText"
                     @click="clearSearch"
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                    class="ml-1.5 text-blue-600 hover:text-blue-800 flex-shrink-0"
+                    title="Hapus pencarian"
                   >
                     <svg
-                      class="w-4 h-4"
+                      class="w-3 h-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1001,95 +1014,226 @@
                       ></path>
                     </svg>
                   </button>
-                  <!-- Search icon -->
-                  <div
-                    v-else
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                <!-- ✅ Search result info di bawah search input untuk mobile -->
-                <div v-if="searchText">
-                  <span
-                    class="inline-flex items-center px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-md"
-                  >
-                    <svg
-                      class="w-3 h-3 mr-1 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      ></path>
-                    </svg>
-                    <span class="truncate max-w-[150px] sm:max-w-[200px]">
-                      "{{ searchText }}"
-                    </span>
-                    <span
-                      v-if="pemohonStore.pagination?.total !== undefined"
-                      class="ml-1 text-gray-600 flex-shrink-0"
-                    >
-                      ({{ pemohonStore.pagination.total }})
-                    </span>
-                    <button
-                      @click="clearSearch"
-                      class="ml-1.5 text-blue-600 hover:text-blue-800 flex-shrink-0"
-                      title="Hapus pencarian"
-                    >
-                      <svg
-                        class="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        ></path>
-                      </svg>
-                    </button>
-                  </span>
+        <!-- Table Container -->
+        <section
+          class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200"
+        >
+          <!-- Mobile Card View -->
+          <div class="block lg:hidden">
+            <!-- Loading State -->
+            <div
+              v-if="isLoading"
+              class="flex justify-center items-center h-64 bg-white"
+            >
+              <div class="text-center">
+                <div
+                  class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-500 mx-auto mb-2"
+                ></div>
+                <div class="text-gray-500 text-xs sm:text-sm">
+                  {{ searchText ? 'Mencari data...' : 'Memuat data...' }}
                 </div>
               </div>
             </div>
-          </section>
 
-          <!-- Table Container -->
-          <section
-            class="relative text-xs sm:text-sm overflow-hidden rounded-lg shadow-sm border border-gray-200"
-          >
-            <!-- Mobile Card View -->
-            <div class="block lg:hidden">
+            <!-- Error State -->
+            <div
+              v-else-if="hasError"
+              class="flex justify-center items-center h-64 bg-white"
+            >
+              <div class="text-red-500 text-center p-4">
+                <div class="text-red-400 mb-2">
+                  <svg
+                    class="w-8 h-8 sm:w-10 sm:h-10 mx-auto"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <p class="text-sm mb-3">{{ error }}</p>
+                <button
+                  @click="fetchData(currentPage, searchText)"
+                  class="px-4 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 text-xs sm:text-sm transition-colors duration-200"
+                >
+                  Coba Lagi
+                </button>
+              </div>
+            </div>
+
+            <!-- Data Cards -->
+            <div v-else class="bg-gray-50">
+              <template v-if="filteredPemohon.length === 0">
+                <div class="py-16 text-center text-gray-400 bg-white">
+                  <div class="text-gray-300 mb-3">
+                    <svg
+                      class="w-12 h-12 sm:w-16 sm:h-16 mx-auto"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <p class="text-sm sm:text-base">
+                    {{
+                      searchText
+                        ? 'Tidak ada data yang sesuai dengan pencarian'
+                        : 'Tidak ada data pemohon'
+                    }}
+                  </p>
+                  <p class="text-xs text-gray-300 mt-1">
+                    {{
+                      searchText
+                        ? 'Coba kata kunci lain atau hapus filter'
+                        : 'Belum ada data pemohon yang tersedia'
+                    }}
+                  </p>
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-450px)] sm:max-h-[calc(100vh-430px)] overflow-y-auto"
+                >
+                  <div
+                    v-for="(pemohon, index) in filteredPemohon"
+                    :key="pemohon.id || index"
+                    class="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
+                  >
+                    <!-- Header with actions -->
+                    <div class="flex justify-between items-start mb-3">
+                      <div class="flex-1 min-w-0">
+                        <h4
+                          class="font-medium text-sm sm:text-base text-gray-900 mb-1 truncate"
+                        >
+                          {{ toTitleCase(pemohon.nama_suplier) }}
+                        </h4>
+                        <p class="text-xs sm:text-sm text-gray-600">
+                          {{ toTitleCase(pemohon.nama_perusahaan) }}
+                        </p>
+                      </div>
+                      <!-- ✅ CHANGED: Vertical layout for action buttons -->
+                      <div class="flex flex-col space-y-1 sm:space-y-1.5 ml-2">
+                        <!-- Edit Button -->
+                        <button
+                          @click="handleEdit(pemohon)"
+                          class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-150 min-w-[70px]"
+                        >
+                          <svg
+                            class="w-3 h-3 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            ></path>
+                          </svg>
+                          Edit
+                        </button>
+                        <!-- Delete Button -->
+                        <button
+                          @click="handleDelete(pemohon)"
+                          class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-150 min-w-[70px]"
+                        >
+                          <svg
+                            class="w-3 h-3 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            ></path>
+                          </svg>
+                          Hapus
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Content Grid -->
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm"
+                    >
+                      <div class="space-y-1">
+                        <span class="text-gray-500 font-medium"
+                          >Jenis Bank:</span
+                        >
+                        <p class="font-medium text-gray-900">
+                          <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                          >
+                            {{ pemohon.jenis_bank || '-' }}
+                          </span>
+                        </p>
+                      </div>
+                      <div class="space-y-1">
+                        <span class="text-gray-500 font-medium"
+                          >No. Rekening:</span
+                        >
+                        <p class="font-medium text-gray-900 font-mono text-xs">
+                          {{ pemohon.no_rekening || '-' }}
+                        </p>
+                      </div>
+                      <div class="space-y-1 sm:col-span-2">
+                        <span class="text-gray-500 font-medium"
+                          >Atas Nama:</span
+                        >
+                        <p class="font-medium text-gray-900 truncate">
+                          {{ toTitleCase(pemohon.atasnama_rekening) }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div
+                      class="flex justify-end items-center mt-3 pt-3 border-t border-gray-100"
+                    >
+                      <div class="flex items-center space-x-2">
+                        <span
+                          class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                        >
+                          {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- Desktop Table View -->
+          <div class="hidden lg:block">
+            <div class="overflow-x-auto">
               <!-- Loading State -->
               <div
                 v-if="isLoading"
-                class="flex justify-center items-center h-64 bg-white"
+                class="flex justify-center items-center h-64"
               >
                 <div class="text-center">
                   <div
-                    class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-500 mx-auto mb-2"
+                    class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"
                   ></div>
-                  <div class="text-gray-500 text-xs sm:text-sm">
+                  <div class="text-gray-500">
                     {{ searchText ? 'Mencari data...' : 'Memuat data...' }}
                   </div>
                 </div>
@@ -1098,445 +1242,245 @@
               <!-- Error State -->
               <div
                 v-else-if="hasError"
-                class="flex justify-center items-center h-64 bg-white"
+                class="flex justify-center items-center h-64"
               >
-                <div class="text-red-500 text-center p-4">
-                  <div class="text-red-400 mb-2">
+                <div class="text-red-500 text-center">
+                  <div class="text-red-400 mb-3">
                     <svg
-                      class="w-8 h-8 sm:w-10 sm:h-10 mx-auto"
+                      class="w-12 h-12 mx-auto"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 00-1-1z"
                         clip-rule="evenodd"
                       />
                     </svg>
                   </div>
-                  <p class="text-sm mb-3">{{ error }}</p>
+                  <p class="mb-4">{{ error }}</p>
                   <button
                     @click="fetchData(currentPage, searchText)"
-                    class="px-4 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 text-xs sm:text-sm transition-colors duration-200"
+                    class="px-6 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
                   >
                     Coba Lagi
                   </button>
                 </div>
               </div>
 
-              <!-- Data Cards -->
-              <div v-else class="bg-gray-50">
-                <template v-if="filteredPemohon.length === 0">
-                  <div class="py-16 text-center text-gray-400 bg-white">
-                    <div class="text-gray-300 mb-3">
-                      <svg
-                        class="w-12 h-12 sm:w-16 sm:h-16 mx-auto"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <p class="text-sm sm:text-base">
-                      {{
-                        searchText
-                          ? 'Tidak ada data yang sesuai dengan pencarian'
-                          : 'Tidak ada data pemohon'
-                      }}
-                    </p>
-                    <p class="text-xs text-gray-300 mt-1">
-                      {{
-                        searchText
-                          ? 'Coba kata kunci lain atau hapus filter'
-                          : 'Belum ada data pemohon yang tersedia'
-                      }}
-                    </p>
-                  </div>
-                </template>
-                <template v-else>
-                  <div
-                    class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-450px)] sm:max-h-[calc(100vh-430px)] overflow-y-auto"
-                  >
-                    <div
-                      v-for="(pemohon, index) in filteredPemohon"
-                      :key="pemohon.id || index"
-                      class="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
+              <!-- Data Table -->
+              <div
+                v-else
+                class="overflow-y-auto max-h-[calc(100vh-300px)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
+              >
+                <table class="w-full">
+                  <thead class="sticky top-0 z-10">
+                    <tr
+                      class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-xs border-b border-gray-200"
                     >
-                      <!-- Header with actions -->
-                      <div class="flex justify-between items-start mb-3">
-                        <div class="flex-1 min-w-0">
-                          <h4
-                            class="font-medium text-sm sm:text-base text-gray-900 mb-1 truncate"
-                          >
-                            {{ toTitleCase(pemohon.nama_suplier) }}
-                          </h4>
-                          <p class="text-xs sm:text-sm text-gray-600">
-                            {{ toTitleCase(pemohon.nama_perusahaan) }}
-                          </p>
-                        </div>
-                        <!-- ✅ CHANGED: Vertical layout for action buttons -->
-                        <div
-                          class="flex flex-col space-y-1 sm:space-y-1.5 ml-2"
+                      <th
+                        class="px-4 py-3 rounded-tl-xl text-center font-semibold w-16"
+                      >
+                        No
+                      </th>
+                      <th class="px-3 py-3 text-left font-semibold w-36">
+                        Nama Supplier
+                      </th>
+                      <th class="px-3 py-3 text-left font-semibold w-36">
+                        Nama Perusahaan
+                      </th>
+                      <th class="px-3 py-3 font-semibold w-24 text-center">
+                        Jenis Bank
+                      </th>
+                      <th class="px-3 py-3 font-semibold w-40 text-center">
+                        No. Rekening
+                      </th>
+                      <th class="px-3 py-3 font-semibold w-36 text-center">
+                        Atas Nama Rekening
+                      </th>
+                      <th
+                        class="px-3 py-3 rounded-tr-xl font-semibold w-32 text-center"
+                      >
+                        Aksi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template v-if="filteredPemohon.length === 0">
+                      <tr>
+                        <td
+                          colspan="7"
+                          class="py-16 text-center text-gray-400 bg-gray-50"
                         >
-                          <!-- Edit Button -->
-                          <button
-                            @click="handleEdit(pemohon)"
-                            class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-150 min-w-[70px]"
-                          >
+                          <div class="text-gray-300 mb-3">
                             <svg
-                              class="w-3 h-3 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                              class="w-16 h-16 mx-auto"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
                             >
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                              ></path>
+                                fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                                clip-rule="evenodd"
+                              />
                             </svg>
-                            Edit
-                          </button>
-                          <!-- Delete Button -->
-                          <button
-                            @click="handleDelete(pemohon)"
-                            class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-150 min-w-[70px]"
-                          >
-                            <svg
-                              class="w-3 h-3 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              ></path>
-                            </svg>
-                            Hapus
-                          </button>
-                        </div>
-                      </div>
-
-                      <!-- Content Grid -->
-                      <div
-                        class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm"
+                          </div>
+                          <p class="text-base">
+                            {{
+                              searchText
+                                ? 'Tidak ada data yang sesuai dengan pencarian'
+                                : 'Tidak ada data pemohon'
+                            }}
+                          </p>
+                          <p class="text-sm text-gray-300 mt-2">
+                            {{
+                              searchText
+                                ? 'Coba kata kunci lain atau hapus filter'
+                                : 'Belum ada data pemohon yang tersedia'
+                            }}
+                          </p>
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-else>
+                      <tr
+                        v-for="(pemohon, index) in filteredPemohon"
+                        :key="pemohon.id || index"
+                        :class="[
+                          index % 2 === 0
+                            ? 'bg-white hover:bg-gray-50'
+                            : 'bg-gray-50/50 hover:bg-gray-100/50',
+                          'border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out',
+                        ]"
                       >
-                        <div class="space-y-1">
-                          <span class="text-gray-500 font-medium"
-                            >Jenis Bank:</span
-                          >
-                          <p class="font-medium text-gray-900">
-                            <span
-                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                            >
-                              {{ pemohon.jenis_bank || '-' }}
-                            </span>
-                          </p>
-                        </div>
-                        <div class="space-y-1">
-                          <span class="text-gray-500 font-medium"
-                            >No. Rekening:</span
-                          >
-                          <p
-                            class="font-medium text-gray-900 font-mono text-xs"
-                          >
-                            {{ pemohon.no_rekening || '-' }}
-                          </p>
-                        </div>
-                        <div class="space-y-1 sm:col-span-2">
-                          <span class="text-gray-500 font-medium"
-                            >Atas Nama:</span
-                          >
-                          <p class="font-medium text-gray-900 truncate">
-                            {{ toTitleCase(pemohon.atasnama_rekening) }}
-                          </p>
-                        </div>
-                      </div>
-
-                      <!-- Footer -->
-                      <div
-                        class="flex justify-end items-center mt-3 pt-3 border-t border-gray-100"
-                      >
-                        <div class="flex items-center space-x-2">
-                          <span
-                            class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                        <!-- No -->
+                        <td class="px-4 py-3 text-center w-16">
+                          <div
+                            class="text-xs font-semibold text-gray-700 bg-blue-50 rounded-full w-8 h-8 flex items-center justify-center mx-auto"
                           >
                             {{ (currentPage - 1) * itemsPerPage + index + 1 }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </div>
+                          </div>
+                        </td>
 
-            <!-- Desktop Table View -->
-            <div class="hidden lg:block">
-              <div class="overflow-x-auto">
-                <!-- Loading State -->
-                <div
-                  v-if="isLoading"
-                  class="flex justify-center items-center h-64"
-                >
-                  <div class="text-center">
-                    <div
-                      class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"
-                    ></div>
-                    <div class="text-gray-500">
-                      {{ searchText ? 'Mencari data...' : 'Memuat data...' }}
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Error State -->
-                <div
-                  v-else-if="hasError"
-                  class="flex justify-center items-center h-64"
-                >
-                  <div class="text-red-500 text-center">
-                    <div class="text-red-400 mb-3">
-                      <svg
-                        class="w-12 h-12 mx-auto"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 00-1-1z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <p class="mb-4">{{ error }}</p>
-                    <button
-                      @click="fetchData(currentPage, searchText)"
-                      class="px-6 py-2 bg-[#0099ff] text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-                    >
-                      Coba Lagi
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Data Table -->
-                <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]">
-                  <table class="w-full">
-                    <thead class="sticky top-0 z-10">
-                      <tr
-                        class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-xs border-b border-gray-200"
-                      >
-                        <th
-                          class="px-4 py-3 rounded-tl-xl text-center font-semibold w-16"
-                        >
-                          No
-                        </th>
-                        <th class="px-3 py-3 text-left font-semibold w-36">
-                          Nama Supplier
-                        </th>
-                        <th class="px-3 py-3 text-left font-semibold w-36">
-                          Nama Perusahaan
-                        </th>
-                        <th class="px-3 py-3 font-semibold w-24 text-center">
-                          Jenis Bank
-                        </th>
-                        <th class="px-3 py-3 font-semibold w-40 text-center">
-                          No. Rekening
-                        </th>
-                        <th class="px-3 py-3 font-semibold w-36 text-center">
-                          Atas Nama Rekening
-                        </th>
-                        <th
-                          class="px-3 py-3 rounded-tr-xl font-semibold w-32 text-center"
-                        >
-                          Aksi
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <template v-if="filteredPemohon.length === 0">
-                        <tr>
-                          <td
-                            colspan="7"
-                            class="py-16 text-center text-gray-400 bg-gray-50"
+                        <!-- Nama Supplier -->
+                        <td class="px-3 py-3 text-left w-36">
+                          <div
+                            class="text-xs font-medium text-gray-900 truncate"
+                            :title="toTitleCase(pemohon.nama_suplier)"
                           >
-                            <div class="text-gray-300 mb-3">
+                            {{ toTitleCase(pemohon.nama_suplier) }}
+                          </div>
+                        </td>
+
+                        <!-- Nama Perusahaan -->
+                        <td class="px-3 py-3 text-left w-36">
+                          <div
+                            class="text-xs text-gray-700 truncate"
+                            :title="toTitleCase(pemohon.nama_perusahaan)"
+                          >
+                            {{ toTitleCase(pemohon.nama_perusahaan) }}
+                          </div>
+                        </td>
+
+                        <!-- Jenis Bank -->
+                        <td class="px-3 py-3 text-center w-24">
+                          <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                          >
+                            {{ pemohon.jenis_bank || '-' }}
+                          </span>
+                        </td>
+
+                        <!-- No. Rekening -->
+                        <td class="px-3 py-3 text-center w-40">
+                          <div
+                            class="text-sm font-mono text-gray-900 bg-gray-50 px-2 py-1 rounded"
+                            :title="pemohon.no_rekening"
+                          >
+                            {{ pemohon.no_rekening || '-' }}
+                          </div>
+                        </td>
+
+                        <!-- Atas Nama Rekening -->
+                        <td class="px-3 py-3 text-center w-36">
+                          <div
+                            class="text-xs text-gray-700 truncate"
+                            :title="toTitleCase(pemohon.atasnama_rekening)"
+                          >
+                            {{ toTitleCase(pemohon.atasnama_rekening) }}
+                          </div>
+                        </td>
+
+                        <!-- Aksi -->
+                        <td class="px-3 py-3 w-32">
+                          <div
+                            class="flex space-x-1.5 justify-center items-center"
+                          >
+                            <!-- Edit Button -->
+                            <button
+                              @click="handleEdit(pemohon)"
+                              class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-150"
+                              title="Edit data pemohon"
+                            >
                               <svg
-                                class="w-16 h-16 mx-auto"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
+                                class="w-3 h-3 mr-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                               >
                                 <path
-                                  fill-rule="evenodd"
-                                  d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
-                                  clip-rule="evenodd"
-                                />
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                ></path>
                               </svg>
-                            </div>
-                            <p class="text-base">
-                              {{
-                                searchText
-                                  ? 'Tidak ada data yang sesuai dengan pencarian'
-                                  : 'Tidak ada data pemohon'
-                              }}
-                            </p>
-                            <p class="text-sm text-gray-300 mt-2">
-                              {{
-                                searchText
-                                  ? 'Coba kata kunci lain atau hapus filter'
-                                  : 'Belum ada data pemohon yang tersedia'
-                              }}
-                            </p>
-                          </td>
-                        </tr>
-                      </template>
-                      <template v-else>
-                        <tr
-                          v-for="(pemohon, index) in filteredPemohon"
-                          :key="pemohon.id || index"
-                          :class="[
-                            index % 2 === 0
-                              ? 'bg-white hover:bg-gray-50'
-                              : 'bg-gray-50/50 hover:bg-gray-100/50',
-                            'border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out',
-                          ]"
-                        >
-                          <!-- No -->
-                          <td class="px-4 py-3 text-center w-16">
-                            <div
-                              class="text-xs font-semibold text-gray-700 bg-blue-50 rounded-full w-8 h-8 flex items-center justify-center mx-auto"
-                            >
-                              {{ (currentPage - 1) * itemsPerPage + index + 1 }}
-                            </div>
-                          </td>
+                              Edit
+                            </button>
 
-                          <!-- Nama Supplier -->
-                          <td class="px-3 py-3 text-left w-36">
-                            <div
-                              class="text-xs font-medium text-gray-900 truncate"
-                              :title="toTitleCase(pemohon.nama_suplier)"
+                            <!-- Delete Button -->
+                            <button
+                              @click="handleDelete(pemohon)"
+                              class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-150"
+                              title="Hapus data pemohon"
                             >
-                              {{ toTitleCase(pemohon.nama_suplier) }}
-                            </div>
-                          </td>
-
-                          <!-- Nama Perusahaan -->
-                          <td class="px-3 py-3 text-left w-36">
-                            <div
-                              class="text-xs text-gray-700 truncate"
-                              :title="toTitleCase(pemohon.nama_perusahaan)"
-                            >
-                              {{ toTitleCase(pemohon.nama_perusahaan) }}
-                            </div>
-                          </td>
-
-                          <!-- Jenis Bank -->
-                          <td class="px-3 py-3 text-center w-24">
-                            <span
-                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                            >
-                              {{ pemohon.jenis_bank || '-' }}
-                            </span>
-                          </td>
-
-                          <!-- No. Rekening -->
-                          <td class="px-3 py-3 text-center w-40">
-                            <div
-                              class="text-sm font-mono text-gray-900 bg-gray-50 px-2 py-1 rounded"
-                              :title="pemohon.no_rekening"
-                            >
-                              {{ pemohon.no_rekening || '-' }}
-                            </div>
-                          </td>
-
-                          <!-- Atas Nama Rekening -->
-                          <td class="px-3 py-3 text-center w-36">
-                            <div
-                              class="text-xs text-gray-700 truncate"
-                              :title="toTitleCase(pemohon.atasnama_rekening)"
-                            >
-                              {{ toTitleCase(pemohon.atasnama_rekening) }}
-                            </div>
-                          </td>
-
-                          <!-- Aksi -->
-                          <td class="px-3 py-3 w-32">
-                            <div
-                              class="flex space-x-1.5 justify-center items-center"
-                            >
-                              <!-- Edit Button -->
-                              <button
-                                @click="handleEdit(pemohon)"
-                                class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-150"
-                                title="Edit data pemohon"
+                              <svg
+                                class="w-3 h-3 mr-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                               >
-                                <svg
-                                  class="w-3 h-3 mr-1"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                  ></path>
-                                </svg>
-                                Edit
-                              </button>
-
-                              <!-- Delete Button -->
-                              <button
-                                @click="handleDelete(pemohon)"
-                                class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-150"
-                                title="Hapus data pemohon"
-                              >
-                                <svg
-                                  class="w-3 h-3 mr-1"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  ></path>
-                                </svg>
-                                Hapus
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      </template>
-                    </tbody>
-                  </table>
-                </div>
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                ></path>
+                              </svg>
+                              Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
               </div>
             </div>
-          </section>
-
-          <!-- ✅ PERBAIKAN: Pagination dengan margin yang lebih kecil -->
-          <div class="mt-3 space-y-2 bottom-0 py-12 sm:py-5 lg:py-0 xl:py-2">
-            <!-- Pagination -->
-            <PageElement
-              v-if="totalPages > 1"
-              :current-page="currentPage"
-              :total-pages="totalPages"
-              @change="handlePageChange"
-            />
           </div>
+        </section>
+
+        <!-- ✅ PERBAIKAN: Pagination dengan margin yang lebih kecil -->
+        <div class="mt-3 space-y-2 bottom-0 py-12 sm:py-5 lg:py-0 xl:py-2">
+          <!-- Pagination -->
+          <PageElement
+            v-if="totalPages > 1"
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            @change="handlePageChange"
+          />
         </div>
-      </section>
-    </MainElement>
-  </SuperAdminLayout>
+      </div>
+    </section>
+  </MainElement>
 </template>

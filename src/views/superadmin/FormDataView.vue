@@ -1,7 +1,6 @@
 <script setup>
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
   import { useRouter, onBeforeRouteLeave } from 'vue-router'
-  import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormElement from '@/components/FormElement.vue'
   import InputIconElement from '@/components/InputIconElement.vue'
@@ -226,7 +225,6 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
     <MainElement>
       <section class="flex flex-col justify-between h-full px-2 sm:px-4">
         <!-- TITLE -->
@@ -286,5 +284,4 @@
         />
       </section>
     </MainElement>
-  </SuperAdminLayout>
 </template>

@@ -1,7 +1,6 @@
-<script setup>
+  <script setup>
   import { ref, computed, onMounted, watch } from 'vue'
   import { useRouter } from 'vue-router'
-  import AdminLayout from '@/layouts/AdminLayout.vue'
   import LihatDataComponent from '@/components/LihatDataComponent.vue'
   import { usePengadaanStore } from '@/stores/pengadaanStore'
   import Swal from 'sweetalert2'
@@ -173,31 +172,29 @@
 </script>
 
 <template>
-  <AdminLayout>
-    <LihatDataComponent
-      :tableData="tableData"
-      :filteredData="paginatedData"
-      :paginatedData="paginatedData"
-      :searchQuery="searchQuery"
-      :selectedMonth="selectedMonth"
-      :currentPage="currentPage"
-      :itemsPerPage="itemsPerPage"
-      :pageInput="pageInput"
-      :months="months"
-      :getTotalPages="totalPages"
-      :isExtraSmallScreen="false"
-      :displayedPageNumbers="displayedPageNumbers"
-      :userType="'admin'"
-      @update:searchQuery="searchQuery = $event"
-      @update:selectedMonth="selectedMonth = $event"
-      @update:currentPage="handlePageChange"
-      @update:pageInput="pageInput = $event"
-      @page-input-submit="handlePageInput"
-      @back="router.push('/admin/dashboard')"
-      @preview="handlePreview"
-      @print="handlePrint"
-      @edit="handleEdit"
-      @delete="handleDelete"
-    />
-  </AdminLayout>
+  <LihatDataComponent
+    :tableData="tableData"
+    :filteredData="paginatedData"
+    :paginatedData="paginatedData"
+    :searchQuery="searchQuery"
+    :selectedMonth="selectedMonth"
+    :currentPage="currentPage"
+    :itemsPerPage="itemsPerPage"
+    :pageInput="pageInput"
+    :months="months"
+    :getTotalPages="totalPages"
+    :isExtraSmallScreen="false"
+    :displayedPageNumbers="displayedPageNumbers"
+    :userType="'admin'"
+    @update:searchQuery="searchQuery = $event"
+    @update:selectedMonth="selectedMonth = $event"
+    @update:currentPage="handlePageChange"
+    @update:pageInput="pageInput = $event"
+    @page-input-submit="handlePageInput"
+    @back="router.push('/admin/dashboard')"
+    @preview="handlePreview"
+    @print="handlePrint"
+    @edit="handleEdit"
+    @delete="handleDelete"
+  />
 </template>

@@ -3,9 +3,11 @@
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthStore } from '@/stores/authStore'
+  import { useUserStore } from '@/stores/userStore'
 
   const router = useRouter()
   const auth = useAuthStore()
+  const userStore = useUserStore()
   const nama_pengguna = ref('')
   const password = ref('')
   const rememberMe = ref(false) // ✅ Tambah remember me state
@@ -51,6 +53,8 @@
         password.value,
         rememberMe.value,
       )
+      // Setelah login, fetch user baru
+      await userStore.fetchCurrentUser()
 
       // Redirect based on role
       const role = auth.user?.role

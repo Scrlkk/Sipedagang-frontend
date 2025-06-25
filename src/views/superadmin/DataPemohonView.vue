@@ -8,7 +8,6 @@
     nextTick,
   } from 'vue'
   import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
-  import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import FormPemohon from '@/components/PemohonElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
@@ -1126,274 +1125,189 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
-    <MainElement>
-      <section class="flex flex-col justify-between h-full px-2 sm:px-4">
-        <!-- HEADER WITH ACTION MENU -->
-        <div class="flex justify-between items-center mb-6">
-          <!-- TITLE -->
-          <div
-            class="font-semibold text-lg text-[#0099FF] underline underline-offset-8"
+  <MainElement>
+    <section class="flex flex-col justify-between h-full px-2 sm:px-4">
+      <!-- HEADER WITH ACTION MENU -->
+      <div class="flex justify-between items-center mb-6">
+        <!-- TITLE -->
+        <div
+          class="font-semibold text-lg text-[#0099FF] underline underline-offset-8"
+        >
+          {{ isEditMode ? 'Edit Data Pemohon' : 'Form Data Pemohon' }}
+        </div>
+
+        <!-- ACTION MENU -->
+        <div ref="dropdownRef" class="relative">
+          <button
+            @click="showMenu = !showMenu"
+            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
           >
-            {{ isEditMode ? 'Edit Data Pemohon' : 'Form Data Pemohon' }}
-          </div>
-
-          <!-- ACTION MENU -->
-          <div ref="dropdownRef" class="relative">
-            <button
-              @click="showMenu = !showMenu"
-              class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            <svg
+              class="w-5 h-5 text-gray-600 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                class="w-5 h-5 text-gray-600 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
-                ></path>
-              </svg>
-              <span class="text-sm font-medium text-gray-700">Aksi</span>
-              <svg
-                class="w-4 h-4 ml-2 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </button>
-
-            <!-- DROPDOWN MENU -->
-            <div
-              v-show="showMenu"
-              class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-20 transform transition-all duration-200 origin-top-right"
-              :class="showMenu ? 'scale-100 opacity-100' : 'scale-95 opacity-0'"
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+              ></path>
+            </svg>
+            <span class="text-sm font-medium text-gray-700">Aksi</span>
+            <svg
+              class="w-4 h-4 ml-2 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <div class="py-2">
-                <!-- Upload Excel - Show only in add mode -->
-                <button
-                  v-if="!isEditMode"
-                  @click="handleUploadAndClose"
-                  :disabled="
-                    isSubmitting || pemohonStore?.isLoading || isUploadingCSV
-                  "
-                  class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg
-                    v-if="isUploadingCSV"
-                    class="animate-spin w-4 h-4 mr-3 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  <svg
-                    v-else
-                    class="w-4 h-4 mr-3 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    ></path>
-                  </svg>
-                  Upload File Excel
-                </button>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
 
-                <!-- Upload disabled message in edit mode -->
-                <div
-                  v-if="isEditMode"
-                  class="w-full px-4 py-3 text-left text-sm text-gray-400 flex items-center cursor-not-allowed"
+          <!-- DROPDOWN MENU -->
+          <div
+            v-show="showMenu"
+            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-20 transform transition-all duration-200 origin-top-right"
+            :class="showMenu ? 'scale-100 opacity-100' : 'scale-95 opacity-0'"
+          >
+            <div class="py-2">
+              <!-- Upload Excel - Show only in add mode -->
+              <button
+                v-if="!isEditMode"
+                @click="handleUploadAndClose"
+                :disabled="
+                  isSubmitting || pemohonStore?.isLoading || isUploadingCSV
+                "
+                class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg
+                  v-if="isUploadingCSV"
+                  class="animate-spin w-4 h-4 mr-3 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-4 h-4 mr-3 text-gray-400"
-                    fill="none"
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
                     stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"
-                    ></path>
-                  </svg>
-                  Upload Excel (Tidak tersedia dalam mode edit)
-                </div>
-
-                <!-- Input Data Pemohon - Show only in edit mode -->
-                <button
-                  v-if="isEditMode"
-                  @click="handleInputAndClose"
-                  :disabled="
-                    isSubmitting || pemohonStore?.isLoading || isUploadingCSV
-                  "
-                  class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <svg
+                  v-else
+                  class="w-4 h-4 mr-3 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <div class="w-4 h-4 mr-3">
-                    <PemohonIconElement
-                      color="none"
-                      stroke="#0099FF"
-                      class="-ml-0.5 -mt-[2.8px]"
-                    />
-                  </div>
-                  Input Data Pemohon
-                </button>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  ></path>
+                </svg>
+                Upload File Excel
+              </button>
 
-                <!-- List Pemohon -->
-                <button
-                  @click="handleListAndClose"
-                  :disabled="
-                    isSubmitting || pemohonStore?.isLoading || isUploadingCSV
-                  "
-                  class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              <!-- Upload disabled message in edit mode -->
+              <div
+                v-if="isEditMode"
+                class="w-full px-4 py-3 text-left text-sm text-gray-400 flex items-center cursor-not-allowed"
+              >
+                <svg
+                  class="w-4 h-4 mr-3 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-4 h-4 mr-3 text-orange-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                    ></path>
-                  </svg>                  Lihat Daftar Pemohon
-                </button>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"
+                  ></path>
+                </svg>
+                Upload Excel (Tidak tersedia dalam mode edit)
               </div>
+
+              <!-- Input Data Pemohon - Show only in edit mode -->
+              <button
+                v-if="isEditMode"
+                @click="handleInputAndClose"
+                :disabled="
+                  isSubmitting || pemohonStore?.isLoading || isUploadingCSV
+                "
+                class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div class="w-4 h-4 mr-3">
+                  <PemohonIconElement
+                    color="none"
+                    stroke="#0099FF"
+                    class="-ml-0.5 -mt-[2.8px]"
+                  />
+                </div>
+                Input Data Pemohon
+              </button>
+
+              <!-- List Pemohon -->
+              <button
+                @click="handleListAndClose"
+                :disabled="
+                  isSubmitting || pemohonStore?.isLoading || isUploadingCSV
+                "
+                class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 flex items-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg
+                  class="w-4 h-4 mr-3 text-orange-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                  ></path>
+                </svg>
+                Lihat Daftar Pemohon
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- FORM -->
-        <FormPemohon 
-          ref="formRef" 
-          :isEditMode="isEditMode"
-          @form-changed="handleFormChanged"        />
+      <FormPemohon ref="formRef" @form-changed="handleFormChanged" />
 
-        <!-- Action Buttons -->
-        <div class="flex justify-end items-center gap-3 pt-6">
-          <!-- Mode Tambah Data -->
-          <template v-if="!isEditMode">
-            <button
-              @click="handleListPemohon"
-              :disabled="isSubmitting || pemohonStore?.isLoading"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              Kembali
-            </button>
-            <button
-              @click="handleClear"
-              :disabled="isSubmitting || pemohonStore?.isLoading || isUploadingCSV"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              Bersihkan
-            </button>
-            <button
-              @click="handleSubmit"
-              :disabled="isSubmitting || !hasUnsavedChanges"
-              class="px-4 py-2 bg-[#0099FF] text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center"
-            >
-              <svg
-                v-if="isSubmitting || pemohonStore?.isLoading"
-                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Simpan
-            </button>
-          </template>
-
-          <!-- Mode Edit Data -->
-          <template v-if="isEditMode">
-            <button
-              @click="handleDelete"
-              :disabled="isSubmitting || pemohonStore?.isLoading"
-              class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              Hapus
-            </button>
-            <button
-              @click="handleListPemohon"
-              :disabled="isSubmitting || pemohonStore?.isLoading"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              Kembali
-            </button>
-            <button
-              @click="handleSubmit"
-              :disabled="isSubmitting || !hasUnsavedChanges"
-              class="px-4 py-2 bg-[#0099FF] text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center"
-            >
-              <svg
-                v-if="isSubmitting || pemohonStore?.isLoading"
-                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Update
-            </button>
-          </template>
-        </div>
-      </section>
-    </MainElement>
-  </SuperAdminLayout>
+      <!-- Main Action Buttons -->
+      <ButtonElement
+        left-label="Clear"
+        :right-label="isEditMode ? 'Update' : 'Simpan'"
+        :show-delete="isEditMode"
+        delete-label="Hapus"
+        :right-loading="isSubmitting || pemohonStore?.isLoading"
+        :left-disabled="
+          isSubmitting || pemohonStore?.isLoading || isUploadingCSV
+        "
+        @on-click-left="handleClear"
+        @on-click-right="handleSubmit"
+        @on-click-delete="handleDelete"
+      />
+    </section>
+  </MainElement>
 </template>

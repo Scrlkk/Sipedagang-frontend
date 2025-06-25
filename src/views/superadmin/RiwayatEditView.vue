@@ -2,7 +2,6 @@
   import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
   import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
   import { usePengadaanStore } from '@/stores/pengadaanStore'
-  import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
   import MainElement from '@/components/MainElement.vue'
   import RiwayatIconElement from '@/components/RiwayatIconElement.vue'
   import ArrowIconElement from '@/components/ArrowIconElement.vue'
@@ -234,75 +233,71 @@
 </script>
 
 <template>
-  <SuperAdminLayout>
-    <MainElement>
-      <section class="flex flex-col justify-between h-full px-2 sm:px-4">
-        <!-- TITLE -->
+  <MainElement>
+    <section class="flex flex-col justify-between h-full px-2 sm:px-4">
+      <!-- TITLE -->
+      <div
+        class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative pb-2"
+      >
+        Edit Data {{ noPreorder }}
+        <!-- ✅ Dot indikator perubahan -->
+        <span
+          v-if="hasUnsavedChanges"
+          class="absolute -top-1 -right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"
+          title="Ada perubahan yang belum disimpan"
+        ></span>
+      </div>
+
+      <!-- NAV -->
+      <div class="flex gap-2 items-center px-2 sm:px-0">
         <div
-          class="text-center font-semibold text-sm sm:text-lg text-[#0099FF] underline sm:underline-offset-8 underline-offset-5 relative pb-2"
+          @mouseenter="iconHover = true"
+          @mouseleave="iconHover = false"
+          class="flex gap-2 items-center cursor-pointer"
+          @click="handleLeft"
         >
-          Edit Data {{ noPreorder }}
-          <!-- ✅ Dot indikator perubahan -->
-          <span
-            v-if="hasUnsavedChanges"
-            class="absolute -top-1 -right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"
-            title="Ada perubahan yang belum disimpan"
-          ></span>
-        </div>
-
-        <!-- NAV -->
-        <div class="flex gap-2 items-center px-2 sm:px-0">
+          <RiwayatIconElement
+            :color="iconHover ? '#0099FF' : '#9BA1AA'"
+            :innerColor="iconHover ? 'white' : 'white'"
+          />
           <div
-            @mouseenter="iconHover = true"
-            @mouseleave="iconHover = false"
-            class="flex gap-2 items-center cursor-pointer"
-            @click="handleLeft"
+            :class="[
+              'text-xs sm:text-sm font-poppins font-medium',
+              iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
+            ]"
           >
-            <RiwayatIconElement
-              :color="iconHover ? '#0099FF' : '#9BA1AA'"
-              :innerColor="iconHover ? 'white' : 'white'"
-            />
-            <div
-              :class="[
-                'text-xs sm:text-sm font-poppins font-medium',
-                iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
-              ]"
-            >
-              Riwayat
-            </div>
-          </div>
-
-          <div class="mt-0.5">
-            <ArrowIconElement />
-          </div>
-          <div
-            class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium"
-          >
-            Edit Data
+            Riwayat
           </div>
         </div>
 
-        <!-- FORM -->
-        <div v-if="isLoading" class="flex justify-center items-center flex-1">
-          <div class="text-gray-500">Loading...</div>
+        <div class="mt-0.5">
+          <ArrowIconElement />
         </div>
+        <div class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium">
+          Edit Data
+        </div>
+      </div>
 
-        <FormElement
-          v-else
-          ref="formRef"
-          :is-edit-mode="true"
-          @form-changed="handleFormChanged"
-        />
+      <!-- FORM -->
+      <div v-if="isLoading" class="flex justify-center items-center flex-1">
+        <div class="text-gray-500">Loading...</div>
+      </div>
 
-        <!-- BUTTON -->
-        <ButtonElement
-          @onClickLeft="handleLeft"
-          @onClickRight="handleRight"
-          :rightLoading="isSubmitting || pengadaanStore?.isLoading"
-          rightLabel="Update"
-          leftLabel="Kembali"
-        />
-      </section>
-    </MainElement>
-  </SuperAdminLayout>
+      <FormElement
+        v-else
+        ref="formRef"
+        :is-edit-mode="true"
+        @form-changed="handleFormChanged"
+      />
+
+      <!-- BUTTON -->
+      <ButtonElement
+        @onClickLeft="handleLeft"
+        @onClickRight="handleRight"
+        :rightLoading="isSubmitting || pengadaanStore?.isLoading"
+        rightLabel="Update"
+        leftLabel="Kembali"
+      />
+    </section>
+  </MainElement>
 </template>

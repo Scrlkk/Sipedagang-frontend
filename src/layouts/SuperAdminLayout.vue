@@ -79,10 +79,12 @@
   const handleLogout = async () => {
     try {
       await auth.logout()
+      userStore.clearUser()
       router.push('/login')
     } catch (error) {
       console.error('Logout failed:', error)
       auth.clearAuth()
+      userStore.clearUser()
       router.push('/login')
     }
   }
@@ -778,7 +780,7 @@
       <div
         class="flex-1 overflow-y-auto bg-gray-50 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
       >
-        <slot />
+        <router-view />
       </div>
     </div>
   </div>
