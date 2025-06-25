@@ -16,9 +16,9 @@
 
 <template>
   <transition name="page" appear>
-    <div class="h-full flex flex-col py-3 px-2 sm:px-4 lg:px-8 overflow-hidden">
+    <div class="flex flex-col py-3 px-2 sm:px-4 lg:px-8 overflow-hidden">
       <!-- Content Container -->
-      <div class="relative max-w-6xl mx-auto flex flex-col h-full">
+      <div class="relative max-w-6xl mx-auto flex flex-col">
         <!-- Welcome Section -->
         <div class="text-center mb-4 flex-shrink-0">
           <h1
