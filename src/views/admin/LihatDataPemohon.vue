@@ -581,7 +581,7 @@
       <div class="flex-shrink-0">
         <!-- ✅ PERBAIKAN: Header dengan layout responsive untuk viewport kecil -->
         <section
-          class="flex flex-col gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8"
+          class="flex flex-col gap-1 sm:gap-1 lg:gap-1 mb-1 sm:mb-1 lg:mb-1"
         >
           <!-- Title dan Action Menu untuk desktop -->
           <div
@@ -618,7 +618,7 @@
             </div>
 
             <!-- Search dan Action Menu untuk desktop -->
-            <div class="flex justify-end items-center gap-2 sm:gap-3 lg:gap-4">
+            <div class="flex justify-end items-center gap-2 sm:gap-2 lg:gap-3">
               <!-- Search result info compact di sebelah kiri search (desktop) -->
               <div v-if="searchText">
                 <span
@@ -668,8 +668,8 @@
                 </span>
               </div>
 
-              <!-- Container untuk Search Input dan Action Menu (desktop) -->
-              <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Container untuk Search Input dan Action Menu (desktop) -->
+              <div class="flex items-center gap-2">
                 <!-- Search input (desktop) -->
                 <div class="relative min-w-[280px]">
                   <input
@@ -830,7 +830,7 @@
           <!-- ✅ BARU: Layout untuk mobile/tablet -->
           <div class="lg:hidden">
             <!-- Title dan Action Menu untuk mobile -->
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-1">
               <div class="flex items-center gap-3">
                 <!-- Back Button Bulat untuk Mobile -->
                 <button
@@ -968,7 +968,7 @@
             </div>
 
             <!-- ✅ Search input w-full untuk mobile -->
-            <div class="space-y-2">
+            <div class="space-y-1">
               <div class="relative w-full">
                 <input
                   type="text"
@@ -1154,15 +1154,15 @@
               </template>
               <template v-else>
                 <div
-                  class="space-y-2 sm:space-y-3 p-3 sm:p-4 max-h-[calc(100vh-450px)] sm:max-h-[calc(100vh-430px)] overflow-y-auto"
+                  class="space-y-2 sm:space-y-3 p-2 sm:p-3 max-h-[calc(100vh-450px)] sm:max-h-[calc(100vh-430px)] overflow-y-auto"
                 >
                   <div
                     v-for="(pemohon, index) in filteredPemohon"
                     :key="pemohon.id || index"
-                    class="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
+                    class="bg-white rounded-lg p-2 sm:p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
                   >
                     <!-- Header with actions -->
-                    <div class="flex justify-between items-start mb-3">
+                    <div class="flex justify-between items-start mb-2">
                       <div class="flex-1 min-w-0">
                         <h4
                           class="font-medium text-sm sm:text-base text-gray-900 mb-1 truncate"
@@ -1320,7 +1320,7 @@
               <!-- Data Table -->
               <div
                 v-else
-                class="overflow-y-auto max-h-[calc(100vh-300px)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
+                class="overflow-y-auto max-h-[calc(100vh-250px)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
               >
                 <table class="w-full">
                   <thead class="sticky top-0 z-10">
@@ -1328,27 +1328,27 @@
                       class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-xs border-b border-gray-200"
                     >
                       <th
-                        class="px-4 py-3 rounded-tl-xl text-center font-semibold w-16"
+                        class="px-3 py-2 rounded-tl-xl text-center font-semibold w-16"
                       >
                         No
                       </th>
-                      <th class="px-3 py-3 text-left font-semibold w-36">
+                      <th class="px-2 py-2 text-left font-semibold w-36">
                         Nama Supplier
                       </th>
-                      <th class="px-3 py-3 text-left font-semibold w-36">
+                      <th class="px-2 py-2 text-left font-semibold w-36">
                         Nama Perusahaan
                       </th>
-                      <th class="px-3 py-3 font-semibold w-24 text-center">
+                      <th class="px-2 py-2 font-semibold w-24 text-center">
                         Jenis Bank
                       </th>
-                      <th class="px-3 py-3 font-semibold w-40 text-center">
+                      <th class="px-2 py-2 font-semibold w-40 text-center">
                         No. Rekening
                       </th>
-                      <th class="px-3 py-3 font-semibold w-36 text-center">
+                      <th class="px-2 py-2 font-semibold w-36 text-center">
                         Atas Nama Rekening
                       </th>
                       <th
-                        class="px-3 py-3 rounded-tr-xl font-semibold w-32 text-center"
+                        class="px-2 py-2 rounded-tr-xl font-semibold w-32 text-center"
                       >
                         Aksi
                       </th>
@@ -1403,7 +1403,7 @@
                         ]"
                       >
                         <!-- No -->
-                        <td class="px-4 py-3 text-center w-16">
+                        <td class="px-3 py-2 text-center w-16">
                           <div
                             class="text-xs font-semibold text-gray-700 bg-blue-50 rounded-full w-8 h-8 flex items-center justify-center mx-auto"
                           >
@@ -1412,7 +1412,7 @@
                         </td>
 
                         <!-- Nama Supplier -->
-                        <td class="px-3 py-3 text-left w-36">
+                        <td class="px-2 py-2 text-left w-36">
                           <div
                             class="text-xs font-medium text-gray-900 truncate"
                             :title="toTitleCase(pemohon.nama_suplier)"
@@ -1422,7 +1422,7 @@
                         </td>
 
                         <!-- Nama Perusahaan -->
-                        <td class="px-3 py-3 text-left w-36">
+                        <td class="px-2 py-2 text-left w-36">
                           <div
                             class="text-xs text-gray-700 truncate"
                             :title="toTitleCase(pemohon.nama_perusahaan)"
@@ -1432,7 +1432,7 @@
                         </td>
 
                         <!-- Jenis Bank -->
-                        <td class="px-3 py-3 text-center w-24">
+                        <td class="px-2 py-2 text-center w-24">
                           <span
                             class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                           >
@@ -1441,7 +1441,7 @@
                         </td>
 
                         <!-- No. Rekening -->
-                        <td class="px-3 py-3 text-center w-40">
+                        <td class="px-2 py-2 text-center w-40">
                           <div
                             class="text-sm font-mono text-gray-900 bg-gray-50 px-2 py-1 rounded"
                             :title="pemohon.no_rekening"
@@ -1451,7 +1451,7 @@
                         </td>
 
                         <!-- Atas Nama Rekening -->
-                        <td class="px-3 py-3 text-center w-36">
+                        <td class="px-2 py-2 text-center w-36">
                           <div
                             class="text-xs text-gray-700 truncate"
                             :title="toTitleCase(pemohon.atasnama_rekening)"
@@ -1461,7 +1461,7 @@
                         </td>
 
                         <!-- Aksi -->
-                        <td class="px-3 py-3 w-32">
+                        <td class="px-2 py-2 w-32">
                           <div
                             class="flex space-x-1.5 justify-center items-center"
                           >
