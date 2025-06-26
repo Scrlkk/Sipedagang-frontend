@@ -105,20 +105,20 @@
 
 <template>
   <GuestLayout>
-    <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
       <!-- Reset Password Card -->
-      <div class="bg-white rounded-lg w-full max-w-md shadow-lg p-8">
+      <div class="bg-white rounded-lg w-full max-w-xs sm:max-w-sm md:max-w-md shadow-lg p-4 sm:p-6 md:p-8">
         <!-- Logo and Title -->
-        <div class="text-center mb-8 font-poppins">
+        <div class="text-center mb-6 sm:mb-8 font-poppins">
           <h1
-            class="text-3xl font-bold flex justify-center items-center text-shadow-lg"
+            class="text-2xl sm:text-3xl font-bold flex justify-center items-center text-shadow-lg"
           >
             <div class="text-[#F0AB26]">Si</div>
             <div class="text-[#176BC7]">PEDAGANG</div>
           </h1>
-          <div class="text-gray-600 mt-2 text-sm">
+          <div class="text-gray-600 mt-2 text-xs sm:text-sm px-2">
             Masukkan password baru untuk akun:
-            <strong>{{ namapengguna }}</strong>
+            <strong class="break-all">{{ namapengguna }}</strong>
           </div>
         </div>
 
@@ -126,12 +126,12 @@
         <form
           v-if="!successMessage"
           @submit.prevent="handleSubmit"
-          class="space-y-4"
+          class="space-y-3 sm:space-y-4"
         >
           <!-- Error message -->
           <div
             v-if="errorMessage"
-            class="text-center bg-red-100 text-red-700 p-3 rounded text-sm"
+            class="text-center bg-red-100 text-red-700 p-2 sm:p-3 rounded text-xs sm:text-sm"
           >
             {{ errorMessage }}
           </div>
@@ -140,7 +140,7 @@
           <div>
             <label
               for="newPassword"
-              class="font-poppins block text-sm text-gray-700 mb-1"
+              class="font-poppins block text-xs sm:text-sm text-gray-700 mb-1"
               >Password Baru</label
             >
             <div class="relative">
@@ -148,20 +148,20 @@
                 id="newPassword"
                 :type="showNewPassword ? 'text' : 'password'"
                 v-model="newPassword"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm font-inter"
+                class="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm sm:text-base font-inter"
                 placeholder="Masukkan password baru (min. 6 karakter)"
                 :disabled="isLoading"
               />
               <button
                 type="button"
                 @click="toggleNewPasswordVisibility"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none p-1"
                 :disabled="isLoading"
               >
                 <svg
                   v-if="!showNewPassword"
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
+                  class="h-4 w-4 sm:h-5 sm:w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -182,7 +182,7 @@
                 <svg
                   v-else
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
+                  class="h-4 w-4 sm:h-5 sm:w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -202,7 +202,7 @@
           <div>
             <label
               for="confirmPassword"
-              class="font-poppins block text-sm text-gray-700 mb-1"
+              class="font-poppins block text-xs sm:text-sm text-gray-700 mb-1"
               >Konfirmasi Password Baru</label
             >
             <div class="relative">
@@ -210,20 +210,20 @@
                 id="confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 v-model="confirmPassword"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm"
+                class="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm sm:text-base"
                 placeholder="Masukkan ulang password baru"
                 :disabled="isLoading"
               />
               <button
                 type="button"
                 @click="toggleConfirmPasswordVisibility"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none p-1"
                 :disabled="isLoading"
               >
                 <svg
                   v-if="!showConfirmPassword"
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
+                  class="h-4 w-4 sm:h-5 sm:w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -261,10 +261,10 @@
           </div>
 
           <!-- Submit button -->
-          <div>
+          <div class="pt-2">
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer font-poppins disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full bg-[#176BC7] text-white py-2 sm:py-2.5 rounded-full font-medium hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer font-poppins disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               :disabled="isLoading || !namapengguna"
             >
               <div v-if="isLoading">Mereset Password...</div>
@@ -274,11 +274,11 @@
         </form>
 
         <!-- Success message -->
-        <div v-else class="space-y-6 text-center">
-          <div class="p-4 bg-blue-50 text-blue-700 rounded-md">
+        <div v-else class="space-y-4 sm:space-y-6 text-center">
+          <div class="p-3 sm:p-4 bg-blue-50 text-blue-700 rounded-md">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-10 w-10 mx-auto text-blue-500 mb-2"
+              class="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-blue-500 mb-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -290,21 +290,21 @@
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h3 class="font-medium mb-1">Password Berhasil Direset!</h3>
-            <p class="text-sm pb-2">
+            <h3 class="font-medium mb-1 text-sm sm:text-base">Password Berhasil Direset!</h3>
+            <p class="text-xs sm:text-sm pb-2">
               {{ successMessage }}
             </p>
-            <p class="text-sm text-blue-600">
+            <p class="text-xs sm:text-sm text-blue-600">
               Silakan klik tombol di bawah untuk kembali ke halaman login.
             </p>
           </div>
         </div>
 
         <!-- Return to login -->
-        <div class="mt-8 pt-4 text-center border-t border-gray-200">
+        <div class="mt-6 sm:mt-8 pt-3 sm:pt-4 text-center border-t border-gray-200">
           <button
             @click="goToLogin"
-            class="text-[#0099FF] hover:underline bg-gray-100 w-full py-3 rounded-md cursor-pointer font-poppins"
+            class="text-[#0099FF] hover:underline bg-gray-100 w-full py-2.5 sm:py-3 rounded-md cursor-pointer font-poppins text-sm sm:text-base"
           >
             Kembali ke Halaman Login
           </button>
@@ -335,5 +335,30 @@
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #dee2e6;
+  }
+
+  /* Mobile-specific enhancements */
+  @media (max-width: 640px) {
+    .min-h-screen {
+      min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    }
+    
+    button {
+      min-height: 44px; /* iOS recommended touch target size */
+    }
+  }
+
+  /* Prevent zoom on input focus on iOS */
+  @media screen and (max-width: 640px) {
+    input[type="text"],
+    input[type="password"] {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+
+  /* Break long usernames on small screens */
+  .break-all {
+    word-break: break-all;
   }
 </style>
