@@ -85,6 +85,10 @@
     }
   })
 
+  onBeforeUnmount(() => {
+    window.removeEventListener('beforeunload', handleBeforeUnload)
+  })
+
   // ✅ IMPROVED: Watch dengan better error handling
   watch(
     [isLoading, formRef, currentData],
@@ -203,6 +207,26 @@
       isSubmitting.value = false
     }
   }
+
+  function handleBeforeUnload(event) {
+    // Cek apakah ada perubahan yang belum disimpan
+    if (hasUnsavedChanges.value) {
+      const message = 'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
+      event.returnValue = message
+      return message
+    }
+  }
+
+  // Method untuk cek perubahan yang belum disimpan
+  function checkUnsavedChanges() {
+    // Implementasi logika untuk mengecek perubahan
+    // Contoh sederhana:
+    return formRef.value && formRef.value.isFormDirty
+  }
+
+  computed(() => {
+    hasUnsavedChanges.value = checkUnsavedChanges()
+  })
 </script>
 
 <template>
