@@ -352,221 +352,225 @@
 </script>
 
 <template>
-  <div class="flex flex-col h-full px-2">
+  <div class="flex flex-col h-full px-1 sm:px-2">
     <!-- Header section -->
     <section class="flex-shrink-0">
-      <!-- TITLE -->
-      <div
-        class="text-center font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-xl text-[#0099FF] underline underline-offset-2 sm:underline-offset-4 md:underline-offset-6 lg:underline-offset-8 relative px-3 sm:px-4 md:px-6 pb-12"
-      >
-        {{ pageTitle }}
-        <!-- DOT -->
-        <span
-          v-if="hasUnsavedChanges"
-          class="absolute -top-0.5 sm:-top-1 -right-1 sm:-right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse shadow-sm"
-          title="Ada perubahan yang belum disimpan"
-        ></span>
-      </div>
     </section>
 
-    <!-- ✅ HAPUS LOADING STATE SECTION -->
-    <!-- Form content langsung tanpa loading indicator -->
+    <!-- Form Content dengan Card -->
     <section
-      class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-3 sm:px-4 md:px-6 lg:px-0"
+      class="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}] px-2 sm:px-3 md:px-4 lg:px-6 xl:px-8 2xl:px-12"
     >
-      <!-- FORM -->
-      <div class="px-3 sm:px-4 md:px-6 lg:px-0">
-        <form @submit.prevent="handleRight">
-          <div
-            class="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 xl:gap-16 w-full"
-          >
-            <!-- FOTO -->
-            <div
-              class="flex flex-col items-center flex-shrink-0 lg:w-auto w-full"
-            >
-              <div
-                class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40"
-              >
-                <div
-                  class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full overflow-hidden border-2 border-gray-300 hover:border-blue-400 hover:shadow-lg transition-all duration-300 shadow-md"
-                >
-                  <input
-                    ref="fileInputRef"
-                    type="file"
-                    accept="image/*"
-                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    @change="onPhotoChange"
-                  />
-                  <img
-                    v-if="photoUrl"
-                    :src="photoUrl"
-                    alt="Foto Profile"
-                    class="object-cover w-full h-full"
-                  />
-                  <div
-                    v-else
-                    class="flex items-center justify-center h-full text-gray-400"
-                  >
-                    <svg
-                      class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
+      <!-- Card Container -->
+      <div class="flex justify-center items-start min-h-full py-1 sm:py-2 md:py-3 lg:py-4">
+        <div class="w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+          <!-- Card -->
+          <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+              <h2 class="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+                <span class="hidden sm:inline">Form Edit Profile</span>
+                <span class="sm:hidden">Edit Profile</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-gray-600 mt-1">Update informasi profile Anda</p>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
+              <form @submit.prevent="handleRight">
+                <div class="flex flex-col lg:flex-row xl:flex-row gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 w-full">
+                  <!-- FOTO SECTION -->
+                  <div class="flex flex-col items-center flex-shrink-0 lg:w-auto w-full order-1 lg:order-1">
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40 2xl:w-44 2xl:h-44">
+                      <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full overflow-hidden border-2 sm:border-3 md:border-4 border-white shadow-lg hover:shadow-xl transition-all duration-300">
+                        <input
+                          ref="fileInputRef"
+                          type="file"
+                          accept="image/*"
+                          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          @change="onPhotoChange"
+                        />
+                        <img
+                          v-if="photoUrl"
+                          :src="photoUrl"
+                          alt="Foto Profile"
+                          class="object-cover w-full h-full"
+                        />
+                        <div
+                          v-else
+                          class="flex items-center justify-center h-full text-gray-400"
+                        >
+                          <svg
+                            class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 2xl:w-18 2xl:h-18"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        @click="triggerFileInput"
+                        class="absolute cursor-pointer overflow-visible -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 z-20 bg-blue-600 rounded-full p-1.5 sm:p-2 shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 hover:scale-110"
+                      >
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="pt-2 sm:pt-3 md:pt-4 w-full text-center text-gray-600 max-w-xs">
+                      <div class="text-xs sm:text-sm md:text-base font-semibold text-gray-800">
+                        Upload Your Photo
+                      </div>
+                      <div class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 leading-relaxed px-2">
+                        Klik untuk upload & edit foto profile
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- INPUT FIELDS SECTION -->
+                  <div class="flex-1 min-w-0 order-2 lg:order-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+                      <!-- NAMA (READONLY) -->
+                      <div class="flex flex-col gap-1.5 sm:gap-2">
+                        <label
+                          for="nama"
+                          class="font-semibold text-xs sm:text-sm md:text-base text-gray-700 flex items-center gap-1.5 sm:gap-2"
+                        >
+                          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                          </svg>
+                          Nama
+                        </label>
+                        <input
+                          type="text"
+                          id="nama"
+                          readonly
+                          class="border-2 border-gray-200 bg-gray-50 rounded-md sm:rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 w-full text-xs sm:text-sm md:text-base text-gray-600 cursor-not-allowed focus:outline-none"
+                          v-model="nama"
+                        />
+                      </div>
+
+                      <!-- NO TELP (EDITABLE) -->
+                      <div class="flex flex-col gap-1.5 sm:gap-2">
+                        <label
+                          for="no-telp"
+                          class="font-semibold text-xs sm:text-sm md:text-base text-gray-700 flex items-center gap-1.5 sm:gap-2"
+                        >
+                          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                          </svg>
+                          No. Telp
+                        </label>
+                        <input
+                          type="text"
+                          id="no-telp"
+                          placeholder="Masukkan Nomor Telepon (max 15 karakter)"
+                          :class="[
+                            'border-2 rounded-md sm:rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 w-full text-xs sm:text-sm md:text-base focus:ring-2 focus:ring-blue-200 transition-all duration-200 focus:outline-none',
+                            isPhoneAtLimit
+                              ? 'border-red-400 focus:border-red-500'
+                              : isPhoneNearLimit
+                                ? 'border-yellow-400 focus:border-yellow-500'
+                                : 'border-gray-300 focus:border-blue-500',
+                          ]"
+                          v-model="displayPhoneNumber"
+                          autocomplete="tel"
+                          inputmode="tel"
+                          @input="formatPhoneNumber"
+                          maxlength="15"
+                          title="Masukkan nomor telepon maksimal 15 karakter"
+                        />
+                        <!-- Character counter -->
+                        <div class="flex items-center text-xs mt-1">
+                          <span class="text-gray-500">Karakter: </span>
+                          <span
+                            :class="[
+                              'font-medium pl-1',
+                              isPhoneAtLimit
+                                ? 'text-red-500'
+                                : isPhoneNearLimit
+                                  ? 'text-yellow-600'
+                                  : 'text-gray-500',
+                            ]"
+                          >
+                            {{ noTelp.length }}/15
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- NAMA PENGGUNA (READONLY) -->
+                      <div class="flex flex-col gap-1.5 sm:gap-2">
+                        <label
+                          for="nama-pengguna"
+                          class="font-semibold text-xs sm:text-sm md:text-base text-gray-700 flex items-center gap-1.5 sm:gap-2"
+                        >
+                          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+                          </svg>
+                          Nama Pengguna
+                        </label>
+                        <input
+                          type="text"
+                          id="nama-pengguna"
+                          readonly
+                          class="border-2 border-gray-200 bg-gray-50 rounded-md sm:rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 w-full text-xs sm:text-sm md:text-base text-gray-600 cursor-not-allowed focus:outline-none"
+                          v-model="namaPengguna"
+                        />
+                      </div>
+
+                      <!-- PASSWORD (READONLY) -->
+                      <div class="flex flex-col gap-1.5 sm:gap-2">
+                        <label
+                          for="password"
+                          class="font-semibold text-xs sm:text-sm md:text-base text-gray-700 flex items-center gap-1.5 sm:gap-2"
+                        >
+                          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                          </svg>
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          id="password"
+                          readonly
+                          class="border-2 border-gray-200 bg-gray-50 rounded-md sm:rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 w-full text-xs sm:text-sm md:text-base text-gray-600 cursor-not-allowed focus:outline-none"
+                          v-model="password"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div
-                  @click="triggerFileInput"
-                  class="absolute cursor-pointer overflow-visible -bottom-1 -right-1 sm:bottom-0 sm:right-0 md:-bottom-1 md:-right-1 lg:bottom-2 lg:right-1 z-20 scale-75 sm:scale-90 md:scale-100 hover:scale-110 transition-transform duration-200"
-                >
-                  <StaffAddIconElement />
-                </div>
-              </div>
-              <div
-                class="pt-2 sm:pt-3 w-full text-center text-gray-600 max-w-xs"
-              >
-                <div class="text-xs sm:text-sm md:text-base font-medium">
-                  Upload Your Photo
-                </div>
-                <div
-                  class="text-xs sm:text-sm text-gray-500 mt-1 leading-tight"
-                >
-                  Klik untuk upload & edit foto
-                </div>
-              </div>
+              </form>
             </div>
 
-            <!-- INPUT FIELDS -->
-            <div
-              class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-6 w-full min-w-0"
-            >
-              <!-- NAMA (READONLY) -->
-              <div
-                class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6"
-              >
-                <label
-                  for="nama"
-                  class="font-medium text-xs sm:text-sm md:text-base text-gray-700"
-                  >Nama</label
-                >
-                <input
-                  type="text"
-                  id="nama"
-                  readonly
-                  class="border-2 border-gray-200 bg-gray-100 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base text-gray-600 cursor-not-allowed"
-                  v-model="nama"
-                />
-              </div>
-
-              <!-- NO TELP (EDITABLE) -->
-              <div
-                class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6"
-              >
-                <label
-                  for="no-telp"
-                  class="font-medium text-xs sm:text-sm md:text-base text-gray-700"
-                  >No. Telp</label
-                >
-                <input
-                  type="text"
-                  id="no-telp"
-                  placeholder="Masukkan Nomor Telepon (max 15 karakter)"
-                  :class="[
-                    'border-2 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base focus:ring-2 focus:ring-blue-200 transition-all duration-200',
-                    isPhoneAtLimit
-                      ? 'border-red-400 focus:border-red-500'
-                      : isPhoneNearLimit
-                        ? 'border-yellow-400 focus:border-yellow-500'
-                        : 'border-gray-300 focus:border-blue-500',
-                  ]"
-                  v-model="displayPhoneNumber"
-                  autocomplete="tel"
-                  inputmode="tel"
-                  @input="formatPhoneNumber"
-                  maxlength="15"
-                  title="Masukkan nomor telepon maksimal 15 karakter"
-                />
-                <!-- Character counter dan helper text -->
-                <div class="flex items-center text-xs mt-1">
-                  <span class="text-gray-500"> Karakter: </span>
-                  <span
-                    :class="[
-                      'font-medium, pl-1',
-                      isPhoneAtLimit
-                        ? 'text-red-500'
-                        : isPhoneNearLimit
-                          ? 'text-yellow-600'
-                          : 'text-gray-500',
-                    ]"
-                  >
-                    {{ noTelp.length }}/15
-                  </span>
-                </div>
-              </div>
-
-              <!-- NAMA PENGGUNA (READONLY) -->
-              <div
-                class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6"
-              >
-                <label
-                  for="nama-pengguna"
-                  class="font-medium text-xs sm:text-sm md:text-base text-gray-700"
-                  >Nama Pengguna</label
-                >
-                <input
-                  type="text"
-                  id="nama-pengguna"
-                  readonly
-                  class="border-2 border-gray-200 bg-gray-100 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base text-gray-600 cursor-not-allowed"
-                  v-model="namaPengguna"
-                />
-              </div>
-
-              <!-- PASSWORD (READONLY) -->
-              <div
-                class="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 mb-4 sm:mb-5 md:mb-6"
-              >
-                <label
-                  for="password"
-                  class="font-medium text-xs sm:text-sm md:text-base text-gray-700"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  readonly
-                  class="border-2 border-gray-200 bg-gray-100 rounded-lg h-10 sm:h-11 md:h-12 px-3 sm:px-4 md:px-5 w-full text-xs sm:text-sm md:text-base text-gray-600 cursor-not-allowed"
-                  v-model="password"
-                />
-              </div>
+            <!-- Card Footer dengan Button -->
+            <div class="bg-gray-50 border-t border-gray-200 px-3 sm:px-4 md:px-6 py-3 sm:py-4 lg:px-8 lg:py-6">
+              <ButtonElement
+                left-label="Back"
+                :show-delete="showDeleteButton"
+                :disabled="userStore.isLoading"
+                @onClickLeft="handleLeft"
+                @onClickRight="handleRight"
+              />
             </div>
           </div>
-        </form>
+        </div>
       </div>
-    </section>
-
-    <!-- BUTTON -->
-    <section class="mt-6 sm:mt-8 md:mt-10 px-3 sm:px-4 md:px-6 lg:px-0">
-      <ButtonElement
-        left-label="Back"
-        :show-delete="showDeleteButton"
-        :disabled="userStore.isLoading"
-        @onClickLeft="handleLeft"
-        @onClickRight="handleRight"
-      />
     </section>
   </div>
 
   <!-- Cropper Modal -->
   <div
     v-if="showCropper"
-    class="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 p-3 sm:p-4 md:p-6"
+    class="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 p-2 sm:p-3 md:p-4 lg:p-6"
   >
     <Transition
       enter-active-class="transition-all duration-300 ease-out delay-100"
@@ -577,18 +581,18 @@
       leave-to-class="opacity-0 scale-95"
     >
       <div
-        class="bg-white rounded-xl p-4 sm:p-6 max-w-[95vw] sm:max-w-lg md:max-w-xl w-full shadow-2xl"
+        class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 max-w-[95vw] sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         <h3
-          class="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 text-center sm:text-left"
+          class="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-2 sm:mb-3 md:mb-4 text-center"
         >
           Edit Foto Profile
         </h3>
 
         <!-- Cropper -->
         <div
-          class="cropper-container mb-4 sm:mb-6"
-          style="height: 250px; min-height: 200px"
+          class="cropper-container mb-3 sm:mb-4 md:mb-6"
+          style="height: 200px; min-height: 180px"
         >
           <Cropper
             ref="cropperRef"
@@ -608,14 +612,14 @@
           <button
             type="button"
             @click="cancelCrop"
-            class="px-4 py-2.5 sm:py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors touch-manipulation"
+            class="px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-md sm:rounded-lg hover:bg-gray-300 transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
           >
             Batal
           </button>
           <button
             type="button"
             @click="saveCroppedImage"
-            class="px-4 py-2.5 sm:py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors touch-manipulation"
+            class="px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-blue-600 rounded-md sm:rounded-lg hover:bg-blue-700 transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
           >
             Simpan
           </button>
@@ -636,45 +640,47 @@
   /* Mobile responsive cropper adjustments */
   @media (max-width: 640px) {
     .cropper-container {
-      height: 200px !important;
-      min-height: 180px !important;
+      height: 180px !important;
+      min-height: 160px !important;
+      border-radius: 8px;
     }
   }
 
   @media (min-width: 641px) and (max-width: 768px) {
     .cropper-container {
-      height: 280px !important;
+      height: 220px !important;
+      min-height: 200px !important;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .cropper-container {
+      height: 250px !important;
       min-height: 220px !important;
     }
   }
 
-  /* Touch optimizations for mobile devices */
-  @media (hover: none) and (pointer: coarse) {
-    .cropper-container {
-      touch-action: pan-x pan-y;
-    }
+  /* Card styling enhancements */
+  .card-container {
+    min-height: 400px;
+  }
 
-    input[type='file'] {
-      min-height: 44px;
-      min-width: 44px;
-    }
-
-    button {
-      min-height: 44px;
-      min-width: 44px;
+  @media (min-width: 640px) {
+    .card-container {
+      min-height: 500px;
     }
   }
 
-  /* Enhanced focus states for accessibility */
-  input:focus:not([readonly]) {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  @media (min-width: 1024px) {
+    .card-container {
+      min-height: 600px;
+    }
   }
 
-  input[readonly] {
-    background-color: #f3f4f6 !important;
-    color: #6b7280 !important;
-    cursor: not-allowed !important;
+  @media (min-width: 1280px) {
+    .card-container {
+      min-height: 700px;
+    }
   }
 
   .photo-upload-container {
@@ -682,23 +688,139 @@
   }
 
   .photo-upload-container:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
-  .form-loading {
-    pointer-events: none;
-    opacity: 0.7;
-  }
-
-  @media (max-width: 375px) {
-    .form-grid {
-      gap: 0.75rem;
+  @media (max-width: 640px) {
+    .photo-upload-container:hover {
+      transform: none; /* Disable hover effects on mobile */
     }
   }
 
-  @media (min-width: 376px) and (max-width: 640px) {
-    .form-grid {
-      gap: 1rem;
+  /* Enhanced input styling */
+  input:focus:not([readonly]) {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 640px) {
+    input:focus:not([readonly]) {
+      transform: none; /* Disable transform on mobile */
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+  }
+
+  input[readonly] {
+    background-color: #f9fafb !important;
+    color: #6b7280 !important;
+    cursor: not-allowed !important;
+    border-color: #e5e7eb !important;
+  }
+
+  /* Custom scrollbar untuk card */
+  .card-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  @media (min-width: 640px) {
+    .card-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+  }
+
+  .card-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+
+  .card-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .card-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Form field animation */
+  .form-field {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .form-field:hover {
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 640px) {
+    .form-field:hover {
+      transform: none;
+    }
+  }
+
+  /* Touch-friendly buttons on mobile */
+  @media (max-width: 640px) {
+    button {
+      min-height: 44px; /* iOS recommended touch target size */
+      min-width: 44px;
+    }
+    
+    input, textarea, select {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+
+  /* Grid responsive adjustments */
+  @media (max-width: 768px) {
+    .grid-cols-1.md\\:grid-cols-2 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+
+  /* Safe area adjustments for mobile */
+  @media (max-width: 640px) {
+    .min-h-screen {
+      min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    }
+  }
+
+  /* Modal responsiveness */
+  @media (max-width: 640px) {
+    .fixed.inset-0 {
+      padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+    }
+  }
+
+  /* Photo upload responsive sizing */
+  @media (max-width: 480px) {
+    .w-24.h-24 {
+      width: 80px !important;
+      height: 80px !important;
+    }
+  }
+
+  /* Card shadows responsive */
+  @media (max-width: 640px) {
+    .shadow-lg {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  /* Improved focus indicators for accessibility */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
   }
 </style>

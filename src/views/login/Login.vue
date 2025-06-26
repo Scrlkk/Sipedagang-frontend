@@ -94,28 +94,28 @@
 
 <template>
   <GuestLayout>
-    <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
       <!-- Login Card -->
-      <div class="bg-white rounded-lg w-full max-w-md shadow-xl p-8">
+      <div class="bg-white rounded-lg w-full max-w-xs sm:max-w-sm md:max-w-md shadow-xl p-4 sm:p-6 md:p-8">
         <!-- Logo and Title -->
-        <div class="text-center mb-8 font-poppins">
+        <div class="text-center mb-6 sm:mb-8 font-poppins">
           <h1
-            class="text-3xl font-bold flex justify-center items-center text-shadow-lg"
+            class="text-2xl sm:text-3xl font-bold flex justify-center items-center text-shadow-lg"
           >
             <div class="text-[#F0AB26]">Si</div>
             <div class="text-[#176BC7]">PEDAGANG</div>
           </h1>
-          <div class="text-gray-600 mt-2 text-sm">
+          <div class="text-gray-600 mt-2 text-xs sm:text-sm">
             Silahkan login terlebih dahulu
           </div>
         </div>
 
         <!-- Login Form -->
-        <form @submit.prevent="handleLogin" class="space-y-4">
+        <form @submit.prevent="handleLogin" class="space-y-3 sm:space-y-4">
           <!-- Error message if any -->
           <div
             v-if="errorMessage"
-            class="text-center bg-red-100 text-red-700 p-3 rounded text-sm"
+            class="text-center bg-red-100 text-red-700 p-2 sm:p-3 rounded text-xs sm:text-sm"
           >
             {{ errorMessage }}
           </div>
@@ -124,14 +124,14 @@
           <div>
             <label
               for="nama_pengguna"
-              class="font-poppins block text-sm text-gray-700 mb-1"
+              class="font-poppins block text-xs sm:text-sm text-gray-700 mb-1"
               >Nama Pengguna</label
             >
             <input
               id="nama_pengguna"
               type="text"
               v-model="nama_pengguna"
-              class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              class="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
 
@@ -139,7 +139,7 @@
           <div>
             <label
               for="password"
-              class="font-poppins block text-sm text-gray-700 mb-1"
+              class="font-poppins block text-xs sm:text-sm text-gray-700 mb-1"
               >Kata Sandi</label
             >
             <div class="relative">
@@ -147,18 +147,18 @@
                 id="password"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="password"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                class="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10 text-sm sm:text-base"
               />
               <button
                 type="button"
                 @click="togglePasswordVisibility"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none p-1"
               >
                 <!-- Eye icon when password is hidden -->
                 <svg
                   v-if="!showPassword"
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
+                  class="h-4 w-4 sm:h-5 sm:w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -180,7 +180,7 @@
                 <svg
                   v-else
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
+                  class="h-4 w-4 sm:h-5 sm:w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -202,18 +202,18 @@
               id="remember-me"
               type="checkbox"
               v-model="rememberMe"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              class="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+            <label for="remember-me" class="ml-2 block text-xs sm:text-sm text-gray-700">
               Ingat saya
             </label>
           </div>
 
           <!-- Login button -->
-          <div>
+          <div class="pt-2">
             <button
               type="submit"
-              class="w-full bg-[#176BC7] text-white py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer disabled:opacity-50"
+              class="w-full bg-[#176BC7] text-white py-2 sm:py-2.5 rounded-full font-semibold font-poppins hover:bg-[#0099FF] transition-colors duration-200 ease-in-out cursor-pointer disabled:opacity-50 text-sm sm:text-base"
               :disabled="isLoading"
             >
               <div v-if="isLoading">Loading...</div>
@@ -222,10 +222,10 @@
           </div>
 
           <!-- Forgot password link -->
-          <div class="text-center">
+          <div class="text-center pt-2">
             <router-link
               to="/resetpassword"
-              class="text-sm text-blue-600 hover:underline"
+              class="text-xs sm:text-sm text-blue-600 hover:underline"
             >
               Lupa kata sandi?
             </router-link>
@@ -256,5 +256,33 @@
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #dee2e6;
+  }
+
+  /* Additional responsive styles */
+  @media (max-width: 640px) {
+    .min-h-screen {
+      min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    }
+  }
+
+  /* Ensure proper touch targets on mobile */
+  @media (max-width: 640px) {
+    button {
+      min-height: 44px; /* iOS recommended touch target size */
+    }
+    
+    input[type="checkbox"] {
+      min-width: 16px;
+      min-height: 16px;
+    }
+  }
+
+  /* Prevent zoom on input focus on iOS */
+  @media screen and (max-width: 640px) {
+    input[type="text"],
+    input[type="password"] {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
   }
 </style>

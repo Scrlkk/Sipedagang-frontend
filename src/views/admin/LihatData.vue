@@ -1,4 +1,4 @@
-  <script setup>
+<script setup>
   import { ref, computed, onMounted, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import LihatDataComponent from '@/components/LihatDataComponent.vue'
@@ -8,26 +8,29 @@
   const router = useRouter()
   const pengadaanStore = usePengadaanStore()
 
-  // ✅ State untuk backend pagination
+  // ✅ State untuk backend pagination (hapus selectedMonth)
   const currentPage = ref(1)
   const itemsPerPage = ref(10)
   const pageInput = ref(1)
   const searchQuery = ref('')
-  const selectedMonth = ref('')
+  // ✅ State untuk rentang tanggal
+  const tanggalAwal = ref('')
+  const tanggalAkhir = ref('')
 
   // ✅ Fetch data dengan backend pagination
   onMounted(async () => {
     await fetchData()
   })
 
-  // ✅ Function untuk fetch data dengan parameter
+  // ✅ Function untuk fetch data dengan parameter (hapus selectedMonth)
   const fetchData = async () => {
     try {
       await pengadaanStore.fetchPengadaan(
         currentPage.value,
         itemsPerPage.value,
         searchQuery.value,
-        selectedMonth.value,
+        tanggalAwal.value,
+        tanggalAkhir.value,
       )
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -54,53 +57,8 @@
   const totalPages = computed(() => pengadaanStore.totalPages)
   const totalItems = computed(() => pengadaanStore.totalItems)
 
-  const months = computed(() => [
-    { value: '', label: 'Semua Bulan' },
-    { value: '01', label: 'Januari' },
-    { value: '02', label: 'Februari' },
-    { value: '03', label: 'Maret' },
-    { value: '04', label: 'April' },
-    { value: '05', label: 'Mei' },
-    { value: '06', label: 'Juni' },
-    { value: '07', label: 'Juli' },
-    { value: '08', label: 'Agustus' },
-    { value: '09', label: 'September' },
-    { value: '10', label: 'Oktober' },
-    { value: '11', label: 'November' },
-    { value: '12', label: 'Desember' },
-  ])
-
-  const displayedPageNumbers = computed(() => {
-    const total = totalPages.value
-    const current = currentPage.value
-    const delta = 2
-    const range = []
-
-    for (
-      let i = Math.max(2, current - delta);
-      i <= Math.min(total - 1, current + delta);
-      i++
-    ) {
-      range.push(i)
-    }
-
-    if (current - delta > 2) {
-      range.unshift('...')
-    }
-    if (current + delta < total - 1) {
-      range.push('...')
-    }
-
-    range.unshift(1)
-    if (total > 1) {
-      range.push(total)
-    }
-
-    return range.filter((item, index, arr) => arr.indexOf(item) === index)
-  })
-
-  // ✅ Watch untuk fetch data ketika ada perubahan
-  watch([searchQuery, selectedMonth], () => {
+  // ✅ Watch untuk fetch data ketika ada perubahan filter (hapus selectedMonth)
+  watch([searchQuery, tanggalAwal, tanggalAkhir], () => {
     currentPage.value = 1
     pageInput.value = 1
     fetchData()
@@ -177,17 +135,18 @@
     :filteredData="paginatedData"
     :paginatedData="paginatedData"
     :searchQuery="searchQuery"
-    :selectedMonth="selectedMonth"
+    :tanggalAwal="tanggalAwal"
+    :tanggalAkhir="tanggalAkhir"
     :currentPage="currentPage"
     :itemsPerPage="itemsPerPage"
     :pageInput="pageInput"
-    :months="months"
     :getTotalPages="totalPages"
+    :totalItems="totalItems"
     :isExtraSmallScreen="false"
-    :displayedPageNumbers="displayedPageNumbers"
     :userType="'admin'"
     @update:searchQuery="searchQuery = $event"
-    @update:selectedMonth="selectedMonth = $event"
+    @update:tanggalAwal="tanggalAwal = $event"
+    @update:tanggalAkhir="tanggalAkhir = $event"
     @update:currentPage="handlePageChange"
     @update:pageInput="pageInput = $event"
     @page-input-submit="handlePageInput"
