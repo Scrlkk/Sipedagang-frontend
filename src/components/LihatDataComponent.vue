@@ -80,6 +80,28 @@
     showDatePickerMobile.value = false
   }
 
+  // ✅ Dynamic positioning untuk dropdown
+  const getDropdownPosition = (ref, isMobile = false) => {
+    if (!ref?.value) return 'bottom'
+    
+    const rect = ref.value.getBoundingClientRect()
+    const viewportHeight = window.innerHeight
+    const dropdownHeight = isMobile ? 280 : 350 // Reduced mobile dropdown height
+    
+    // Check if there's enough space below
+    const spaceBelow = viewportHeight - rect.bottom
+    
+    // For mobile, prefer bottom positioning unless very little space
+    if (isMobile) {
+      return spaceBelow < 200 && rect.top > 250 ? 'top' : 'bottom'
+    }
+    
+    if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+      return 'top'
+    }
+    return 'bottom'
+  }
+
   // ✅ Close dropdown saat klik di luar
   const handleClickOutside = (event) => {
     // Check desktop dropdown
@@ -252,10 +274,10 @@
   <div class="px-4 max-w-5xl max-h-[36rem] mx-auto">
     <!-- Simple Content Card -->
     <div
-      class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden"
+      class="bg-white rounded-lg shadow-md border border-gray-200 overflow-visible"
     >
       <!-- Simple Header -->
-      <div class="bg-blue-600 p-2 sm:p-4 rounded-b-lg">
+      <div class="bg-blue-600 p-2 sm:p-4 rounded-b-lg relative overflow-visible">
         <!-- Mobile Back Button -->
         <div class="flex sm:hidden mb-2">
           <router-link
@@ -511,8 +533,19 @@
               <div
                 v-if="showDatePickerDesktop"
                 @click.stop
-                class="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] w-80 p-4"
-                style="z-index: 99999 !important;"
+                class="fixed bg-white border border-gray-200 rounded-lg shadow-2xl w-80 p-4"
+                :class="{
+                  'bottom-full mb-2': getDropdownPosition(datePickerDesktopRef) === 'top',
+                  'top-full mt-2': getDropdownPosition(datePickerDesktopRef) === 'bottom'
+                }"
+                :style="{
+                  zIndex: 999999,
+                  left: datePickerDesktopRef ? `${datePickerDesktopRef.getBoundingClientRect().right - 320}px` : 'auto',
+                  top: getDropdownPosition(datePickerDesktopRef) === 'bottom' && datePickerDesktopRef ? 
+                       `${datePickerDesktopRef.getBoundingClientRect().bottom + 8}px` : 'auto',
+                  bottom: getDropdownPosition(datePickerDesktopRef) === 'top' && datePickerDesktopRef ? 
+                          `${window.innerHeight - datePickerDesktopRef.getBoundingClientRect().top + 8}px` : 'auto'
+                }"
               >
                 <div class="space-y-4">
                   <!-- Header -->
@@ -657,13 +690,23 @@
             <div
               v-if="showDatePickerMobile"
               @click.stop
-              class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] p-4"
-              style="z-index: 99999 !important;"
+              class="fixed bg-white border border-gray-200 rounded-lg shadow-2xl p-4"
+              :class="{
+                'bottom-4': getDropdownPosition(datePickerMobileRef, true) === 'top',
+                'top-16': getDropdownPosition(datePickerMobileRef, true) === 'bottom'
+              }"
+              :style="{
+                zIndex: 999999,
+                left: '1rem',
+                right: '1rem',
+                maxHeight: '70vh',
+                overflowY: 'auto'
+              }"
             >
-              <div class="space-y-4">
+              <div class="space-y-3">
                 <!-- Header -->
                 <div
-                  class="flex items-center justify-between pb-3 border-b border-gray-100"
+                  class="flex items-center justify-between pb-2 border-b border-gray-100"
                 >
                   <h4 class="text-sm font-semibold text-gray-700">
                     Pilih Rentang Tanggal
@@ -687,10 +730,10 @@
                 </div>
 
                 <!-- Date Inputs -->
-                <div class="space-y-4">
+                <div class="space-y-3">
                   <div>
                     <label
-                      class="block text-sm font-medium text-gray-700 mb-2"
+                      class="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Tanggal Awal
                     </label>
@@ -699,12 +742,12 @@
                       :value="tanggalAwal"
                       @input="$emit('update:tanggalAwal', $event.target.value)"
                       @click.stop
-                      class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      class="w-full border border-gray-300 rounded-lg h-11 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                     />
                   </div>
                   <div>
                     <label
-                      class="block text-sm font-medium text-gray-700 mb-2"
+                      class="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Tanggal Akhir
                     </label>
@@ -714,22 +757,22 @@
                       :min="tanggalAwal"
                       @input="$emit('update:tanggalAkhir', $event.target.value)"
                       @click.stop
-                      class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      class="w-full border border-gray-300 rounded-lg h-11 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                     />
                   </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-3 pt-3 border-t border-gray-100">
+                <div class="flex gap-3 pt-2 border-t border-gray-100">
                   <button
                     @click.stop="clearDateFilter"
-                    class="flex-1 px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 font-medium"
+                    class="flex-1 px-4 py-2.5 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 font-medium"
                   >
                     Reset
                   </button>
                   <button
                     @click.stop="applyDateFilterMobile"
-                    class="flex-1 px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 font-medium"
+                    class="flex-1 px-4 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 font-medium"
                   >
                     Terapkan
                   </button>
@@ -1179,6 +1222,14 @@
       </div>
     </div>
   </div>
+
+  <!-- ✅ Backdrop untuk dropdown -->
+  <div
+    v-if="showDatePickerDesktop || showDatePickerMobile"
+    class="fixed inset-0 bg-black/20"
+    style="z-index: 999998"
+    @click="showDatePickerDesktop = false; showDatePickerMobile = false"
+  ></div>
 </template>
 
 <style scoped>
@@ -1204,5 +1255,33 @@
   /* Focus styles */
   .focus\:ring-white\/50:focus {
     --tw-ring-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* ✅ Ensure dropdown appears above everything */
+  .relative {
+    z-index: auto;
+  }
+  
+  /* ✅ Fix for mobile dropdown positioning */
+  @media (max-width: 640px) {
+    .fixed.inset-x-4 {
+      left: 1rem !important;
+      right: 1rem !important;
+      max-width: calc(100vw - 2rem) !important;
+    }
+    
+    /* Ensure dropdown inputs are touch-friendly */
+    input[type="date"] {
+      min-height: 44px;
+    }
+  }
+  
+  /* ✅ Fix for very small screens */
+  @media (max-width: 375px) {
+    .fixed {
+      left: 0.5rem !important;
+      right: 0.5rem !important;
+      max-width: calc(100vw - 1rem) !important;
+    }
   }
 </style>
