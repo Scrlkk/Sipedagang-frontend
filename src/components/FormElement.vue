@@ -152,11 +152,9 @@
       clearTimeout(searchTimeout.value)
     }
 
-    // Reset data jika query kosong
+    // ✅ NEW: Auto-clear ketika input dikosongkan
     if (!query || query.trim() === '') {
-      clearPemohonData()
-      companyResults.value = []
-      showDropdown.value = false
+      clearSelection() // Panggil fungsi yang sama seperti tombol X
       return
     }
 
@@ -191,11 +189,9 @@
       clearTimeout(searchJenisPengadaanTimeout.value)
     }
 
-    // Reset selection jika query kosong
+    // ✅ NEW: Auto-clear ketika input dikosongkan
     if (!query || query.trim() === '') {
-      selectedJenisPengadaan.value = null
-      // ✅ NEW: Tetap tampilkan semua hasil meski query kosong
-      searchJenisPengadaanData('')
+      clearJenisPengadaanSelection() // Panggil fungsi yang sama seperti tombol X
       return
     }
 
