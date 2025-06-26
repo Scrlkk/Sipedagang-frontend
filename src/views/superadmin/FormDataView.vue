@@ -3,15 +3,11 @@
   import { useRouter, onBeforeRouteLeave } from 'vue-router'
   import MainElement from '@/components/MainElement.vue'
   import FormElement from '@/components/FormElement.vue'
-  import InputIconElement from '@/components/InputIconElement.vue'
-  import ArrowIconElement from '@/components/ArrowIconElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
   import Swal from 'sweetalert2'
 
-  const iconHover = ref(false)
   const formRef = ref(null)
   const isSubmitting = ref(false)
-  const router = useRouter()
   const hasUnsavedChanges = ref(false)
 
   const pengadaanStore = computed(() => formRef.value?.pengadaanStore)
@@ -238,37 +234,6 @@
             class="absolute -top-1 -right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"
             title="Ada perubahan yang belum disimpan"
           ></span>
-        </div>
-
-        <!-- NAV -->
-        <div class="flex gap-2 items-center px-2 sm:px-0">
-          <div
-            @mouseenter="iconHover = true"
-            @mouseleave="iconHover = false"
-            class="flex gap-2 items-center cursor-pointer"
-          >
-            <InputIconElement
-              :color="iconHover ? '#0099FF' : '#9BA1AA'"
-              :innerColor="iconHover ? 'white' : 'white'"
-            />
-            <div
-              :class="[
-                'text-xs sm:text-sm font-poppins font-medium',
-                iconHover ? 'text-[#0099FF]' : 'text-[#9BA1AA]',
-              ]"
-            >
-              Input
-            </div>
-          </div>
-
-          <div class="mt-0.5">
-            <ArrowIconElement />
-          </div>
-          <div
-            class="text-[#9BA1AA] text-xs sm:text-sm font-poppins font-medium"
-          >
-            Input Data
-          </div>
         </div>
 
         <!-- FORM -->

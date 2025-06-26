@@ -8,7 +8,6 @@
     nextTick,
   } from 'vue'
   import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
-  import MainElement from '@/components/MainElement.vue'
   import FormPemohon from '@/components/PemohonElement.vue'
   import PemohonIconElement from '@/components/PemohonIconElement.vue'
   import Swal from 'sweetalert2'

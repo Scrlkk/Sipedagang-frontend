@@ -39,35 +39,14 @@
       confirmButtonText: 'Ya, Tinggalkan',
       cancelButtonText: 'Batal',
       reverseButtons: true,
+      customClass: {
+        popup: 'rounded-xl',
+        confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
+        cancelButton: 'rounded-lg font-medium px-4 py-2 text-sm',
+      },
     })
 
     return result.isConfirmed
-  }
-
-  onBeforeRouteLeave(async (to, from) => {
-    if (bypassConfirmation.value) {
-      bypassConfirmation.value = false
-      return true
-    }
-
-    const canLeave = await confirmLeave()
-    if (!canLeave) {
-      return false
-    }
-    return true
-  })
-
-  const handleBeforeUnload = (event) => {
-    if (hasUnsavedChanges.value) {
-      event.preventDefault()
-      event.returnValue =
-        'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
-      return event.returnValue
-    }
-  }
-
-  const handleFormChanged = (hasChanges) => {
-    hasUnsavedChanges.value = hasChanges
   }
 
   onMounted(async () => {
@@ -89,21 +68,21 @@
       currentData.value = data
     } catch (error) {
       Swal.fire({
-        position: 'center',
-        icon: 'error',
-        title: 'Gagal memuat data',
+        title: 'Gagal Memuat Data!',
         text: error.message || 'Data tidak ditemukan atau terjadi kesalahan',
-        showConfirmButton: false,
-        timer: 2000,
+        icon: 'error',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Tutup',
+        customClass: {
+          popup: 'rounded-xl',
+          confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
+        },
+      }).then(() => {
+        router.push('/superadmin/riwayat')
       })
-      router.push('/superadmin/riwayat')
     } finally {
       isLoading.value = false
     }
-  })
-
-  onBeforeUnmount(() => {
-    window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
   // ✅ IMPROVED: Watch dengan better error handling
@@ -124,10 +103,11 @@
           console.error('Error populating form:', error)
 
           Swal.fire({
-            title: 'Error!',
-            text: `Gagal memuat data ke form: ${error.message}`,
+            title: 'Gagal Memuat Data ke Form!',
+            text: `Tidak dapat memuat data ke form: ${error.message}`,
             icon: 'error',
             confirmButtonColor: '#d33',
+            confirmButtonText: 'Tutup',
             customClass: {
               popup: 'rounded-xl',
               confirmButton: 'rounded-lg font-medium px-4 py-2 text-sm',
@@ -138,14 +118,6 @@
     },
     { immediate: true },
   )
-
-  async function handleLeft() {
-    const canLeave = await confirmLeave()
-    if (canLeave) {
-      bypassConfirmation.value = true
-      router.push('/superadmin/riwayat')
-    }
-  }
 
   async function handleRight() {
     if (!formRef.value) {
@@ -216,10 +188,11 @@
       }
 
       Swal.fire({
-        title: 'Error!',
+        title: 'Gagal Memperbarui!',
         text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#d33',
+        confirmButtonText: 'Tutup',
         customClass: {
           content: 'whitespace-pre-line',
           popup: 'rounded-xl',
