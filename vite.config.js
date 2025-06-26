@@ -111,7 +111,7 @@ export default defineConfig({
   
   // Server configuration for development
   server: {
-    port: 3000,
+    port: 5173,
     open: true,
     cors: true
   },

@@ -32,7 +32,6 @@ import LihatDataPemohonView from '@/views/superadmin/LihatDataPemohonView.vue'
 import SettingPengadaanView from '@/views/superadmin/SettingPengadaanView.vue'
 import LihatSettingPengadaanView from '@/views/superadmin/LihatSettingPengadaanView.vue'
 import EditProfileView from '@/views/superadmin/EditProfileView.vue'
-import EditFormData from '../views/admin/EditFormData.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -101,7 +100,7 @@ const router = createRouter({
         },
         {
           path: 'form-edit/:id',
-          component: EditFormData,
+          component: FormAdmin,
           name: 'EditPage',
           props: true,
           meta: { requiresAuth: true, role: 'admin' },
