@@ -999,21 +999,21 @@
                       class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-sm text-center border-b border-gray-200"
                     >
                       <th
-                        class="px-2 lg:px-3 py-4 rounded-tl-xl text-center font-semibold w-[18%]"
+                        class="px-2 lg:px-3 py-4 rounded-tl-xl text-left font-semibold w-[18%]"
                       >
+                        Jenis Pengadaan
+                      </th>
+                      <th class="px-1 lg:px-2 py-4 font-semibold w-[15%]">
                         No Preorder
                       </th>
-                      <th class="px-1 lg:px-2 py-4 font-semibold w-[15%]">
-                        Perusahaan
-                      </th>
-                      <th class="px-1 lg:px-2 py-4 font-semibold w-[15%]">
+                      <th class="px-1 lg:px-2 py-4 font-semibold w-[12%]">
                         Supplier
+                      </th>
+                      <th class="px-1 lg:px-2 py-4 font-semibold w-[12%]">
+                        Perusahaan
                       </th>
                       <th class="px-1 lg:px-2 py-4 font-semibold w-[10%]">
                         Admin
-                      </th>
-                      <th class="px-1 lg:px-2 py-4 font-semibold w-[10%]">
-                        Jenis Pengadaan
                       </th>
                       <th class="px-1 lg:px-2 py-4 font-semibold w-[10%]">
                         Kuantum
