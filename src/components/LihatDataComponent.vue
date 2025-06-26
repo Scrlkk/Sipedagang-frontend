@@ -1,21 +1,20 @@
 <script setup>
   import { useRouter } from 'vue-router'
-  import { computed, ref, onMounted, onUnmounted } from 'vue'
-  import PageElement from '@/components/PageElement.vue'
+  import { computed, watch } from 'vue'
 
   const props = defineProps({
     tableData: { type: Array, default: () => [] },
     searchQuery: { type: String, default: '' },
-    tanggalAwal: { type: String, default: '' },
-    tanggalAkhir: { type: String, default: '' },
+    selectedMonth: { type: String, default: '' },
     currentPage: { type: Number, default: 1 },
     itemsPerPage: { type: Number, default: 10 },
     pageInput: { type: Number, default: 1 },
+    months: { type: Array, default: () => [] },
     filteredData: { type: Array, default: () => [] },
     paginatedData: { type: Array, default: () => [] },
     getTotalPages: { type: Number, default: 1 },
-    totalItems: { type: Number, default: 0 },
     isExtraSmallScreen: { type: Boolean, default: false },
+    displayedPageNumbers: { type: Array, default: () => [] },
     userType: { type: String, default: 'admin' },
   })
 
@@ -26,8 +25,7 @@
     'edit',
     'delete',
     'update:searchQuery',
-    'update:tanggalAwal',
-    'update:tanggalAkhir',
+    'update:selectedMonth',
     'update:currentPage',
     'update:pageInput',
     'page-input-submit',
@@ -35,75 +33,151 @@
 
   const router = useRouter()
 
-  // ✅ State untuk dropdown date picker - pisahkan untuk desktop dan mobile
-  const showDatePickerDesktop = ref(false)
-  const showDatePickerMobile = ref(false)
+  // ✅ Helper function untuk mendapatkan nama bulan dalam bahasa Indonesia
+  const getMonthName = (monthNumber) => {
+    const months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ]
+    return months[monthNumber - 1] || ''
+  }
 
-  // ✅ Refs untuk dropdown
-  const datePickerDesktopRef = ref(null)
-  const datePickerMobileRef = ref(null)
+  // ✅ Helper function untuk ekstrak bulan dari tanggal
+  const extractMonth = (dateString) => {
+    if (!dateString) return null
 
-  // ✅ Data langsung dari props (sudah ter-paginasi dari backend)
-  const computedFilteredData = computed(() => props.paginatedData)
-  const computedPaginatedData = computed(() => props.paginatedData)
-  const computedTotalPages = computed(() => props.getTotalPages)
+    try {
+      // Format yang mungkin: YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY, etc.
+      let date
 
-  // ✅ Computed untuk check filter
-  const hasDateFilter = computed(() => {
-    return props.tanggalAwal || props.tanggalAkhir
-  })
+      if (dateString.includes('/')) {
+        // Format DD/MM/YYYY
+        const parts = dateString.split('/')
+        if (parts.length === 3) {
+          date = new Date(parts[2], parts[1] - 1, parts[0])
+        }
+      } else if (dateString.includes('-')) {
+        // Format YYYY-MM-DD atau DD-MM-YYYY
+        const parts = dateString.split('-')
+        if (parts.length === 3) {
+          if (parts[0].length === 4) {
+            // YYYY-MM-DD
+            date = new Date(parts[0], parts[1] - 1, parts[2])
+          } else {
+            // DD-MM-YYYY
+            date = new Date(parts[2], parts[1] - 1, parts[0])
+          }
+        }
+      } else {
+        date = new Date(dateString)
+      }
 
-  // ✅ Format tanggal untuk display
-  const formatDateDisplay = (dateStr) => {
-    if (!dateStr) return ''
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+      return date.getMonth() + 1 // Return 1-12
+    } catch (error) {
+      console.warn('Error parsing date:', dateString, error)
+      return null
+    }
+  }
+
+  // ✅ Computed untuk daftar bulan yang tersedia
+  const availableMonths = computed(() => {
+    const monthsSet = new Set()
+
+    // Tambahkan opsi "Semua Bulan"
+    const months = [{ value: '', label: 'Semua Bulan' }]
+
+    // Ekstrak bulan dari data
+    props.tableData.forEach((item) => {
+      const tanggal = getItemValue(item, 'tanggal')
+      if (tanggal && tanggal !== 'N/A') {
+        const monthNumber = extractMonth(tanggal)
+        if (monthNumber && monthNumber >= 1 && monthNumber <= 12) {
+          monthsSet.add(monthNumber)
+        }
+      }
     })
-  }
 
-  // ✅ Functions untuk clear filters
-  const clearDateFilter = () => {
-    emit('update:tanggalAwal', '')
-    emit('update:tanggalAkhir', '')
-    showDatePickerDesktop.value = false
-    showDatePickerMobile.value = false
-  }
+    // Convert Set ke Array dan sort
+    const sortedMonths = Array.from(monthsSet).sort((a, b) => a - b)
 
-  // ✅ Apply date filter dan tutup dropdown
-  const applyDateFilterDesktop = () => {
-    showDatePickerDesktop.value = false
-  }
+    // Tambahkan ke daftar bulan
+    sortedMonths.forEach((monthNumber) => {
+      months.push({
+        value: monthNumber.toString(),
+        label: getMonthName(monthNumber),
+      })
+    })
 
-  const applyDateFilterMobile = () => {
-    showDatePickerMobile.value = false
-  }
-
-  // ✅ Close dropdown saat klik di luar
-  const handleClickOutside = (event) => {
-    // Check desktop dropdown
-    if (
-      datePickerDesktopRef.value &&
-      !datePickerDesktopRef.value.contains(event.target)
-    ) {
-      showDatePickerDesktop.value = false
-    }
-    // Check mobile dropdown
-    if (
-      datePickerMobileRef.value &&
-      !datePickerMobileRef.value.contains(event.target)
-    ) {
-      showDatePickerMobile.value = false
-    }
-  }
-
-  onMounted(() => {
-    document.addEventListener('click', handleClickOutside)
+    return months
   })
 
-  onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside)
+  // ✅ Computed untuk data yang difilter
+  const computedFilteredData = computed(() => {
+    let filtered = [...props.tableData]
+
+    // Filter berdasarkan search query
+    if (props.searchQuery && props.searchQuery.trim()) {
+      const query = props.searchQuery.toLowerCase().trim()
+      filtered = filtered.filter((item) => {
+        const jenisPengadaan = getItemValue(
+          item,
+          'jenis_pengadaan',
+        ).toLowerCase()
+        const noPreorder = getItemValue(item, 'no_preorder').toLowerCase()
+        const supplier = getItemValue(item, 'supplier').toLowerCase()
+        const perusahaan = getItemValue(item, 'perusahaan').toLowerCase()
+        const kuantum = getItemValue(item, 'kuantum').toLowerCase()
+        const tanggal = getItemValue(item, 'tanggal').toLowerCase()
+
+        return (
+          jenisPengadaan.includes(query) ||
+          noPreorder.includes(query) ||
+          supplier.includes(query) ||
+          perusahaan.includes(query) ||
+          kuantum.includes(query) ||
+          tanggal.includes(query)
+        )
+      })
+    }
+
+    // Filter berdasarkan bulan yang dipilih
+    if (props.selectedMonth && props.selectedMonth.trim()) {
+      const selectedMonthNumber = parseInt(props.selectedMonth)
+      filtered = filtered.filter((item) => {
+        const tanggal = getItemValue(item, 'tanggal')
+        if (tanggal && tanggal !== 'N/A') {
+          const itemMonth = extractMonth(tanggal)
+          return itemMonth === selectedMonthNumber
+        }
+        return false
+      })
+    }
+
+    return filtered
+  })
+
+  // ✅ Computed untuk data dengan pagination
+  const computedPaginatedData = computed(() => {
+    const startIndex = (props.currentPage - 1) * props.itemsPerPage
+    const endIndex = startIndex + props.itemsPerPage
+    return computedFilteredData.value.slice(startIndex, endIndex)
+  })
+
+  // ✅ Computed untuk total halaman
+  const computedTotalPages = computed(() => {
+    return (
+      Math.ceil(computedFilteredData.value.length / props.itemsPerPage) || 1
+    )
   })
 
   // Helper functions tetap sama...
@@ -202,15 +276,57 @@
 
   const resetFilters = () => {
     emit('update:searchQuery', '')
-    emit('update:tanggalAwal', '')
-    emit('update:tanggalAkhir', '')
+    emit('update:selectedMonth', '')
     emit('update:currentPage', 1)
   }
 
-  // ✅ Handler untuk PageElement
-  const handlePageChange = (page) => {
-    emit('update:currentPage', page)
+  // ✅ Pagination handlers
+  const goToPage = (page) => {
+    if (
+      page >= 1 &&
+      page <= computedTotalPages.value &&
+      page !== props.currentPage
+    ) {
+      emit('update:currentPage', page)
+    }
   }
+
+  const nextPage = () => {
+    if (props.currentPage < computedTotalPages.value) {
+      emit('update:currentPage', props.currentPage + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (props.currentPage > 1) {
+      emit('update:currentPage', props.currentPage - 1)
+    }
+  }
+
+  // ✅ Computed untuk page numbers yang akan ditampilkan
+  const visiblePageNumbers = computed(() => {
+    const total = computedTotalPages.value
+    const current = props.currentPage
+    const pages = []
+
+    if (total <= 5) {
+      // Jika total halaman <= 5, tampilkan semua
+      for (let i = 1; i <= total; i++) {
+        pages.push(i)
+      }
+    } else {
+      // Jika total halaman > 5, tampilkan dengan logika
+      if (current <= 3) {
+        pages.push(1, 2, 3, 4, 5)
+      } else if (current >= total - 2) {
+        pages.push(total - 4, total - 3, total - 2, total - 1, total)
+      } else {
+        pages.push(current - 2, current - 1, current, current + 1, current + 2)
+      }
+    }
+
+    return pages
+  })
 
   const formatDate = (dateString) => {
     if (!dateString || dateString === 'N/A') return 'N/A'
@@ -257,6 +373,7 @@
       <!-- Simple Header -->
       <div class="bg-blue-600 p-2 sm:p-4 rounded-b-lg">
         <!-- Mobile Back Button -->
+
         <div class="flex sm:hidden mb-2">
           <router-link
             to="/admin/dashboard"
@@ -338,10 +455,10 @@
 
           <!-- Search & Filter -->
           <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
-            <!-- Active Filters Desktop -->
+            <!-- Active Filters -->
             <div
-              v-if="searchQuery || hasDateFilter"
-              class="lg:flex lg:flex-wrap hidden gap-2"
+              v-if="searchQuery || selectedMonth"
+              class="lg:flex lg:flex-wrap hidden gap-2 mt-3"
             >
               <span
                 v-if="searchQuery"
@@ -368,20 +485,15 @@
                 </button>
               </span>
               <span
-                v-if="hasDateFilter"
+                v-if="selectedMonth"
                 class="inline-flex items-center px-3 py-1 bg-white/20 text-white text-xs rounded-full"
               >
-                <span v-if="tanggalAwal && tanggalAkhir">
-                  {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
-                </span>
-                <span v-else-if="tanggalAwal">
-                  Dari {{ formatDateDisplay(tanggalAwal) }}
-                </span>
-                <span v-else-if="tanggalAkhir">
-                  Sampai {{ formatDateDisplay(tanggalAkhir) }}
-                </span>
+                Bulan:
+                {{
+                  availableMonths.find((m) => m.value === selectedMonth)?.label
+                }}
                 <button
-                  @click="clearDateFilter"
+                  @click="$emit('update:selectedMonth', '')"
                   class="ml-2 text-white/80 hover:text-white"
                 >
                   <svg
@@ -400,12 +512,11 @@
                 </button>
               </span>
               <span
-                class="flex items-center px-3 py-1 bg-white/30 text-white text-xs rounded-full font-medium"
+                class="px-3 py-1 bg-white/30 text-white text-xs rounded-full font-medium"
               >
-                {{ totalItems }} hasil
+                {{ computedFilteredData.length }} hasil
               </span>
             </div>
-            
             <!-- Search -->
             <div class="relative">
               <input
@@ -449,165 +560,24 @@
               </button>
             </div>
 
-            <!-- ✅ Date Filter Button Desktop -->
-            <div class="relative hidden sm:block" ref="datePickerDesktopRef">
-              <button
-                @click.stop="showDatePickerDesktop = !showDatePickerDesktop"
-                class="flex items-center gap-2 px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 hover:bg-white/30 min-w-[140px]"
-                :class="{
-                  'ring-2 ring-white/50': showDatePickerDesktop,
-                  'bg-white/30 border-white/50': hasDateFilter,
-                }"
+            <!-- Month Filter -->
+            <div class="relative">
+              <select
+                :value="selectedMonth"
+                @change="$emit('update:selectedMonth', $event.target.value)"
+                class="w-full sm:w-40 pl-9 pr-8 py-2 bg-white/20 border border-white/30 rounded-lg text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-white/50"
               >
-                <!-- Calendar Icon -->
-                <svg
-                  class="w-4 h-4 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                <option
+                  v-for="month in availableMonths"
+                  :key="month.value"
+                  :value="month.value"
+                  class="text-gray-900"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-
-                <!-- Button Text -->
-                <span class="whitespace-nowrap flex-1 text-left min-w-0">
-                  <span v-if="hasDateFilter" class="font-medium truncate block">
-                    <span v-if="tanggalAwal && tanggalAkhir">
-                      {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
-                    </span>
-                    <span v-else-if="tanggalAwal">
-                      Dari {{ formatDateDisplay(tanggalAwal) }}
-                    </span>
-                    <span v-else-if="tanggalAkhir">
-                      Sampai {{ formatDateDisplay(tanggalAkhir) }}
-                    </span>
-                  </span>
-                  <span v-else class="text-white/70 truncate block">
-                    Filter Tanggal
-                  </span>
-                </span>
-
-                <!-- Dropdown Arrow -->
-                <svg
-                  class="w-3 h-3 text-white/60 transition-transform duration-200 flex-shrink-0"
-                  :class="{ 'rotate-180': showDatePickerDesktop }"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </button>
-
-              <!-- ✅ Dropdown Date Picker Desktop -->
-              <div
-                v-if="showDatePickerDesktop"
-                @click.stop
-                class="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] w-80 p-4"
-                style="z-index: 99999 !important;"
-              >
-                <div class="space-y-4">
-                  <!-- Header -->
-                  <div
-                    class="flex items-center justify-between pb-3 border-b border-gray-100"
-                  >
-                    <h4 class="text-sm font-semibold text-gray-700">
-                      Pilih Rentang Tanggal
-                    </h4>
-                    <button
-                      @click.stop="showDatePickerDesktop = false"
-                      class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <!-- Date Inputs -->
-                  <div class="space-y-4">
-                    <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Tanggal Awal
-                      </label>
-                      <input
-                        type="date"
-                        :value="tanggalAwal"
-                        @input="$emit('update:tanggalAwal', $event.target.value)"
-                        @click.stop
-                        class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Tanggal Akhir
-                      </label>
-                      <input
-                        type="date"
-                        :value="tanggalAkhir"
-                        :min="tanggalAwal"
-                        @input="$emit('update:tanggalAkhir', $event.target.value)"
-                        @click.stop
-                        class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- Action Buttons -->
-                  <div class="flex gap-3 pt-3 border-t border-gray-100">
-                    <button
-                      @click.stop="clearDateFilter"
-                      class="flex-1 px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 font-medium"
-                    >
-                      Reset
-                    </button>
-                    <button
-                      @click.stop="applyDateFilterDesktop"
-                      class="flex-1 px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 font-medium"
-                    >
-                      Terapkan
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Mobile Date Filter Button -->
-        <div class="sm:hidden mt-2">
-          <div class="relative" ref="datePickerMobileRef">
-            <button
-              @click.stop="showDatePickerMobile = !showDatePickerMobile"
-              class="flex items-center gap-2 w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 hover:bg-white/30"
-              :class="{
-                'ring-2 ring-white/50': showDatePickerMobile,
-                'bg-white/30 border-white/50': hasDateFilter,
-              }"
-            >
-              <!-- Calendar Icon -->
+                  {{ month.label }}
+                </option>
+              </select>
               <svg
-                class="w-4 h-4 flex-shrink-0"
+                class="absolute left-3 top-2.5 h-4 w-4 text-white/60"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -619,130 +589,26 @@
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-
-              <!-- Button Text -->
-              <span class="flex-1 text-left min-w-0">
-                <span v-if="hasDateFilter" class="font-medium truncate block">
-                  <span v-if="tanggalAwal && tanggalAkhir">
-                    {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
-                  </span>
-                  <span v-else-if="tanggalAwal">
-                    Dari {{ formatDateDisplay(tanggalAwal) }}
-                  </span>
-                  <span v-else-if="tanggalAkhir">
-                    Sampai {{ formatDateDisplay(tanggalAkhir) }}
-                  </span>
-                </span>
-                <span v-else class="text-white/70 truncate block">
-                  Filter Tanggal
-                </span>
-              </span>
-
-              <!-- Dropdown Arrow -->
               <svg
-                class="w-3 h-3 text-white/60 transition-transform duration-200 flex-shrink-0"
-                :class="{ 'rotate-180': showDatePickerMobile }"
-                fill="currentColor"
-                viewBox="0 0 20 20"
+                class="absolute right-3 top-2.5 h-4 w-4 text-white/60"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  fill-rule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
                 />
               </svg>
-            </button>
-
-            <!-- ✅ Dropdown Date Picker Mobile -->
-            <div
-              v-if="showDatePickerMobile"
-              @click.stop
-              class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] p-4"
-              style="z-index: 99999 !important;"
-            >
-              <div class="space-y-4">
-                <!-- Header -->
-                <div
-                  class="flex items-center justify-between pb-3 border-b border-gray-100"
-                >
-                  <h4 class="text-sm font-semibold text-gray-700">
-                    Pilih Rentang Tanggal
-                  </h4>
-                  <button
-                    @click.stop="showDatePickerMobile = false"
-                    class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- Date Inputs -->
-                <div class="space-y-4">
-                  <div>
-                    <label
-                      class="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      Tanggal Awal
-                    </label>
-                    <input
-                      type="date"
-                      :value="tanggalAwal"
-                      @input="$emit('update:tanggalAwal', $event.target.value)"
-                      @click.stop
-                      class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      Tanggal Akhir
-                    </label>
-                    <input
-                      type="date"
-                      :value="tanggalAkhir"
-                      :min="tanggalAwal"
-                      @input="$emit('update:tanggalAkhir', $event.target.value)"
-                      @click.stop
-                      class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    />
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex gap-3 pt-3 border-t border-gray-100">
-                  <button
-                    @click.stop="clearDateFilter"
-                    class="flex-1 px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 font-medium"
-                  >
-                    Reset
-                  </button>
-                  <button
-                    @click.stop="applyDateFilterMobile"
-                    class="flex-1 px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 font-medium"
-                  >
-                    Terapkan
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
-
-        <!-- Active Filters Mobile -->
+        <!-- Active Filters -->
         <div
-          v-if="searchQuery || hasDateFilter"
-          class="flex flex-wrap gap-1 mt-2 w-full sm:mt-3 md:gap-2 lg:hidden"
+          v-if="searchQuery || selectedMonth"
+          class="flex flex-wrap gap-1 mt-2 w-full sm:mt-3 md:gap-2 md:mt-3 md:flex md:flex-wrap lg:hidden"
         >
           <span
             v-if="searchQuery"
@@ -769,20 +635,13 @@
             </button>
           </span>
           <span
-            v-if="hasDateFilter"
+            v-if="selectedMonth"
             class="inline-flex items-center px-2 py-0.5 bg-white/20 text-white text-[10px] rounded-full md:px-3 md:py-1 md:text-xs"
           >
-            <span v-if="tanggalAwal && tanggalAkhir">
-              {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
-            </span>
-            <span v-else-if="tanggalAwal">
-              Dari {{ formatDateDisplay(tanggalAwal) }}
-            </span>
-            <span v-else-if="tanggalAkhir">
-              Sampai {{ formatDateDisplay(tanggalAkhir) }}
-            </span>
+            Bulan:
+            {{ availableMonths.find((m) => m.value === selectedMonth)?.label }}
             <button
-              @click="clearDateFilter"
+              @click="$emit('update:selectedMonth', '')"
               class="ml-1 text-white/80 hover:text-white md:ml-2"
             >
               <svg
@@ -803,11 +662,10 @@
           <span
             class="px-2 py-0.5 bg-white/30 text-white text-[10px] rounded-full font-medium md:px-3 md:py-1 md:text-xs"
           >
-            {{ totalItems }} hasil
+            {{ computedFilteredData.length }} hasil
           </span>
         </div>
       </div>
-      
       <!-- Simple Table Container -->
       <div class="overflow-x-auto">
         <!-- Mobile Card View -->
@@ -941,19 +799,63 @@
             </p>
           </div>
 
-          <!-- ✅ PageElement untuk Mobile -->
-          <div class="bg-white border-t border-gray-200 p-3 w-full sticky -bottom-4 left-0 z-20">
-            <div class="flex flex-col items-center gap-3">
+          <!-- Sticky Pagination Footer Mobile -->
+          <div
+            class="bg-white border-t border-gray-200 p-3 w-full sticky -bottom-4 left-0 z-20"
+            style="box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03)"
+          >
+            <div
+              class="flex flex-col xs:flex-row justify-between items-center gap-3"
+            >
               <div class="text-xs text-gray-600">
                 Menampilkan {{ (currentPage - 1) * itemsPerPage + 1 }} -
-                {{ Math.min(currentPage * itemsPerPage, totalItems) }}
-                dari {{ totalItems }} data
+                {{
+                  Math.min(
+                    currentPage * itemsPerPage,
+                    computedFilteredData.length,
+                  )
+                }}
+                dari {{ computedFilteredData.length }} data
               </div>
-              <PageElement
-                :currentPage="currentPage"
-                :totalPages="computedTotalPages"
-                @change="handlePageChange"
-              />
+              <div class="flex items-center space-x-1">
+                <button
+                  @click="prevPage"
+                  :disabled="currentPage === 1"
+                  class="px-2 py-1 border rounded text-xs"
+                  :class="
+                    currentPage === 1
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed border-gray-200'
+                      : 'text-gray-700 bg-white hover:bg-gray-50 border-gray-300'
+                  "
+                >
+                  ‹
+                </button>
+                <button
+                  v-for="page in visiblePageNumbers"
+                  :key="page"
+                  @click="goToPage(page)"
+                  class="w-7 h-7 flex items-center justify-center rounded text-xs font-medium"
+                  :class="
+                    currentPage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                  "
+                >
+                  {{ page }}
+                </button>
+                <button
+                  @click="nextPage"
+                  :disabled="currentPage === computedTotalPages"
+                  class="px-2 py-1 border rounded text-xs"
+                  :class="
+                    currentPage === computedTotalPages
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed border-gray-200'
+                      : 'text-gray-700 bg-white hover:bg-gray-50 border-gray-300'
+                  "
+                >
+                  ›
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1124,13 +1026,13 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
+                />
               </svg>
               <p class="text-gray-500 text-lg font-medium">Tidak ada data</p>
               <p class="text-gray-400">Data yang dicari tidak ditemukan</p>
             </div>
           </div>
-          <!-- ✅ PageElement untuk Desktop -->
+          <!-- Sticky Pagination Footer -->
           <div
             class="bg-gray-50 border-t border-gray-200 p-4 w-full sticky bottom-0 left-0 z-20"
             style="box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03)"
@@ -1141,15 +1043,61 @@
               <!-- Pagination Info -->
               <div class="text-sm text-gray-600">
                 Menampilkan {{ (currentPage - 1) * itemsPerPage + 1 }} -
-                {{ Math.min(currentPage * itemsPerPage, totalItems) }}
-                dari {{ totalItems }} data
+                {{
+                  Math.min(
+                    currentPage * itemsPerPage,
+                    computedFilteredData.length,
+                  )
+                }}
+                dari {{ computedFilteredData.length }} data
               </div>
-              <!-- ✅ PageElement Component -->
-              <PageElement
-                :currentPage="currentPage"
-                :totalPages="computedTotalPages"
-                @change="handlePageChange"
-              />
+              <!-- Pagination Controls -->
+              <div class="flex items-center space-x-2">
+                <!-- Previous Button -->
+                <button
+                  @click="prevPage"
+                  :disabled="currentPage === 1"
+                  class="px-3 py-1 border rounded text-sm"
+                  :class="
+                    currentPage === 1
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed border-gray-200'
+                      : 'text-gray-700 bg-white hover:bg-gray-50 border-gray-300'
+                  "
+                >
+                  ‹ Prev
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="flex items-center space-x-1">
+                  <button
+                    v-for="page in visiblePageNumbers"
+                    :key="page"
+                    @click="goToPage(page)"
+                    class="w-8 h-8 flex items-center justify-center rounded text-sm font-medium"
+                    :class="
+                      currentPage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                    "
+                  >
+                    {{ page }}
+                  </button>
+                </div>
+
+                <!-- Next Button -->
+                <button
+                  @click="nextPage"
+                  :disabled="currentPage === computedTotalPages"
+                  class="px-3 py-1 border rounded text-sm"
+                  :class="
+                    currentPage === computedTotalPages
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed border-gray-200'
+                      : 'text-gray-700 bg-white hover:bg-gray-50 border-gray-300'
+                  "
+                >
+                  Next ›
+                </button>
+              </div>
               <!-- Back Button (Desktop only) -->
               <div class="hidden sm:block">
                 <router-link

@@ -360,7 +360,7 @@
       </div>
     </header>
 
-    <div class=" relative z-10 -mt-3 sm:mt-0 md:-mt-2">
+    <div class="h-[38rem] relative z-10 ">
       <router-view />
     </div>
   </section>
