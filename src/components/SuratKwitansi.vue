@@ -186,7 +186,7 @@
             <div class="font-bold tracking-tight leading-snug">
               <p>Perum BULOG</p>
               <p>Kantor Cabang Surakarta</p>
-              <p>Jl. L.U Adisucipto No. 17</p>
+              <p>Jl. LU. Adisucipto No. 17</p>
               <p>Surakarta</p>
             </div>
           </div>
