@@ -166,6 +166,26 @@
   const openPrintPreview = (itemId) => {
     window.open(`/surat-preview/${itemId}`, '_blank')
   }
+
+  const formatKuantum = (value) => {
+    if (!value || value === 'N/A') {
+      return value // Jika tidak ada nilai atau 'N/A', kembalikan apa adanya
+    }
+
+    const stringValue = String(value)
+    const parts = stringValue.split(' ') // Memisahkan angka dan satuan, misal: "600000 LITER" -> ["600000", "LITER"]
+
+    const numberPart = parts[0]
+    const unitPart = parts.slice(1).join(' ') // Cek apakah bagian pertama adalah angka
+
+    if (isNaN(numberPart)) {
+      return value // Jika bukan angka, kembalikan nilai asli
+    } // Format bagian angka dengan titik pemisah ribuan
+
+    const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.') // Gabungkan kembali dengan satuannya (jika ada)
+
+    return unitPart ? `${formattedNumber} ${unitPart}` : formattedNumber
+  }
 </script>
 
 <template>
@@ -918,7 +938,7 @@
                       <div class="space-y-1">
                         <span class="text-gray-500 font-medium">Kuantum:</span>
                         <p class="font-medium text-gray-900">
-                          {{ item.kuantum || '-' }}
+                          {{ formatKuantum(item.kuantum || '-') }}
                         </p>
                       </div>
                     </div>
@@ -951,6 +971,7 @@
               </template>
             </div>
           </div>
+
           <!-- Desktop Table View -->
           <div class="hidden lg:block">
             <div class="">

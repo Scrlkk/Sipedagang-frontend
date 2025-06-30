@@ -986,7 +986,7 @@
               <div>
                 <span class="text-gray-500">Kuantum:</span>
                 <div class="font-medium text-blue-600">
-                  {{ getItemValue(item, 'kuantum') }}
+                  {{ formatKuantum(getItemValue(item, 'kuantum')) }}
                 </div>
               </div>
               <div>
