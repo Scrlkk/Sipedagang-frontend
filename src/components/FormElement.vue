@@ -537,51 +537,7 @@
     }
   }
 
-  // ✅ MISSING: Add handleNomorPOInput, handleNomorPOPaste, handleNomorPOKeypress functions
-  const handleNomorPOInput = (event) => {
-    let value = event.target.value.replace(/[^A-Za-z0-9]/g, '')
 
-    // Auto format: XXXX/XX/XXXXX/XXXX
-    if (value.length <= 4) {
-      nomorPO.value = value
-    } else if (value.length <= 6) {
-      nomorPO.value = `${value.slice(0, 4)}/${value.slice(4)}`
-    } else if (value.length <= 11) {
-      nomorPO.value = `${value.slice(0, 4)}/${value.slice(4, 6)}/${value.slice(6)}`
-    } else if (value.length <= 15) {
-      nomorPO.value = `${value.slice(0, 4)}/${value.slice(4, 6)}/${value.slice(6, 11)}/${value.slice(11)}`
-    }
-  }
-
-  const handleNomorPOPaste = (event) => {
-    event.preventDefault()
-    const pastedText = (event.clipboardData || window.clipboardData).getData(
-      'text',
-    )
-    const cleanText = pastedText.replace(/[^A-Za-z0-9]/g, '')
-
-    if (cleanText.length <= 15) {
-      const input = event.target
-      input.value = cleanText
-      handleNomorPOInput({ target: input })
-    }
-  }
-
-  const handleNomorPOKeypress = (event) => {
-    const allowedKeys = [
-      'Backspace',
-      'Delete',
-      'Tab',
-      'Enter',
-      'ArrowLeft',
-      'ArrowRight',
-    ]
-    if (allowedKeys.includes(event.key)) return
-
-    if (!/[A-Za-z0-9]/.test(event.key)) {
-      event.preventDefault()
-    }
-  }
 
   function clearForm() {
     // ✅ Clear search dan data pemohon
@@ -1215,7 +1171,7 @@
     <!-- DETAIL PURCHASING ORDER -->
     <div class="font-bold text-lg sm:text-xl mt-4">Detail Purchasing Order</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <!-- ✅ Nomor PO dengan Auto-formatting -->
+      <!-- Nomor PO -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1225,43 +1181,14 @@
         >
           Nomor PO <span class="text-red-500">*</span>
         </label>
-        <div class="relative w-full">
-          <input
-            type="text"
-            id="nomor-po"
-            placeholder="Otomatis Terformat: XXXX/XX/XXXXX/XXXX"
-            class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
-            v-model="nomorPO"
-            @input="handleNomorPOInput"
-            @paste="handleNomorPOPaste"
-            @keypress="handleNomorPOKeypress"
-            maxlength="18"
-            autocomplete="off"
-            pattern="[A-Za-z0-9]{4}\/[A-Za-z0-9]{2}\/[A-Za-z0-9]{5}\/[A-Za-z0-9]{4}"
-            title="Format: 4 karakter/2 karakter/5 karakter/4 karakter"
-            required
-          />
-
-          <!-- Info icon dengan tooltip -->
-          <div
-            class="absolute inset-y-0 right-7.5 flex items-center pointer-events-none"
-            title="Format otomatis: XXXX/XX/XXXXX/XXXX"
-          >
-            <svg
-              class="w-4 h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-        </div>
+        <input
+          type="text"
+          id="nomor-po"
+          placeholder="Masukkan nomor PO"
+          class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
+          v-model="nomorPO"
+          required
+        />
       </div>
 
       <div
