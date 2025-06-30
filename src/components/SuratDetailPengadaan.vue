@@ -141,7 +141,8 @@
           </div>
         </div>
         <div>
-          Dengan ini kami mengajukan permohonan pembayaran pengadaan Gabah
+          Dengan ini kami mengajukan permohonan pembayaran pengadaan
+          {{ jenisPengadaanCapital }}
           sesuai IN :
         </div>
 
