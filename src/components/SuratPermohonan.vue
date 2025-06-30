@@ -45,6 +45,26 @@
     const str = props.item.jenis_pengadaan_barang || ''
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
   })
+
+  const formatKuantum = (value) => {
+    if (!value || value === 'N/A') {
+      return value // Jika tidak ada nilai atau 'N/A', kembalikan apa adanya
+    }
+
+    const stringValue = String(value)
+    const parts = stringValue.split(' ') // Memisahkan angka dan satuan, misal: "600000 LITER" -> ["600000", "LITER"]
+
+    const numberPart = parts[0]
+    const unitPart = parts.slice(1).join(' ') // Cek apakah bagian pertama adalah angka
+
+    if (isNaN(numberPart)) {
+      return value // Jika bukan angka, kembalikan nilai asli
+    } // Format bagian angka dengan titik pemisah ribuan
+
+    const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.') // Gabungkan kembali dengan satuannya (jika ada)
+
+    return unitPart ? `${formattedNumber} ${unitPart}` : formattedNumber
+  }
 </script>
 
 <template>
@@ -57,7 +77,8 @@
           SURAT PERMOHONAN PEMBAYARAN
         </div>
         <div class="m-0 font-bold uppercase text-[18px]">
-          PENGADAAN GABAH/BERAS DALAM NEGERI TAHUN {{ tahunPengadaan }}
+          PENGADAAN {{ item.jenis_pengadaan_barang }} DALAM NEGERI TAHUN
+          {{ tahunPengadaan }}
         </div>
       </div>
 
@@ -75,7 +96,7 @@
       <div class="text-justify font-arial text-[13.5px]">
         <!-- 1 -->
         <div class="mt-14">
-          Bersama ini kami {{ item.nama_perusahaan }} menyampaikan permohonan
+          Bersama ini, kami, {{ item.nama_perusahaan }}, menyampaikan permohonan
           pembayaran
           <span>
             {{ jenisPengadaanCapital }}
@@ -83,25 +104,28 @@
           <span class="font-bold">
             Pengadaan Dalam Negeri Tahun {{ tahunPengadaan }}</span
           >
-          sebanyak {{ item.kuantum }} dengan bukti dokumen terlampir.
+          sebanyak
+          <span class="lowercase">
+            {{ formatKuantum(item.kuantum) }}
+          </span>
+          dengan bukti dokumen terlampir.
         </div>
 
         <!-- 2 -->
         <div class="mt-2.5">
           Mohon kiranya harga
-          <span>
-            {{ jenisPengadaanCapital }}
+          <span class="lowercase">
+            {{ item.jenis_pengadaan_barang }}
           </span>
-          tersebut di atas dapat dibayar / dipindahbukukan ke rekening Kami Bank
-          {{ item.jenis_bank }}
-          sebagaimana No Rekening {{ item.no_rekening }} Sesuai PO No
-          {{ item.no_preorder }} a.n. {{ item.atasnama_rekening }}
-          {{ tanggalFormatSurat }}
+          tersebut di atas dapat dibayar/dipindahbukukan ke rekening kami Bank
+          {{ item.jenis_bank }}, sebagaimana No. Rekening
+          {{ item.no_rekening }}, Sesuai PO No. {{ item.no_preorder }} a.n.
+          {{ item.atasnama_rekening }}, {{ tanggalFormatSurat }}.
         </div>
 
         <!-- 3 -->
         <div class="mt-2.5">
-          Demikian disampaikan dan atas perkenannya diucapkan terima kasih.
+          Demikian disampaikan. Atas perkenannya, diucapkan terima kasih.
         </div>
       </div>
 

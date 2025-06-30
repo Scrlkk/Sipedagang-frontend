@@ -127,15 +127,15 @@
           <div>Telah di-SPP-kan</div>
 
           <!-- KIRI -->
-          <div>
+          <div class="lowercase">
             : <span>{{ splitAngkaSatuan(item.kuantum).angka }}</span
             >{{ splitAngkaSatuan(item.kuantum).satuan }}
           </div>
-          <div>
+          <div class="lowercase">
             : <span>{{ splitAngkaSatuan(item.jumlah_pembayaran).angka }}</span
             >{{ splitAngkaSatuan(item.jumlah_pembayaran).satuan }}
           </div>
-          <div>
+          <div class="lowercase">
             : <span>{{ splitAngkaSatuan(item.spp).angka }}</span
             >{{ splitAngkaSatuan(item.spp).satuan }}
           </div>
@@ -158,7 +158,7 @@
               (() => {
                 const first = dataInList[0]?.kuantum_in || ''
                 const match = first.match(/[a-zA-Z]+$/)
-                return match ? ' ' + match[0] : ''
+                return match ? ' ' + match[0].toLowerCase() : ''
               })()
             }}
           </div>

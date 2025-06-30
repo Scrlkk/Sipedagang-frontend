@@ -32,7 +32,12 @@
           Tgl <span class="ml-2">{{ formatTanggal(datain.tanggal_in) }}</span>
         </div>
       </div>
-      <div>Kuantum : {{ formatAngka(datain.kuantum_in) }}</div>
+      <div>
+        Kuantum :
+        <span class="lowercase">
+          {{ formatAngka(datain.kuantum_in) }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

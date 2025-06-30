@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useResetPasswordStore } from '@/stores/resetStore'
+import { usePengadaanStore } from '@/stores/pengadaanStore'
 
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
@@ -240,6 +241,18 @@ const router = createRouter({
       component: RiwayatPreviewView,
       props: true,
       meta: { requiresAuth: true },
+      beforeEnter: async (to, from, next) => {
+        const pengadaanStore = usePengadaanStore()
+        try {
+          const data = await pengadaanStore.fetchPengadaanById(to.params.id)
+          const noPO = data?.no_preorder || 'PO'
+          const namaPerusahaan = data?.nama_perusahaan || 'Perusahaan'
+          document.title = `SIPEDAGANG-${noPO}-${namaPerusahaan}`
+        } catch {
+          document.title = 'SIPEDAGANG - Cetak Surat'
+        }
+        next()
+      },
     },
     { path: '/unauthorized', name: 'Unauthorized', component: NotFound },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },

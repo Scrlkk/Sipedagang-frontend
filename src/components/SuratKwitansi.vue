@@ -214,8 +214,9 @@
             </div>
             <div>
               {{ jenisPengadaanCapital }}
-              {{ formatRupiah(angkaSaja(item.kuantum)) }} LITER sesuai dengan
-              PO/{{ item.no_preorder }} Tahun {{ tahunPengadaan }}
+              {{ formatRupiah(angkaSaja(item.kuantum)) }}
+              <span class="lowercase">{{ satuanSaja(item.kuantum) }}</span>
+              sesuai dengan PO/{{ item.no_preorder }} Tahun {{ tahunPengadaan }}
             </div>
 
             <div class="col-start-2 flex flex-col">
