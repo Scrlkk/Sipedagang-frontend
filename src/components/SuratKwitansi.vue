@@ -89,11 +89,82 @@
     return parseFloat(props.item?.nominal) || 0
   })
 
+  function angkaSaja(val) {
+    if (!val) return 0
+    const num = (val + '').replace(/[^\d]/g, '')
+    return num ? parseInt(num) : 0
+  }
+
+  // Ambil satuan dari string, misal "6000000 LITER" => "LITER"
+  function satuanSaja(val) {
+    if (!val) return ''
+    const match = (val + '').match(/[a-zA-Z]+$/)
+    return match ? match[0] : ''
+  }
+
   // ✅ Format angka dengan separator ribuan
   const formatRupiah = (angka) => {
     if (!angka && angka !== 0) return '0'
     return new Intl.NumberFormat('id-ID').format(angka)
   }
+
+  // Fungsi konversi angka ke huruf (terbilang) sederhana untuk rupiah
+  function terbilang(n) {
+    const satuan = [
+      '',
+      'satu',
+      'dua',
+      'tiga',
+      'empat',
+      'lima',
+      'enam',
+      'tujuh',
+      'delapan',
+      'sembilan',
+      'sepuluh',
+      'sebelas',
+    ]
+    n = Math.floor(n)
+    if (n < 12) return satuan[n]
+    if (n < 20) return terbilang(n - 10) + ' belas'
+    if (n < 100)
+      return terbilang(Math.floor(n / 10)) + ' puluh ' + terbilang(n % 10)
+    if (n < 200) return 'seratus ' + terbilang(n - 100)
+    if (n < 1000)
+      return terbilang(Math.floor(n / 100)) + ' ratus ' + terbilang(n % 100)
+    if (n < 2000) return 'seribu ' + terbilang(n - 1000)
+    if (n < 1000000)
+      return terbilang(Math.floor(n / 1000)) + ' ribu ' + terbilang(n % 1000)
+    if (n < 1000000000)
+      return (
+        terbilang(Math.floor(n / 1000000)) + ' juta ' + terbilang(n % 1000000)
+      )
+    if (n < 1000000000000)
+      return (
+        terbilang(Math.floor(n / 1000000000)) +
+        ' miliar ' +
+        terbilang(n % 1000000000)
+      )
+    if (n < 1000000000000000)
+      return (
+        terbilang(Math.floor(n / 1000000000000)) +
+        ' triliun ' +
+        terbilang(n % 1000000000000)
+      )
+    return ''
+  }
+
+  // computed untuk hasil terbilang nominal
+  const nominalTerbilang = computed(() => {
+    if (!nominal.value) return ''
+    return (
+      terbilang(nominal.value)
+        .replace(/\s+/g, ' ')
+        .replace(/^\s+|\s+$/g, '')
+        .replace(/ +/g, ' ')
+        .replace(/^\w/, (c) => c.toUpperCase()) + ' rupiah'
+    )
+  })
 </script>
 
 <template>
@@ -135,23 +206,24 @@
               <p>:</p>
             </div>
             <div>
-              Empat juta sembilan ratus dua ribu delapan ratus lima belas rupiah
+              {{ nominalTerbilang }}
             </div>
             <div class="flex justify-between pr-1">
               <p>Untuk pembayaran</p>
               <p>:</p>
             </div>
             <div>
-              {{ jenisPengadaanCapital }} {{ item.kuantum }} sesuai dengan PO/{{
-                item.no_preorder
-              }}
-              Tahun {{ tahunPengadaan }}
+              {{ jenisPengadaanCapital }}
+              {{ formatRupiah(angkaSaja(item.kuantum)) }} LITER sesuai dengan
+              PO/{{ item.no_preorder }} Tahun {{ tahunPengadaan }}
             </div>
 
             <div class="col-start-2 flex flex-col">
               <div class="flex justify-between">
                 <div>Kuantum</div>
-                <div>{{ item.jumlah_pembayaran }}</div>
+                <div>
+                  {{ formatRupiah(angkaSaja(item.jumlah_pembayaran)) }}
+                </div>
               </div>
               <div class="flex justify-between">
                 <div>Harga</div>
@@ -168,14 +240,12 @@
                 <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
                 <div>{{ formatRupiah(dpp) }}</div>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between" v-if="ppnTotal !== 0">
                 <div>PPN 12%</div>
-                <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
                 <div>{{ formatRupiah(ppnTotal) }}</div>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between" v-if="pphTotal !== 0">
                 <div>PPH 22</div>
-                <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
                 <div>{{ formatRupiah(pphTotal) }}</div>
               </div>
               <div class="flex justify-between font-bold">

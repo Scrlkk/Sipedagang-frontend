@@ -211,22 +211,29 @@
   function handleBeforeUnload(event) {
     // Cek apakah ada perubahan yang belum disimpan
     if (hasUnsavedChanges.value) {
-      const message = 'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
+      const message =
+        'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman?'
       event.returnValue = message
       return message
     }
   }
 
-  // Method untuk cek perubahan yang belum disimpan
-  function checkUnsavedChanges() {
-    // Implementasi logika untuk mengecek perubahan
-    // Contoh sederhana:
-    return formRef.value && formRef.value.isFormDirty
+  function handleLeft() {
+    // Jika ada perubahan yang belum disimpan, tampilkan konfirmasi
+    if (hasUnsavedChanges.value && !bypassConfirmation.value) {
+      confirmLeave().then((confirmed) => {
+        if (confirmed) {
+          router.push('/superadmin/riwayat')
+        }
+      })
+    } else {
+      router.push('/superadmin/riwayat')
+    }
   }
 
-  computed(() => {
-    hasUnsavedChanges.value = checkUnsavedChanges()
-  })
+  function handleFormChanged(isDirty) {
+    hasUnsavedChanges.value = isDirty
+  }
 </script>
 
 <template>

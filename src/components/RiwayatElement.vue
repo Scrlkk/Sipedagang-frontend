@@ -97,20 +97,34 @@
     if (!str) return 'Unknown'
     return toTitleCase(str)
   })
+
+  const formatKuantum = (value) => {
+    if (!value || value === 'N/A') {
+      return value // Jika tidak ada nilai atau 'N/A', kembalikan apa adanya
+    }
+
+    const stringValue = String(value)
+    const parts = stringValue.split(' ') // Memisahkan angka dan satuan, misal: "600000 LITER" -> ["600000", "LITER"]
+
+    const numberPart = parts[0]
+    const unitPart = parts.slice(1).join(' ') // Cek apakah bagian pertama adalah angka
+
+    if (isNaN(numberPart)) {
+      return value // Jika bukan angka, kembalikan nilai asli
+    } // Format bagian angka dengan titik pemisah ribuan
+
+    const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.') // Gabungkan kembali dengan satuannya (jika ada)
+
+    return unitPart ? `${formattedNumber} ${unitPart}` : formattedNumber
+  }
 </script>
 
-<template>  <tr class="border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50">
-    <!-- Jenis Pengadaan -->
-    <td class="px-2 lg:px-3 py-2 lg:py-3 text-left">
-      <div
-        class="truncate text-xs lg:text-sm"
-        :title="jenisPengadaanFormatted"
-      >
-        {{ jenisPengadaanFormatted }}
-      </div>
-    </td>
+<template>
+  <tr
+    class="border-b border-[#E4E7EC] cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50"
+  >
     <!-- No Preorder -->
-    <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
+    <td class="px-2 lg:px-3 py-2 lg:py-3 text-center">
       <div
         class="truncate text-xs lg:text-sm"
         :title="item.no_preorder || item.noPreorder || '-'"
@@ -118,39 +132,37 @@
         {{ item.no_preorder || item.noPreorder || '-' }}
       </div>
     </td>
-    <!-- Supplier -->
+    <!-- Perusahaan -->
     <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
-      <div
-        class="truncate text-xs lg:text-sm"
-        :title="supplierFormatted"
-      >
-        {{ supplierFormatted }}
+      <div class="truncate text-xs lg:text-sm" :title="perusahaanFormatted">
+        {{ perusahaanFormatted }}
       </div>
     </td>
-    <!-- Perusahaan -->
-    <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">      <div
-        class="truncate text-xs lg:text-sm"
-        :title="perusahaanFormatted"
-      >
-        {{ perusahaanFormatted }}
+    <!-- Supplier -->
+    <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
+      <div class="truncate text-xs lg:text-sm" :title="supplierFormatted">
+        {{ supplierFormatted }}
       </div>
     </td>
     <!-- Admin/User -->
     <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
-      <div
-        class="truncate text-xs lg:text-sm"
-        :title="userFormatted"
-      >
+      <div class="truncate text-xs lg:text-sm" :title="userFormatted">
         {{ userFormatted }}
+      </div>
+    </td>
+    <!-- Jenis Pengadaan -->
+    <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
+      <div class="truncate text-xs lg:text-sm" :title="jenisPengadaanFormatted">
+        {{ jenisPengadaanFormatted }}
       </div>
     </td>
     <!-- Kuantum -->
     <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
       <div
         class="truncate text-xs lg:text-sm"
-        :title="item.kuantum || '-'"
+        :title="formatKuantum(item.kuantum || '-')"
       >
-        {{ item.kuantum || '-' }}
+        {{ formatKuantum(item.kuantum || '-') }}
       </div>
     </td>
     <!-- Tanggal -->
@@ -161,57 +173,85 @@
       >
         {{ formatDate(item.tanggal_pengadaan || item.tanggal) }}
       </div>
-    </td>    <!-- Action Buttons -->
+    </td>
+    <!-- Action Buttons -->
     <td class="px-1 lg:px-2 py-2 lg:py-3 text-center">
       <div class="flex space-x-1 justify-center items-center">
         <!-- Print Button -->
         <button
           @click="openPrintPreview"
-          class="cursor-pointer text-[#2B79EF] hover:text-[#1E5FCC] transition-all duration-200 p-1.5 rounded-full hover:bg-blue-50"
+          class="cursor-pointer text-[#2B79EF] hover:text-white transition-all duration-200 p-1.5 rounded-full hover:bg-[#2B79EF] group"
           title="Cetak Dokumen"
         >
           <svg
-            width="14"
-            height="14"
-            class="lg:w-[16px] lg:h-[16px]"
-            viewBox="0 0 24 24"
-            fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"
+            fill="white"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            width="18"
+            height="18"
+            class="group-hover:fill-white transition-all"
           >
-            <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6.75 3.75A2.25 2.25 0 0 0 4.5 6v3.75m15 0V6a2.25 2.25 0 0 0-2.25-2.25h-9m11.25 6V18a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 18V9.75m15 0H4.5m3 6h9m-6 3h3"
+            />
           </svg>
-        </button>        <!-- Edit Button -->
+        </button>
+
+        <!-- Edit Button -->
         <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
           <button
-            class="cursor-pointer text-[#9BA1AA] hover:text-[#6B7280] transition-all duration-200 p-1.5 rounded-full hover:bg-gray-50"
+            class="cursor-pointer text-[#9BA1AA] hover:text-white transition-all duration-200 p-1.5 rounded-full hover:bg-[#6B7280] group"
             title="Edit Data"
           >
             <svg
-              width="14"
-              height="14"
-              class="lg:w-[16px] lg:h-[16px]"
-              viewBox="0 0 24 24"
-              fill="currentColor"
               xmlns="http://www.w3.org/2000/svg"
+              fill="white"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              width="18"
+              height="18"
+              class="group-hover:fill-white transition-all"
             >
-              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182L7.5 19.212l-4 1 1-4 13.362-13.725z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 6.75l-1.086-1.086a2.25 2.25 0 0 0-3.182 0l-9.193 9.193a.75.75 0 0 0-.22.53v2.25a.75.75 0 0 0 .75.75h2.25a.75.75 0 0 0 .53-.22l9.193-9.193a2.25 2.25 0 0 0 0-3.182z"
+              />
             </svg>
           </button>
-        </RouterLink>        <!-- Delete Button -->
+        </RouterLink>
+
+        <!-- Delete Button -->
         <button
           @click="handleDelete"
-          class="cursor-pointer text-[#F44336] hover:text-[#D32F2F] transition-all duration-200 p-1.5 rounded-full hover:bg-red-50"
+          class="cursor-pointer text-[#F44336] hover:text-white transition-all duration-200 p-1.5 rounded-full hover:bg-[#F44336] group"
           title="Hapus Data"
         >
           <svg
-            width="14"
-            height="14"
-            class="lg:w-[16px] lg:h-[16px]"
-            viewBox="0 0 24 24"
-            fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"
+            fill="white"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            width="18"
+            height="18"
+            class="group-hover:fill-white transition-all"
           >
-            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 7.5V19.5A2.25 2.25 0 0 0 8.25 21.75h7.5A2.25 2.25 0 0 0 18 19.5V7.5m-9 0V6.75A2.25 2.25 0 0 1 11.25 4.5h1.5A2.25 2.25 0 0 1 15 6.75V7.5m-9 0h12"
+            />
           </svg>
         </button>
       </div>

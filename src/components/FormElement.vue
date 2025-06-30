@@ -537,7 +537,16 @@
     }
   }
 
+  function formatAngkaRibuan(val) {
+    if (val === null || val === undefined || val === '') return ''
+    const num = val.toString().replace(/\D/g, '')
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  }
 
+  function unformatAngka(val) {
+    if (!val) return ''
+    return val.toString().replace(/\./g, '')
+  }
 
   function clearForm() {
     // ✅ Clear search dan data pemohon
@@ -890,10 +899,8 @@
   <section
     class="flex flex-col gap-4 mt-4 sm:mt-6 overflow-y-auto w-full h-full pb-3 px-2 sm:px-0 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
   >
-    <!-- DATA PEMOHON -->
     <div class="font-bold text-lg sm:text-xl">Data Pemohon</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <!-- ✅ Search Nama Perusahaan -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -901,7 +908,7 @@
           for="search-company"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Nama Perusahaan <span class="text-red-500">*</span>
+          Nama Perusahaan <span class="text-red-500">*</span>  
         </label>
         <div class="relative w-full company-search-container">
           <input
@@ -915,8 +922,6 @@
             @blur="handleBlur"
             required
           />
-
-          <!-- Search/Loading icon -->
           <div
             v-if="!selectedCompany"
             class="absolute inset-y-0 right-7.5 flex items-center pointer-events-none"
@@ -935,7 +940,6 @@
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-
             <svg
               v-else
               class="animate-spin h-4 w-4 text-gray-400"
@@ -958,8 +962,6 @@
               />
             </svg>
           </div>
-
-          <!-- Clear button -->
           <button
             v-if="selectedCompany"
             type="button"
@@ -980,8 +982,6 @@
               />
             </svg>
           </button>
-
-          <!-- Dropdown Results -->
           <div
             v-if="showDropdown && companyResults.length > 0"
             class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
@@ -993,15 +993,13 @@
               class="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
             >
               <div class="font-medium text-sm text-gray-900">
-                {{ company.nama_perusahaan }}
+                {{ company.nama_perusahaan }}  
               </div>
               <div class="text-xs text-gray-500 mt-1">
-                {{ company.nama_suplier }} • {{ company.jenis_bank }}
+                {{ company.nama_suplier }} • {{ company.jenis_bank }}  
               </div>
             </div>
           </div>
-
-          <!-- No results -->
           <div
             v-if="
               showDropdown &&
@@ -1012,10 +1010,8 @@
             "
             class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm"
           >
-            Tidak ada perusahaan ditemukan untuk "{{ searchCompany }}"
+            Tidak ada perusahaan ditemukan untuk "{{ searchCompany }}"    
           </div>
-
-          <!-- Hint text -->
           <div
             v-if="
               showDropdown &&
@@ -1025,12 +1021,10 @@
             "
             class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm"
           >
-            Ketik minimal 2 karakter untuk mencari...
+            Ketik minimal 2 karakter untuk mencari...    
           </div>
         </div>
       </div>
-
-      <!-- ✅ Fields yang muncul setelah memilih perusahaan -->
       <template v-if="selectedCompany">
         <div
           class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
@@ -1051,7 +1045,6 @@
             required
           />
         </div>
-
         <div
           class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
         >
@@ -1059,7 +1052,7 @@
             for="jenis-bank"
             class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >
-            Jenis Bank <span class="text-red-500">*</span>
+            Jenis Bank <span class="text-red-500">*</span>    
           </label>
           <input
             type="text"
@@ -1071,7 +1064,6 @@
             required
           />
         </div>
-
         <div
           class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
         >
@@ -1091,7 +1083,6 @@
             required
           />
         </div>
-
         <div
           class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
         >
@@ -1099,19 +1090,18 @@
             for="atasnama-rekening"
             class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
           >
-            Atas Nama Rekening <span class="text-red-500">*</span>
+            Atas Nama Rekening <span class="text-red-500">*</span>      
           </label>
           <input
             type="text"
             id="atasnama-rekening"
-            class="border-[2.2px] border-green-200 bg-green-50 rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base cursor-not-allowed text-green-700 font-medium"
+            class="border-[2.2px] border-green-200 bg-green-50 rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-smsm:text-base cursor-not-allowed text-green-700 font-medium"
             v-model="atasnamaRekening"
             readonly
             disabled
             required
           />
         </div>
-
         <div
           class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700"
         >
@@ -1135,12 +1125,10 @@
           </div>
           <div class="mt-1 text-xs">
             Data supplier, bank, dan rekening telah diambil dari database
-            berdasarkan perusahaan yang dipilih.
+            berdasarkan perusahaan yang dipilih.    
           </div>
         </div>
       </template>
-
-      <!-- ✅ Pesan instruksi jika belum ada yang dipilih -->
       <div
         v-else-if="!selectedCompany && searchCompany.length === 0"
         class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center text-sm text-gray-500"
@@ -1163,15 +1151,12 @@
         </div>
         <p>
           Ketik nama perusahaan di kolom pencarian untuk menampilkan dan mengisi
-          data pemohon secara otomatis.
+            data pemohon secara otomatis.  
         </p>
       </div>
     </div>
-
-    <!-- DETAIL PURCHASING ORDER -->
     <div class="font-bold text-lg sm:text-xl mt-4">Detail Purchasing Order</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <!-- Nomor PO -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1179,7 +1164,7 @@
           for="nomor-po"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Nomor PO <span class="text-red-500">*</span>
+          Nomor PO <span class="text-red-500">*</span>  
         </label>
         <input
           type="text"
@@ -1190,7 +1175,6 @@
           required
         />
       </div>
-
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1208,8 +1192,6 @@
           required
         />
       </div>
-
-      <!-- ✅ Search Jenis Pengadaan dengan Autocomplete -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1217,7 +1199,7 @@
           for="search-jenis-pengadaan"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Jenis Pengadaan <span class="text-red-500">*</span>
+          Jenis Pengadaan <span class="text-red-500">*</span>  
         </label>
         <div class="relative w-full jenis-pengadaan-search-container">
           <input
@@ -1231,8 +1213,6 @@
             @blur="handleJenisPengadaanBlur"
             required
           />
-
-          <!-- Search/Loading icon -->
           <div
             v-if="!selectedJenisPengadaan"
             class="absolute inset-y-0 right-7.5 flex items-center pointer-events-none"
@@ -1251,7 +1231,6 @@
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-
             <svg
               v-else
               class="animate-spin h-4 w-4 text-gray-400"
@@ -1274,8 +1253,6 @@
               />
             </svg>
           </div>
-
-          <!-- Clear button -->
           <button
             v-if="selectedJenisPengadaan || searchJenisPengadaan"
             type="button"
@@ -1296,15 +1273,12 @@
               />
             </svg>
           </button>
-
-          <!-- Dropdown Results -->
           <div
             v-if="
               showJenisPengadaanDropdown && jenisPengadaanResults.length > 0
             "
             class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
           >
-            <!-- ✅ NEW: Loading state -->
             <div
               v-if="isSearchingJenisPengadaan"
               class="px-4 py-3 text-center text-gray-500 text-sm"
@@ -1330,11 +1304,9 @@
                     d="M4 12a8 8 0 118-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Memuat jenis pengadaan...
+                Memuat jenis pengadaan...  
               </div>
             </div>
-
-            <!-- ✅ Results list -->
             <div v-else>
               <div
                 v-for="(jenisObj, index) in jenisPengadaanResults"
@@ -1359,6 +1331,7 @@
                     />
                   </svg>
                   {{ jenisObj.jenis_pengadaan_barang }}
+
                   <span
                     class="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded"
                   >
@@ -1368,8 +1341,6 @@
               </div>
             </div>
           </div>
-
-          <!-- ✅ MODIFIED: No results - hanya tampil saat search dengan query -->
           <div
             v-if="
               showJenisPengadaanDropdown &&
@@ -1382,10 +1353,9 @@
           >
             Tidak ada jenis pengadaan ditemukan untuk "{{
               searchJenisPengadaan
-            }}"
+            }}"    
           </div>
 
-          <!-- ✅ NEW: Empty state ketika tidak ada data sama sekali -->
           <div
             v-if="
               showJenisPengadaanDropdown &&
@@ -1410,12 +1380,10 @@
                 />
               </svg>
             </div>
-            Belum ada data pengaturan pengadaan tersedia
+            Belum ada data pengaturan pengadaan tersedia    
           </div>
         </div>
       </div>
-
-      <!-- ✅ Info satuan jika ada jenis pengadaan terpilih -->
       <div
         v-if="selectedJenisPengadaan"
         class="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700"
@@ -1435,15 +1403,15 @@
             />
           </svg>
           <span class="font-medium">
-            Satuan otomatis diatur ke: {{ selectedJenisPengadaan.satuan }}
+            Satuan otomatis diatur ke:
+            {{ selectedJenisPengadaan.satuan }}    
           </span>
         </div>
         <div class="mt-1 text-xs">
           Semua satuan dalam form ini akan mengikuti satuan dari jenis pengadaan
-          yang dipilih.
+            yang dipilih.  
         </div>
       </div>
-
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1451,21 +1419,22 @@
           for="kuantum"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Kuantum <span class="text-red-500">*</span>
+          Kuantum <span class="text-red-500">*</span>  
         </label>
         <div class="relative w-full">
           <input
-            type="number"
+            type="text"
             id="kuantum"
             placeholder="Masukkan kuantum"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            v-model="kuantum"
+            :value="formatAngkaRibuan(kuantum)"
+            @input="kuantum = unformatAngka($event.target.value)"
+            inputmode="numeric"
             required
           />
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
           >
-            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
@@ -1482,11 +1451,10 @@
         </div>
       </div>
     </div>
-
-    <!-- DATA IN -->
     <div class="font-bold text-lg sm:text-xl mt-4 flex gap-x-2 items-center">
       <div>
-        Data IN <span class="text-red-500 text-base sm:text-base">*</span>
+        Data IN
+        <span class="text-red-500 text-base sm:text-base">*</span>
       </div>
     </div>
     <div class="flex flex-col gap-4 sm:gap-6">
@@ -1495,13 +1463,12 @@
         :key="idx"
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-x-3"
       >
-        <!-- Nomor IN manual -->
         <input
-          type="number"
+          type="text"
           v-model="row.no_in"
-          min="1"
           class="w-full sm:w-20 md:w-24 h-10 sm:h-12 border-[2.2px] border-[#D9D9D9] rounded-lg px-2 text-center text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           placeholder="No"
+          inputmode="numeric"
           required
         />
         <input
@@ -1512,16 +1479,17 @@
         />
         <div class="relative w-full">
           <input
-            type="number"
-            v-model="row.jumlah"
+            type="text"
+            :value="formatAngkaRibuan(row.jumlah)"
+            @input="row.jumlah = unformatAngka($event.target.value)"
             placeholder="Masukkan jumlah"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            inputmode="numeric"
             required
           />
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
           >
-            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
@@ -1559,17 +1527,15 @@
           </svg>
         </button>
       </div>
-
       <div class="flex justify-center w-full">
         <button
           type="button"
           class="mt-2 px-3 sm:px-4 py-2 hover:bg-green-500 text-white rounded bg-green-600 transition-all duration-200 ease-in-out w-fit text-sm sm:text-base"
           @click="addDataInRow"
         >
-          + Tambah Data IN
+          + Tambah Data IN  
         </button>
       </div>
-
       <div
         v-if="dataInList.length >= 2"
         class="text-gray-500 text-center text-sm"
@@ -1577,11 +1543,8 @@
         Total {{ dataInList.length }} baris Data IN
       </div>
     </div>
-
-    <!-- ✅ INFORMASI PEMBAYARAN - TETAP ADA -->
     <div class="font-bold text-lg sm:text-xl mt-4">Informasi Pembayaran</div>
     <div class="flex flex-col gap-4 sm:gap-6">
-      <!-- ✅ JUMLAH PEMBAYARAN - TETAP ADA -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1589,13 +1552,13 @@
           for="jumlah-pembayaran"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Jumlah Pembayaran
+          Jumlah Pembayaran  
         </label>
         <div class="relative w-full">
           <input
             type="text"
             id="jumlah-pembayaran"
-            :value="jumlahPembayaran"
+            :value="formatAngkaRibuan(jumlahPembayaran)"
             readonly
             class="border-[2.2px] border-[#E5E5E5] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base bg-gray-50 cursor-not-allowed"
             placeholder="Akan otomatis terhitung dari Data IN"
@@ -1603,7 +1566,6 @@
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#E5E5E5] my-0.5 pl-2"
           >
-            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="
@@ -1619,8 +1581,6 @@
           </div>
         </div>
       </div>
-
-      <!-- ✅ ADD: JUMLAH SPP - YANG HILANG -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
       >
@@ -1628,20 +1588,22 @@
           for="jumlah-spp"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Jumlah SPP <span class="text-gray-500">(Opsional)</span>
+          Jumlah SPP <span class="text-gray-500">(Opsional)</span>        
         </label>
         <div class="relative w-full">
           <input
-            type="number"
+            _
+            type="text"
             id="jumlah-spp"
             placeholder="Masukkan jumlah SPP"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            v-model="jumlahSPP"
+            :value="formatAngkaRibuan(jumlahSPP)"
+            @input="jumlahSPP = unformatAngka($event.target.value)"
+            inputmode="numeric"
           />
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
           >
-            <!-- ✅ Tampilkan placeholder jika belum ada satuan -->
             <span
               class="text-center text-sm sm:text-base px-1 sm:px-2.5 py-1 min-w-[60px] font-medium"
               :class="

@@ -777,49 +777,9 @@
       </div>
 
       <!-- MAIN CONTENT -->
-      <div
-        class="flex-1 overflow-y-auto bg-gray-50 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
-      >
+      <div class="flex-1bg-gray-50">
         <router-view />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-  /* Custom scrollbar for sidebar */
-  .overflow-y-auto::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .overflow-y-auto::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: rgba(156, 163, 175, 0.3);
-    border-radius: 2px;
-  }
-
-  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: rgba(156, 163, 175, 0.5);
-  }
-
-  /* Smooth transitions for all interactive elements */
-  * {
-    transition-property:
-      transform, background-color, border-color, text-decoration-color, fill,
-      stroke, opacity, box-shadow, filter, backdrop-filter;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* ✅ ENHANCED: Shine effect animation */
-  .group:hover .group-hover\:translate-x-\[100\%\] {
-    transform: translateX(100%);
-  }
-
-  /* ✅ ENHANCED: Scale animation for profile photo */
-  .group:hover .group-hover\:scale-105 {
-    transform: scale(1.05);
-  }
-</style>

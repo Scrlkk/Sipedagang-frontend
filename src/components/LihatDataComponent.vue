@@ -83,19 +83,19 @@
   // ✅ Dynamic positioning untuk dropdown
   const getDropdownPosition = (ref, isMobile = false) => {
     if (!ref?.value) return 'bottom'
-    
+
     const rect = ref.value.getBoundingClientRect()
     const viewportHeight = window.innerHeight
     const dropdownHeight = isMobile ? 280 : 350 // Reduced mobile dropdown height
-    
+
     // Check if there's enough space below
     const spaceBelow = viewportHeight - rect.bottom
-    
+
     // For mobile, prefer bottom positioning unless very little space
     if (isMobile) {
       return spaceBelow < 200 && rect.top > 250 ? 'top' : 'bottom'
     }
-    
+
     if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
       return 'top'
     }
@@ -200,6 +200,26 @@
     }
   }
 
+  const formatKuantum = (value) => {
+    if (!value || value === 'N/A') {
+      return value // Jika tidak ada nilai atau 'N/A', kembalikan apa adanya
+    }
+
+    const stringValue = String(value)
+    const parts = stringValue.split(' ') // Memisahkan angka dan satuan, misal: "600000 LITER" -> ["600000", "LITER"]
+
+    const numberPart = parts[0]
+    const unitPart = parts.slice(1).join(' ') // Cek apakah bagian pertama adalah angka
+
+    if (isNaN(numberPart)) {
+      return value // Jika bukan angka, kembalikan nilai asli
+    } // Format bagian angka dengan titik pemisah ribuan
+
+    const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.') // Gabungkan kembali dengan satuannya (jika ada)
+
+    return unitPart ? `${formattedNumber} ${unitPart}` : formattedNumber
+  }
+
   // Event handlers...
   const goBack = () => {
     emit('back')
@@ -277,7 +297,9 @@
       class="bg-white rounded-lg shadow-md border border-gray-200 overflow-visible"
     >
       <!-- Simple Header -->
-      <div class="bg-blue-600 p-2 sm:p-4 rounded-b-lg relative overflow-visible">
+      <div
+        class="bg-blue-600 p-2 sm:p-4 rounded-t-lg relative overflow-visible"
+      >
         <!-- Mobile Back Button -->
         <div class="flex sm:hidden mb-2">
           <router-link
@@ -394,7 +416,8 @@
                 class="inline-flex items-center px-3 py-1 bg-white/20 text-white text-xs rounded-full"
               >
                 <span v-if="tanggalAwal && tanggalAkhir">
-                  {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
+                  {{ formatDateDisplay(tanggalAwal) }} -
+                  {{ formatDateDisplay(tanggalAkhir) }}
                 </span>
                 <span v-else-if="tanggalAwal">
                   Dari {{ formatDateDisplay(tanggalAwal) }}
@@ -427,7 +450,7 @@
                 {{ totalItems }} hasil
               </span>
             </div>
-            
+
             <!-- Search -->
             <div class="relative">
               <input
@@ -500,7 +523,8 @@
                 <span class="whitespace-nowrap flex-1 text-left min-w-0">
                   <span v-if="hasDateFilter" class="font-medium truncate block">
                     <span v-if="tanggalAwal && tanggalAkhir">
-                      {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
+                      {{ formatDateDisplay(tanggalAwal) }} -
+                      {{ formatDateDisplay(tanggalAkhir) }}
                     </span>
                     <span v-else-if="tanggalAwal">
                       Dari {{ formatDateDisplay(tanggalAwal) }}
@@ -535,16 +559,26 @@
                 @click.stop
                 class="fixed bg-white border border-gray-200 rounded-lg shadow-2xl w-80 p-4"
                 :class="{
-                  'bottom-full mb-2': getDropdownPosition(datePickerDesktopRef) === 'top',
-                  'top-full mt-2': getDropdownPosition(datePickerDesktopRef) === 'bottom'
+                  'bottom-full mb-2':
+                    getDropdownPosition(datePickerDesktopRef) === 'top',
+                  'top-full mt-2':
+                    getDropdownPosition(datePickerDesktopRef) === 'bottom',
                 }"
                 :style="{
                   zIndex: 999999,
-                  left: datePickerDesktopRef ? `${datePickerDesktopRef.getBoundingClientRect().right - 320}px` : 'auto',
-                  top: getDropdownPosition(datePickerDesktopRef) === 'bottom' && datePickerDesktopRef ? 
-                       `${datePickerDesktopRef.getBoundingClientRect().bottom + 8}px` : 'auto',
-                  bottom: getDropdownPosition(datePickerDesktopRef) === 'top' && datePickerDesktopRef ? 
-                          `${window.innerHeight - datePickerDesktopRef.getBoundingClientRect().top + 8}px` : 'auto'
+                  left: datePickerDesktopRef
+                    ? `${datePickerDesktopRef.getBoundingClientRect().right - 320}px`
+                    : 'auto',
+                  top:
+                    getDropdownPosition(datePickerDesktopRef) === 'bottom' &&
+                    datePickerDesktopRef
+                      ? `${datePickerDesktopRef.getBoundingClientRect().bottom + 8}px`
+                      : 'auto',
+                  bottom:
+                    getDropdownPosition(datePickerDesktopRef) === 'top' &&
+                    datePickerDesktopRef
+                      ? `${window.innerHeight - datePickerDesktopRef.getBoundingClientRect().top + 8}px`
+                      : 'auto',
                 }"
               >
                 <div class="space-y-4">
@@ -584,7 +618,9 @@
                       <input
                         type="date"
                         :value="tanggalAwal"
-                        @input="$emit('update:tanggalAwal', $event.target.value)"
+                        @input="
+                          $emit('update:tanggalAwal', $event.target.value)
+                        "
                         @click.stop
                         class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       />
@@ -599,7 +635,9 @@
                         type="date"
                         :value="tanggalAkhir"
                         :min="tanggalAwal"
-                        @input="$emit('update:tanggalAkhir', $event.target.value)"
+                        @input="
+                          $emit('update:tanggalAkhir', $event.target.value)
+                        "
                         @click.stop
                         class="w-full border border-gray-300 rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       />
@@ -626,7 +664,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Mobile Date Filter Button -->
         <div class="sm:hidden mt-2">
           <div class="relative" ref="datePickerMobileRef">
@@ -657,7 +695,8 @@
               <span class="flex-1 text-left min-w-0">
                 <span v-if="hasDateFilter" class="font-medium truncate block">
                   <span v-if="tanggalAwal && tanggalAkhir">
-                    {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
+                    {{ formatDateDisplay(tanggalAwal) }} -
+                    {{ formatDateDisplay(tanggalAkhir) }}
                   </span>
                   <span v-else-if="tanggalAwal">
                     Dari {{ formatDateDisplay(tanggalAwal) }}
@@ -692,15 +731,17 @@
               @click.stop
               class="fixed bg-white border border-gray-200 rounded-lg shadow-2xl p-4"
               :class="{
-                'bottom-4': getDropdownPosition(datePickerMobileRef, true) === 'top',
-                'top-16': getDropdownPosition(datePickerMobileRef, true) === 'bottom'
+                'bottom-4':
+                  getDropdownPosition(datePickerMobileRef, true) === 'top',
+                'top-16':
+                  getDropdownPosition(datePickerMobileRef, true) === 'bottom',
               }"
               :style="{
                 zIndex: 999999,
                 left: '1rem',
                 right: '1rem',
                 maxHeight: '70vh',
-                overflowY: 'auto'
+                overflowY: 'auto',
               }"
             >
               <div class="space-y-3">
@@ -732,9 +773,7 @@
                 <!-- Date Inputs -->
                 <div class="space-y-3">
                   <div>
-                    <label
-                      class="block text-sm font-medium text-gray-700 mb-1"
-                    >
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
                       Tanggal Awal
                     </label>
                     <input
@@ -746,9 +785,7 @@
                     />
                   </div>
                   <div>
-                    <label
-                      class="block text-sm font-medium text-gray-700 mb-1"
-                    >
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
                       Tanggal Akhir
                     </label>
                     <input
@@ -816,7 +853,8 @@
             class="inline-flex items-center px-2 py-0.5 bg-white/20 text-white text-[10px] rounded-full md:px-3 md:py-1 md:text-xs"
           >
             <span v-if="tanggalAwal && tanggalAkhir">
-              {{ formatDateDisplay(tanggalAwal) }} - {{ formatDateDisplay(tanggalAkhir) }}
+              {{ formatDateDisplay(tanggalAwal) }} -
+              {{ formatDateDisplay(tanggalAkhir) }}
             </span>
             <span v-else-if="tanggalAwal">
               Dari {{ formatDateDisplay(tanggalAwal) }}
@@ -850,7 +888,7 @@
           </span>
         </div>
       </div>
-      
+
       <!-- Simple Table Container -->
       <div class="overflow-x-auto">
         <!-- Mobile Card View -->
@@ -985,7 +1023,9 @@
           </div>
 
           <!-- ✅ PageElement untuk Mobile -->
-          <div class="bg-white border-t border-gray-200 p-3 w-full sticky -bottom-4 left-0 z-20">
+          <div
+            class="bg-white border-t border-gray-200 p-3 w-full sticky -bottom-4 left-0 z-20"
+          >
             <div class="flex flex-col items-center gap-3">
               <div class="text-xs text-gray-600">
                 Menampilkan {{ (currentPage - 1) * itemsPerPage + 1 }} -
@@ -1003,99 +1043,108 @@
 
         <!-- Desktop Table View -->
         <div class="hidden md:block relative">
-          <!-- Scrollable Table Container -->
-          <div class="overflow-x-auto" style="max-height: 420px">
-            <table class="w-full min-w-max">
-              <!-- Simple Table Header -->
+          <div style="max-height: 420px; overflow-y: auto">
+            <table class="w-full table-fixed">
               <thead
                 class="bg-gray-50 border-b border-gray-200 sticky top-0 z-10"
               >
                 <tr>
                   <th
-                    class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[20%]"
                   >
                     No. Preorder
                   </th>
                   <th
-                    class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[14%]"
                   >
                     Perusahaan
                   </th>
                   <th
-                    class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[20%]"
                   >
                     Supplier
                   </th>
                   <th
-                    class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[12%]"
                   >
                     Jenis Pengadaan
                   </th>
                   <th
-                    class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[13%]"
                   >
                     Kuantum
                   </th>
                   <th
-                    class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[12%]"
                   >
                     Tanggal
                   </th>
                   <th
-                    class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase"
+                    class="px-2 py-2 text-center text-xs font-semibold text-gray-700 uppercase w-[10%]"
                   >
                     Aksi
                   </th>
                 </tr>
               </thead>
-              <!-- Table Body -->
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr
                   v-for="(item, index) in computedPaginatedData"
                   :key="index"
-                  class="hover:bg-gray-50"
+                  class="hover:bg-gray-50 text-center"
                 >
-                  <td class="px-4 py-3">
-                    <div class="text-sm text-gray-900">
+                  <td class="px-2 py-2">
+                    <div
+                      class="text-sm text-gray-900 truncate"
+                      :title="getItemValue(item, 'no_preorder')"
+                    >
                       {{ getItemValue(item, 'no_preorder') }}
                     </div>
                   </td>
-                  <td class="px-4 py-3">
-                    <div class="text-sm text-gray-900">
+                  <td class="px-2 py-2">
+                    <div
+                      class="text-sm text-gray-900 truncate"
+                      :title="getItemValue(item, 'perusahaan')"
+                    >
                       {{ getItemValue(item, 'perusahaan') }}
                     </div>
                   </td>
-                  <td class="px-4 py-3">
-                    <div class="text-sm text-gray-900">
+                  <td class="px-2 py-2">
+                    <div
+                      class="text-sm text-gray-900 truncate"
+                      :title="getItemValue(item, 'supplier')"
+                    >
                       {{ getItemValue(item, 'supplier') }}
                     </div>
                   </td>
-                  <td class="px-4 py-3">
-                    <div class="text-sm font-medium text-gray-900">
+                  <td class="px-2 py-2">
+                    <div
+                      class="text-sm font-medium text-gray-900 truncate"
+                      :title="getItemValue(item, 'jenis_pengadaan')"
+                    >
                       {{ getItemValue(item, 'jenis_pengadaan') }}
                     </div>
                   </td>
-                  <td class="px-4 py-3">
+                  <td class="px-2 py-2">
                     <span
-                      class="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                      class="inline-flex px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
                     >
-                      {{ getItemValue(item, 'kuantum') }}
+                      {{ formatKuantum(getItemValue(item, 'kuantum')) }}
                     </span>
                   </td>
-                  <td class="px-4 py-3">
+                  <td class="px-2 py-2">
                     <div class="text-sm text-gray-900">
                       {{ formatDate(getItemValue(item, 'tanggal')) }}
                     </div>
                   </td>
-                  <td class="px-4 py-3">
+                  <td class="px-2 py-2">
                     <div class="flex justify-center space-x-1">
                       <button
                         @click="printItem(item)"
-                        class="p-1.5 text-purple-600 bg-purple-100 rounded hover:bg-purple-200"
+                        class="p-1 text-purple-600 bg-purple-100 rounded hover:bg-purple-200"
                         title="Print"
                       >
                         <svg
-                          class="h-3 w-3"
+                          class="h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -1110,11 +1159,11 @@
                       </button>
                       <button
                         @click="editItem(item)"
-                        class="p-1.5 text-green-600 bg-green-100 rounded hover:bg-green-200"
+                        class="p-1 text-green-600 bg-green-100 rounded hover:bg-green-200"
                         title="Edit"
                       >
                         <svg
-                          class="h-3 w-3"
+                          class="h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -1129,11 +1178,11 @@
                       </button>
                       <button
                         @click="deleteItem(item)"
-                        class="p-1.5 text-red-600 bg-red-100 rounded hover:bg-red-200"
+                        class="p-1 text-red-600 bg-red-100 rounded hover:bg-red-200"
                         title="Delete"
                       >
                         <svg
-                          class="h-3 w-3"
+                          class="h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -1151,7 +1200,6 @@
                 </tr>
               </tbody>
             </table>
-            <!-- Empty State Desktop -->
             <div
               v-if="computedPaginatedData.length === 0"
               class="text-center py-12"
@@ -1167,13 +1215,12 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
+                />
               </svg>
               <p class="text-gray-500 text-lg font-medium">Tidak ada data</p>
               <p class="text-gray-400">Data yang dicari tidak ditemukan</p>
             </div>
           </div>
-          <!-- ✅ PageElement untuk Desktop -->
           <div
             class="bg-gray-50 border-t border-gray-200 p-4 w-full sticky bottom-0 left-0 z-20"
             style="box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03)"
@@ -1228,7 +1275,7 @@
     v-if="showDatePickerDesktop || showDatePickerMobile"
     class="fixed inset-0 bg-black/20"
     style="z-index: 999998"
-    @click="showDatePickerDesktop = false; showDatePickerMobile = false"
+    @click="((showDatePickerDesktop = false), (showDatePickerMobile = false))"
   ></div>
 </template>
 
@@ -1256,12 +1303,12 @@
   .focus\:ring-white\/50:focus {
     --tw-ring-color: rgba(255, 255, 255, 0.5);
   }
-  
+
   /* ✅ Ensure dropdown appears above everything */
   .relative {
     z-index: auto;
   }
-  
+
   /* ✅ Fix for mobile dropdown positioning */
   @media (max-width: 640px) {
     .fixed.inset-x-4 {
@@ -1269,13 +1316,13 @@
       right: 1rem !important;
       max-width: calc(100vw - 2rem) !important;
     }
-    
+
     /* Ensure dropdown inputs are touch-friendly */
-    input[type="date"] {
+    input[type='date'] {
       min-height: 44px;
     }
   }
-  
+
   /* ✅ Fix for very small screens */
   @media (max-width: 375px) {
     .fixed {

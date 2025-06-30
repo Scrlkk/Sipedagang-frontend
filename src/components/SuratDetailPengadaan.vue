@@ -60,6 +60,22 @@
     const str = props.item.jenis_pengadaan_barang || ''
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
   })
+
+  // Fungsi format angka dengan titik ribuan
+  function formatAngka(angka) {
+    if (!angka) return '0'
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  }
+
+  function splitAngkaSatuan(val) {
+    const str = (val || '').toString()
+    const angka = str.replace(/[^\d]/g, '')
+    const satuan = str.replace(/[\d\s.]/g, '')
+    return {
+      angka: angka ? formatAngka(angka) : '0',
+      satuan: satuan ? ' ' + satuan : '',
+    }
+  }
 </script>
 
 <template>
@@ -112,13 +128,16 @@
 
           <!-- KIRI -->
           <div>
-            : <span>{{ item.kuantum }}</span>
+            : <span>{{ splitAngkaSatuan(item.kuantum).angka }}</span
+            >{{ splitAngkaSatuan(item.kuantum).satuan }}
           </div>
           <div>
-            : <span>{{ item.jumlah_pembayaran }}</span>
+            : <span>{{ splitAngkaSatuan(item.jumlah_pembayaran).angka }}</span
+            >{{ splitAngkaSatuan(item.jumlah_pembayaran).satuan }}
           </div>
           <div>
-            : <span>{{ item.spp }}</span>
+            : <span>{{ splitAngkaSatuan(item.spp).angka }}</span
+            >{{ splitAngkaSatuan(item.spp).satuan }}
           </div>
         </div>
         <div>
@@ -134,7 +153,7 @@
             :datain="datain"
           />
           <div class="ml-[294.9px] mt-2">
-            Jumlah : {{ jumlah }}
+            Jumlah : {{ formatAngka(jumlah) }}
             {{
               (() => {
                 const first = dataInList[0]?.kuantum_in || ''

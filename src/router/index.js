@@ -18,6 +18,7 @@ import LihatDataAdmin from '../views/admin/LihatData.vue'
 import DataPemohonAdmin from '../views/admin/DataPemohon.vue'
 import LihatDataPemohonAdmin from '../views/admin/LihatDataPemohon.vue'
 import EditProfileAdmin from '../views/admin/EditProfile.vue'
+import EditFormData from '../views/admin/EditFormData.vue'
 
 // Super Admin
 import SuperAdminView from '@/views/superadmin/SuperAdminView.vue'
@@ -100,7 +101,7 @@ const router = createRouter({
         },
         {
           path: 'form-edit/:id',
-          component: FormAdmin,
+          component: EditFormData,
           name: 'EditPage',
           props: true,
           meta: { requiresAuth: true, role: 'admin' },
