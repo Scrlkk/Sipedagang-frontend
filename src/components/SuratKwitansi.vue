@@ -1,5 +1,4 @@
 <script setup>
-  import bulog from '@/assets/images/bulog.png'
   import { computed } from 'vue'
   import { useSettingPengadaanStore } from '@/stores/settingPengadaanStore'
 
@@ -30,8 +29,8 @@
 
   const tanggalSurat = computed(() => {
     if (!props.item?.tanggal_pengadaan) return ''
-    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
-    return `${parseInt(tanggal)} ${bulanIndo[parseInt(bulan)]} ${tahun}`
+    const [tahun, bulan] = props.item.tanggal_pengadaan.split('-')
+    return `${bulanIndo[parseInt(bulan)]} ${tahun}`
   })
 
   const jenisPengadaanCapital = computed(() => {
@@ -44,7 +43,6 @@
     return new Date(props.item.tanggal_pengadaan).getFullYear()
   })
 
-  // ✅ Cari setting berdasarkan jenis pengadaan untuk harga per satuan
   const settingPengadaan = computed(() => {
     if (
       !props.item?.jenis_pengadaan_barang ||
@@ -60,7 +58,6 @@
     )
   })
 
-  // ✅ Harga per satuan dari setting
   const hargaPerSatuan = computed(() => {
     if (settingPengadaan.value?.harga_per_satuan) {
       return parseFloat(settingPengadaan.value.harga_per_satuan)
@@ -68,7 +65,6 @@
     return 0
   })
 
-  // ✅ Gunakan nilai yang sudah dihitung dari backend
   const hargaSebelumPajak = computed(() => {
     return parseFloat(props.item?.harga_sebelum_pajak) || 0
   })
@@ -224,39 +220,50 @@
                 <div>Kuantum</div>
                 <div>
                   {{ formatRupiah(angkaSaja(item.jumlah_pembayaran)) }}
+                  <span class="lowercase">{{
+                    satuanSaja(item.jumlah_pembayaran)
+                  }}</span>
                 </div>
               </div>
               <div class="flex justify-between">
                 <div>Harga</div>
                 <!-- ✅ Gunakan harga per satuan dari setting -->
-                <div>{{ formatRupiah(hargaPerSatuan) }}</div>
+                <div>Rp. {{ formatRupiah(hargaPerSatuan) }},-</div>
               </div>
-              <div class="flex justify-between">
+              <div
+                class="flex justify-between"
+                v-if="ppnTotal !== 0 || pphTotal !== 0"
+              >
                 <div>Harga Sebelum Pajak</div>
                 <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
-                <div>{{ formatRupiah(hargaSebelumPajak) }}</div>
+                <div>Rp. {{ formatRupiah(hargaSebelumPajak) }},-</div>
               </div>
-              <div class="flex justify-between">
+              <div
+                class="flex justify-between"
+                v-if="ppnTotal !== 0 || pphTotal !== 0"
+              >
                 <div>DPP</div>
                 <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
-                <div>{{ formatRupiah(dpp) }}</div>
+                <div>Rp. {{ formatRupiah(dpp) }},-</div>
               </div>
               <div class="flex justify-between" v-if="ppnTotal !== 0">
                 <div>PPN 12%</div>
-                <div>{{ formatRupiah(ppnTotal) }}</div>
+                <div>Rp. {{ formatRupiah(ppnTotal) }},-</div>
               </div>
               <div class="flex justify-between" v-if="pphTotal !== 0">
                 <div>PPH 22</div>
-                <div>{{ formatRupiah(pphTotal) }}</div>
+                <div>Rp. {{ formatRupiah(pphTotal) }},-</div>
               </div>
               <div class="flex justify-between font-bold">
                 <div>Nominal</div>
                 <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
-                <div>{{ formatRupiah(nominal) }}</div>
+                <div>Rp. {{ formatRupiah(nominal) }},-</div>
               </div>
 
-              <div class="text-center text-[16px]">
-                <div>Surakarta, {{ tanggalSurat }}</div>
+              <div class="text-center text-[16px] pt-1">
+                <div>
+                  Surakarta, <span class="pl-2">{{ tanggalSurat }}</span>
+                </div>
 
                 <div class="mt-24">
                   <!-- ✅ Tampilkan nama supplier dari database -->

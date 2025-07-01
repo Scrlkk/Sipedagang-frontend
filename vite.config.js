@@ -17,13 +17,13 @@ export default defineConfig({
   build: {
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    
+
     // Enable source maps for debugging (optional)
     sourcemap: false,
-    
+
     // Ganti minifier dari terser ke esbuild (default dan lebih cepat)
     minify: 'esbuild',
-    
+
     rollupOptions: {
       output: {
         // Manual chunks configuration - hanya untuk vendor yang sudah terinstall
@@ -31,50 +31,54 @@ export default defineConfig({
           // Vendor chunks
           if (id.includes('node_modules')) {
             // Vue ecosystem
-            if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+            if (
+              id.includes('vue') ||
+              id.includes('vue-router') ||
+              id.includes('pinia')
+            ) {
               return 'vendor-vue'
             }
-            
+
             // HTTP clients
             if (id.includes('axios')) {
               return 'vendor-http'
             }
-            
+
             // Utilities
             if (id.includes('lodash') || id.includes('date-fns')) {
               return 'vendor-utils'
             }
-            
+
             // Other vendor libraries
             return 'vendor'
           }
-          
+
           // Application chunks berdasarkan path
           if (id.includes('/views/login/')) {
             return 'auth'
           }
-          
+
           if (id.includes('/views/admin/')) {
             return 'admin'
           }
-          
+
           if (id.includes('/views/superadmin/')) {
             return 'superadmin'
           }
-          
+
           if (id.includes('/layouts/')) {
             return 'layouts'
           }
-          
+
           if (id.includes('/stores/')) {
             return 'stores'
           }
-          
+
           if (id.includes('/components/')) {
             return 'components'
           }
         },
-        
+
         // Naming pattern for chunks
         chunkFileNames: (chunkInfo) => {
           const facadeModuleId = chunkInfo.facadeModuleId
@@ -91,34 +95,34 @@ export default defineConfig({
           }
           return 'assets/[name]-[hash].js'
         },
-        
+
         // Asset naming
         assetFileNames: 'assets/[name]-[hash].[ext]',
-        entryFileNames: 'assets/[name]-[hash].js'
-      }
-    }
+        entryFileNames: 'assets/[name]-[hash].js',
+      },
+    },
   },
-  
+
   // ESBuild options (alternative to terser)
   esbuild: {
-    drop: ['console', 'debugger']
+    drop: ['console', 'debugger'],
   },
-  
+
   // Optimization for development
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'pinia']
+    include: ['vue', 'vue-router', 'pinia'],
   },
-  
+
   // Server configuration for development
   server: {
     port: 5173,
     open: true,
-    cors: true
+    cors: true,
   },
-  
+
   // Preview configuration
   preview: {
     port: 8080,
-    open: true
-  }
+    open: true,
+  },
 })

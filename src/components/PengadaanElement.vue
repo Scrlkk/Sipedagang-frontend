@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch, onMounted, nextTick, computed } from 'vue' // ✅ 1. Import computed
+  import { ref, watch, onMounted, nextTick, computed } from 'vue'
   import { useSettingPengadaanStore } from '@/stores/settingPengadaanStore'
 
   const props = defineProps({
@@ -13,13 +13,14 @@
 
   const jenisPengadaanBarang = ref('')
   const satuan = ref('')
-  const hargaPerSatuanRaw = ref(null) // ✅ 2. Ref untuk angka mentah (raw number)
+  const hargaPerSatuanRaw = ref(null)
   const ppn = ref('0')
   const pph = ref('0')
+  const tanpaPajak = ref(false) // ✅ NEW: Add tanpa_pajak field
 
   const settingPengadaanStore = useSettingPengadaanStore()
 
-  // ✅ 3. Computed property untuk format tampilan
+  // ✅ Computed property untuk format tampilan
   const hargaPerSatuan = computed({
     get() {
       if (
@@ -43,9 +44,10 @@
     initialFormData.value = {
       jenisPengadaanBarang: jenisPengadaanBarang.value,
       satuan: satuan.value,
-      hargaPerSatuan: hargaPerSatuanRaw.value, // ✅ 4. Gunakan nilai mentah
+      hargaPerSatuan: hargaPerSatuanRaw.value,
       ppn: ppn.value,
       pph: pph.value,
+      tanpaPajak: tanpaPajak.value, // ✅ NEW: Include in initial data
     }
     hasChanges.value = false
     emit('form-changed', false)
@@ -55,9 +57,10 @@
     const currentData = {
       jenisPengadaanBarang: jenisPengadaanBarang.value,
       satuan: satuan.value,
-      hargaPerSatuan: hargaPerSatuanRaw.value, // ✅ 4. Gunakan nilai mentah
+      hargaPerSatuan: hargaPerSatuanRaw.value,
       ppn: ppn.value,
       pph: pph.value,
+      tanpaPajak: tanpaPajak.value, // ✅ NEW: Include in change detection
     }
 
     const hasFormChanges =
@@ -69,9 +72,10 @@
   function clearForm() {
     jenisPengadaanBarang.value = ''
     satuan.value = ''
-    hargaPerSatuanRaw.value = null // ✅ 4. Gunakan nilai mentah
+    hargaPerSatuanRaw.value = null
     ppn.value = '0'
     pph.value = '0'
+    tanpaPajak.value = false // ✅ NEW: Reset tanpa_pajak
     settingPengadaanStore.clearCurrentPengaturanPengadaan()
 
     nextTick(() => {
@@ -90,14 +94,14 @@
 
     jenisPengadaanBarang.value = data.jenis_pengadaan_barang || ''
     satuan.value = data.satuan || ''
-    // ✅ FIXED: Parse the incoming value to a clean number
     hargaPerSatuanRaw.value = data.harga_per_satuan
       ? parseFloat(data.harga_per_satuan)
       : null
     ppn.value =
-      data.ppn !== undefined && data.ppn !== null ? data.ppn.toString() : '0' // ✅ Default to "0" if no value
+      data.ppn !== undefined && data.ppn !== null ? data.ppn.toString() : '0'
     pph.value =
-      data.pph !== undefined && data.pph !== null ? data.pph.toString() : '0' // ✅ Default to "0" if no value
+      data.pph !== undefined && data.pph !== null ? data.pph.toString() : '0'
+    tanpaPajak.value = Boolean(data.tanpa_pajak) // ✅ NEW: Handle tanpa_pajak
 
     nextTick(() => {
       saveInitialData()
@@ -115,10 +119,11 @@
   function getFormData() {
     const formData = {
       jenis_pengadaan_barang: jenisPengadaanBarang.value,
-      satuan: satuan.value.toUpperCase(), // ✅ Convert to uppercase
-      harga_per_satuan: hargaPerSatuanRaw.value || 0, // ✅ 4. Gunakan nilai mentah
+      satuan: satuan.value.toUpperCase(),
+      harga_per_satuan: hargaPerSatuanRaw.value || 0,
       ppn: parseFloat(ppn.value) || 0,
       pph: parseFloat(pph.value) || 0,
+      tanpa_pajak: tanpaPajak.value, // ✅ NEW: Include tanpa_pajak
     }
 
     return formData
@@ -134,23 +139,35 @@
       hargaPerSatuanRaw.value === null ||
       hargaPerSatuanRaw.value === undefined
     ) {
-      // ✅ 4. Gunakan nilai mentah
       errors.push('Harga Per Satuan harus diisi')
     }
 
     // Validate numeric values
-    const priceValue = hargaPerSatuanRaw.value // ✅ 4. Gunakan nilai mentah
+    const priceValue = hargaPerSatuanRaw.value
     if (priceValue !== null && isNaN(priceValue)) {
       errors.push('Harga Per Satuan harus berupa angka')
     }
-    if (ppn.value && isNaN(parseFloat(ppn.value))) {
-      errors.push('PPN harus berupa angka')
-    }
-    if (pph.value && isNaN(parseFloat(pph.value))) {
-      errors.push('PPh harus berupa angka')
+
+    // ✅ NEW: Only validate PPN/PPH if tanpa_pajak is false
+    if (!tanpaPajak.value) {
+      if (ppn.value && isNaN(parseFloat(ppn.value))) {
+        errors.push('PPN harus berupa angka')
+      }
+      if (pph.value && isNaN(parseFloat(pph.value))) {
+        errors.push('PPh harus berupa angka')
+      }
     }
 
     return errors
+  }
+
+  // ✅ NEW: Handle tanpa_pajak checkbox change
+  const handleTanpaPajakChange = () => {
+    if (tanpaPajak.value) {
+      // If tanpa_pajak is checked, set PPN and PPH to 0
+      ppn.value = '0'
+      pph.value = '0'
+    }
   }
 
   async function submitForm() {
@@ -221,11 +238,16 @@
     }
   }
 
-  // ✅ UPDATED: Number input handlers for PPN and PPh (auto-clear "0" when typing)
+  // ✅ FIXED: Enhanced number input handlers
   const handleNumberInput = (event, field) => {
     let value = event.target.value
-    // Allow only numbers and decimal point (removed minus sign)
+    // Allow only numbers and decimal point
     value = value.replace(/[^0-9.]/g, '')
+
+    // ✅ FIXED: Remove leading zeros unless it's just "0" or "0."
+    if (value.length > 1 && value.startsWith('0') && !value.startsWith('0.')) {
+      value = value.substring(1)
+    }
 
     // ✅ If value becomes empty, default to "0"
     if (value === '') {
@@ -239,36 +261,86 @@
     }
   }
 
-  // ✅ NEW: Handle focus event to clear "0" when user starts typing
+  // ✅ FIXED: Enhanced focus handler to clear "0" and leading zeros
   const handleNumberFocus = (event, field) => {
-    if (field === 'ppn' && ppn.value === '0') {
-      ppn.value = ''
-      // Clear the input field
-      event.target.value = ''
-    } else if (field === 'pph' && pph.value === '0') {
-      pph.value = ''
-      // Clear the input field
+    const currentValue = event.target.value
+
+    // Clear if value is "0" or starts with "0" followed by numbers (like "012")
+    if (
+      currentValue === '0' ||
+      (currentValue.startsWith('0') &&
+        currentValue.length > 1 &&
+        !currentValue.startsWith('0.'))
+    ) {
+      if (field === 'ppn') {
+        ppn.value = ''
+      } else if (field === 'pph') {
+        pph.value = ''
+      }
       event.target.value = ''
     }
   }
 
+  // ✅ ENHANCED: Better keypress handler
   const handleNumberKeypress = (event) => {
     const char = String.fromCharCode(event.which)
-    // Allow: numbers (0-9), decimal point (.), backspace, delete, arrow keys, tab (removed minus sign)
+    const currentValue = event.target.value
+
+    // Allow: numbers (0-9), decimal point (.), backspace, delete, arrow keys, tab
     if (
       !/[0-9.]/.test(char) &&
       ![8, 9, 37, 38, 39, 40, 46].includes(event.keyCode)
     ) {
       event.preventDefault()
+      return
+    }
+
+    // Prevent multiple decimal points
+    if (char === '.' && currentValue.includes('.')) {
+      event.preventDefault()
+      return
+    }
+
+    // ✅ NEW: If current value is "0" and user types a number (not decimal), replace the "0"
+    if (currentValue === '0' && /[1-9]/.test(char)) {
+      event.preventDefault()
+      const field = event.target.id === 'ppn' ? 'ppn' : 'pph'
+      if (field === 'ppn') {
+        ppn.value = char
+      } else {
+        pph.value = char
+      }
+      event.target.value = char
     }
   }
 
-  // ✅ UPDATED: Handle number field blur to ensure default "0"
+  // ✅ UPDATED: Enhanced blur handler
   const handleNumberBlur = (field) => {
-    if (field === 'ppn' && (!ppn.value || ppn.value.trim() === '')) {
-      ppn.value = '0'
-    } else if (field === 'pph' && (!pph.value || pph.value.trim() === '')) {
-      pph.value = '0'
+    let value = field === 'ppn' ? ppn.value : pph.value
+
+    // If empty or just whitespace, set to "0"
+    if (!value || value.trim() === '') {
+      value = '0'
+    } else {
+      // Remove leading zeros (except for "0" or "0.something")
+      if (
+        value.length > 1 &&
+        value.startsWith('0') &&
+        !value.startsWith('0.')
+      ) {
+        value = value.replace(/^0+/, '') || '0'
+      }
+
+      // If it becomes empty after removing zeros, set to "0"
+      if (value === '') {
+        value = '0'
+      }
+    }
+
+    if (field === 'ppn') {
+      ppn.value = value
+    } else if (field === 'pph') {
+      pph.value = value
     }
   }
 
@@ -287,16 +359,15 @@
     submitForm,
     updateForm,
     populateForm,
-    settingPengadaanStore, // ✅ Expose the store reference
+    settingPengadaanStore,
     hasChanges,
     saveInitialData,
   })
 
-  // ✅ UPDATED: Watch with edit mode consideration
+  // ✅ UPDATED: Watch with tanpa_pajak included
   watch(
-    [jenisPengadaanBarang, satuan, hargaPerSatuanRaw, ppn, pph], // ✅ 4. Gunakan nilai mentah
+    [jenisPengadaanBarang, satuan, hargaPerSatuanRaw, ppn, pph, tanpaPajak],
     () => {
-      // Only check for changes after form is properly initialized
       if (Object.keys(initialFormData.value).length > 0) {
         checkForChanges()
       }
@@ -310,7 +381,6 @@
         saveInitialData()
       })
     }
-    // For edit mode, saveInitialData will be called from populateForm
   })
 </script>
 
@@ -390,6 +460,34 @@
         </div>
       </div>
 
+      <!-- ✅ NEW: Tanpa Pajak Checkbox -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="tanpa-pajak"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+        >
+          Tanpa Pajak
+        </label>
+        <div class="flex items-center gap-3 w-full">
+          <input
+            type="checkbox"
+            id="tanpa-pajak"
+            v-model="tanpaPajak"
+            @change="handleTanpaPajakChange"
+            class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded"
+          />
+          <label
+            for="tanpa-pajak"
+            class="text-sm sm:text-base text-gray-700 cursor-pointer"
+          >
+            Centang jika pengadaan ini tanpa pajak (PPN dan PPH akan diatur ke
+            0%)
+          </label>
+        </div>
+      </div>
+
       <!-- PPN -->
       <div
         class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
@@ -405,11 +503,13 @@
             type="text"
             id="ppn"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base font-mono"
+            :class="{ 'bg-gray-100 cursor-not-allowed': tanpaPajak }"
             v-model="ppn"
             @focus="handleNumberFocus($event, 'ppn')"
             @input="handleNumberInput($event, 'ppn')"
             @keypress="handleNumberKeypress"
             @blur="handleNumberBlur('ppn')"
+            :disabled="tanpaPajak"
             autocomplete="off"
             inputmode="decimal"
             pattern="[0-9.]*"
@@ -439,11 +539,13 @@
             type="text"
             id="pph"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base font-mono"
+            :class="{ 'bg-gray-100 cursor-not-allowed': tanpaPajak }"
             v-model="pph"
             @focus="handleNumberFocus($event, 'pph')"
             @input="handleNumberInput($event, 'pph')"
             @keypress="handleNumberKeypress"
             @blur="handleNumberBlur('pph')"
+            :disabled="tanpaPajak"
             autocomplete="off"
             inputmode="decimal"
             pattern="[0-9.]*"

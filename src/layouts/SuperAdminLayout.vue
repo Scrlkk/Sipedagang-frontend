@@ -777,7 +777,9 @@
       </div>
 
       <!-- MAIN CONTENT -->
-      <div class="flex-1bg-gray-50">
+      <div
+        class="flex-1 overflow-y-auto bg-gray-50 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-scrollbar:{display:none}]"
+      >
         <router-view />
       </div>
     </div>

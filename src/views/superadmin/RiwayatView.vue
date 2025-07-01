@@ -711,7 +711,7 @@
                 </button>
               </div>
 
-              <!-- ✅ Search result info di bawah search input untuk mobile -->
+              <!-- Search result info di bawah search input untuk mobile -->
               <div v-if="searchText">
                 <span
                   class="inline-flex items-center px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-md"
@@ -858,53 +858,73 @@
                       <div class="flex space-x-1 sm:space-x-2 ml-2">
                         <button
                           @click="openPrintPreview(item.id)"
-                          class="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors duration-200"
-                          title="Cetak"
+                          class="cursor-pointer text-[#2B79EF] hover:text-white transition-all duration-200 p-1.5 rounded-full hover:bg-[#2B79EF] group"
+                          title="Cetak Dokumen"
                         >
                           <svg
-                            width="16"
-                            height="16"
-                            class="sm:w-[18px] sm:h-[18px]"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="white"
                             viewBox="0 0 24 24"
-                            fill="currentColor"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            width="18"
+                            height="18"
+                            class="group-hover:fill-white transition-all"
                           >
                             <path
-                              d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M6.75 3.75A2.25 2.25 0 0 0 4.5 6v3.75m15 0V6a2.25 2.25 0 0 0-2.25-2.25h-9m11.25 6V18a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 18V9.75m15 0H4.5m3 6h9m-6 3h3"
                             />
                           </svg>
                         </button>
                         <RouterLink :to="`/superadmin/riwayat-edit/${item.id}`">
                           <button
-                            class="p-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors duration-200"
-                            title="Edit"
+                            class="cursor-pointer text-[#9BA1AA] hover:text-white transition-all duration-200 p-1.5 rounded-full hover:bg-[#6B7280] group"
+                            title="Edit Data"
                           >
                             <svg
-                              width="16"
-                              height="16"
-                              class="sm:w-[18px] sm:h-[18px]"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="white"
                               viewBox="0 0 24 24"
-                              fill="currentColor"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              width="18"
+                              height="18"
+                              class="group-hover:fill-white transition-all"
                             >
                               <path
-                                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182L7.5 19.212l-4 1 1-4 13.362-13.725z"
+                              />
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M19.5 6.75l-1.086-1.086a2.25 2.25 0 0 0-3.182 0l-9.193 9.193a.75.75 0 0 0-.22.53v2.25a.75.75 0 0 0 .75.75h2.25a.75.75 0 0 0 .53-.22l9.193-9.193a2.25 2.25 0 0 0 0-3.182z"
                               />
                             </svg>
                           </button>
                         </RouterLink>
                         <button
                           @click="handleDelete(item)"
-                          class="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors duration-200"
-                          title="Hapus"
+                          class="cursor-pointer text-[#F44336] hover:text-white transition-all duration-200 p-1.5 rounded-full hover:bg-[#F44336] group"
+                          title="Hapus Data"
                         >
                           <svg
-                            width="16"
-                            height="16"
-                            class="sm:w-[18px] sm:h-[18px]"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="white"
                             viewBox="0 0 24 24"
-                            fill="currentColor"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            width="18"
+                            height="18"
+                            class="group-hover:fill-white transition-all"
                           >
                             <path
-                              d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M6 7.5V19.5A2.25 2.25 0 0 0 8.25 21.75h7.5A2.25 2.25 0 0 0 18 19.5V7.5m-9 0V6.75A2.25 2.25 0 0 1 11.25 4.5h1.5A2.25 2.25 0 0 1 15 6.75V7.5m-9 0h12"
                             />
                           </svg>
                         </button>
