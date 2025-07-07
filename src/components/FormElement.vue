@@ -28,6 +28,7 @@
   const atasnamaRekening = ref('')
   const nomorPO = ref('')
   const tanggalPengadaan = ref('')
+  const tanggalPengajuan = ref('') // ✅ NEW: Add tanggal_pengajuan field
   const jenisPengadaan = ref('')
   const kuantum = ref('')
   const satuanKuantum = ref('')
@@ -365,6 +366,7 @@
       atasnamaRekening: atasnamaRekening.value,
       nomorPO: nomorPO.value,
       tanggalPengadaan: tanggalPengadaan.value,
+      tanggalPengajuan: tanggalPengajuan.value, // ✅ NEW: Include in initial data
       jenisPengadaan: jenisPengadaan.value,
       kuantum: kuantum.value,
       satuanKuantum: satuanKuantum.value,
@@ -388,6 +390,7 @@
       atasnamaRekening: atasnamaRekening.value,
       nomorPO: nomorPO.value,
       tanggalPengadaan: tanggalPengadaan.value,
+      tanggalPengajuan: tanggalPengajuan.value, // ✅ NEW: Include in change detection
       jenisPengadaan: jenisPengadaan.value,
       kuantum: kuantum.value,
       satuanKuantum: satuanKuantum.value,
@@ -404,7 +407,7 @@
     emit('form-changed', hasFormChanges)
   }
 
-  // ✅ MISSING: Add getFormData function
+  // ✅ UPDATED: Add getFormData function with tanggal_pengajuan
   const getFormData = () => {
     const formattedDataIn = dataInList.value.map((row) => ({
       no_in: row.no_in,
@@ -416,7 +419,6 @@
       ? `${kuantum.value} ${satuanKuantum.value}`
       : ''
 
-    // ✅ FIXED: Handle jumlahSPP yang bisa berupa number atau string
     const sppFormatted =
       jumlahSPP.value && String(jumlahSPP.value).trim() !== ''
         ? `${jumlahSPP.value} ${satuanJumlahSPP.value}`
@@ -437,6 +439,7 @@
       // Detail PO
       no_preorder: nomorPO.value,
       tanggal_pengadaan: tanggalPengadaan.value,
+      tanggal_pengajuan: tanggalPengajuan.value, // ✅ NEW: Add tanggal_pengajuan
       jenis_pengadaan_barang: jenisPengadaan.value,
       kuantum: kuantumFormatted,
       satuan: satuanKuantum.value,
@@ -446,20 +449,11 @@
 
       // Pembayaran
       jumlah_pembayaran: jumlahPembayaranFormatted,
-      spp: sppFormatted, // ✅ FIXED: SPP dengan handling yang benar
+      spp: sppFormatted,
     }
 
     console.log('Generated form data:', formData)
-    console.log('Raw jumlahSPP value:', jumlahSPP.value, typeof jumlahSPP.value)
-    console.log('Formatted SPP:', sppFormatted)
-
     return formData
-  }
-
-  // ✅ MISSING: Add other required functions
-  const clearFormWithDelay = async (delay = 100) => {
-    await new Promise((resolve) => setTimeout(resolve, delay))
-    clearForm()
   }
 
   const validateForm = () => {
@@ -474,7 +468,8 @@
 
     // Validasi Detail PO
     if (!nomorPO.value) errors.push('Nomor PO harus diisi')
-    if (!tanggalPengadaan.value) errors.push('Tanggal Pengadaan harus diisi')
+    if (!tanggalPengadaan.value) errors.push('Tanggal PO harus diisi')
+    if (!tanggalPengajuan.value) errors.push('Tanggal Pengajuan harus diisi') // ✅ NEW: Add validation
     if (!jenisPengadaan.value) errors.push('Jenis Pengadaan harus diisi')
     if (!kuantum.value) errors.push('Kuantum harus diisi')
 
@@ -490,64 +485,6 @@
     }
   }
 
-  const submitForm = async () => {
-    const validation = validateForm()
-    if (!validation.isValid) {
-      throw new Error(`Validasi gagal: ${validation.errors.join(', ')}`)
-    }
-
-    const formData = getFormData()
-
-    try {
-      if (props.isEditMode) {
-        return await pengadaanStore.updatePengadaan(formData.id, formData)
-      } else {
-        return await pengadaanStore.createPengadaan(formData)
-      }
-    } catch (error) {
-      console.error('Submit form error:', error)
-      throw error
-    }
-  }
-
-  const updateForm = async (id, data) => {
-    try {
-      // ✅ FIXED: Jika data tidak diberikan, ambil dari form
-      const formData = data || getFormData()
-
-      // ✅ FIXED: Pastikan ID disertakan dalam data
-      const updateData = {
-        ...formData,
-        id: id, // Tambahkan ID untuk update
-      }
-
-      console.log('Updating with data:', updateData)
-
-      return await pengadaanStore.updatePengadaan(id, updateData)
-    } catch (error) {
-      console.error('Update form error:', error)
-      throw error
-    }
-  }
-
-  // ✅ MISSING: Add removeDataInRow function
-  const removeDataInRow = (index) => {
-    if (dataInList.value.length > 1) {
-      dataInList.value.splice(index, 1)
-    }
-  }
-
-  function formatAngkaRibuan(val) {
-    if (val === null || val === undefined || val === '') return ''
-    const num = val.toString().replace(/\D/g, '')
-    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-  }
-
-  function unformatAngka(val) {
-    if (!val) return ''
-    return val.toString().replace(/\./g, '')
-  }
-
   function clearForm() {
     // ✅ Clear search dan data pemohon
     searchCompany.value = ''
@@ -559,9 +496,10 @@
 
     nomorPO.value = ''
     tanggalPengadaan.value = ''
+    tanggalPengajuan.value = '' // ✅ NEW: Clear tanggal_pengajuan
     kuantum.value = ''
     jumlahSPP.value = ''
-    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: '' }] // ✅ Satuan kosong
+    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: '' }]
 
     // Clear store messages
     if (pengadaanStore && pengadaanStore.clearMessages) {
@@ -574,13 +512,11 @@
     jenisPengadaanResults.value = []
     showJenisPengadaanDropdown.value = false
 
-    // ✅ Use nextTick to ensure all reactivity updates are complete
     return nextTick(() => {
       saveInitialData()
     })
   }
 
-  // ✅ FIXED: Force clear method dengan satuan kosong
   const forceClearForm = async () => {
     console.log('Force clearing form...')
 
@@ -597,12 +533,13 @@
     jenisPengadaan.value = ''
     nomorPO.value = ''
     tanggalPengadaan.value = ''
+    tanggalPengajuan.value = '' // ✅ NEW: Clear tanggal_pengajuan
     kuantum.value = ''
     jumlahSPP.value = ''
-    satuanKuantum.value = '' // ✅ Reset ke kosong
-    satuanJumlahPembayaran.value = '' // ✅ Reset ke kosong
-    satuanJumlahSPP.value = '' // ✅ Reset ke kosong
-    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: '' }] // ✅ Satuan kosong
+    satuanKuantum.value = ''
+    satuanJumlahPembayaran.value = ''
+    satuanJumlahSPP.value = ''
+    dataInList.value = [{ no_in: '', tanggal: '', jumlah: '', satuan: '' }]
     companyResults.value = []
     showDropdown.value = false
     jenisPengadaanResults.value = []
@@ -632,17 +569,7 @@
     console.log('Force clear completed')
   }
 
-  // ✅ Move addDataInRow function BEFORE defineExpose
-  const addDataInRow = () => {
-    dataInList.value.push({
-      no_in: '',
-      tanggal: '',
-      jumlah: '',
-      satuan: satuanKuantum.value || '', // ✅ Gunakan satuan saat ini atau kosong
-    })
-  }
-
-  // ✅ NEW: populateForm — fill all refs from an incoming object
+  // ✅ UPDATED: populateForm with tanggal_pengajuan
   const populateForm = (formData) => {
     console.log('populateForm called with:', formData)
 
@@ -664,6 +591,7 @@
     // — PO Detail —
     nomorPO.value = formData.no_preorder || ''
     tanggalPengadaan.value = formData.tanggal_pengadaan || ''
+    tanggalPengajuan.value = formData.tanggal_pengajuan || '' // ✅ NEW: Populate tanggal_pengajuan
     jenisPengadaan.value = formData.jenis_pengadaan_barang || ''
     searchJenisPengadaan.value = jenisPengadaan.value
 
@@ -835,20 +763,103 @@
     })
   }
 
-  // ✅ Expose the force clear method - AFTER all functions are declared
+  // ✅ ADD: Missing functions that are exposed but not defined
+
+  const clearFormWithDelay = (delay = 1000) => {
+    setTimeout(() => {
+      clearForm()
+    }, delay)
+  }
+
+  const submitForm = async () => {
+    try {
+      const validation = validateForm()
+      if (!validation.isValid) {
+        throw new Error(validation.errors.join(', '))
+      }
+
+      const formData = getFormData()
+      const result = await pengadaanStore.createPengadaan(formData)
+
+      if (result) {
+        await nextTick()
+        clearForm()
+      }
+
+      return result
+    } catch (error) {
+      console.error('Submit form error:', error)
+      throw error
+    }
+  }
+
+  const updateForm = async (id) => {
+    try {
+      const validation = validateForm()
+      if (!validation.isValid) {
+        throw new Error(validation.errors.join(', '))
+      }
+
+      const formData = getFormData()
+      const result = await pengadaanStore.updatePengadaan(id, formData)
+
+      if (result) {
+        nextTick(() => {
+          saveInitialData()
+        })
+      }
+
+      return result
+    } catch (error) {
+      console.error('Update form error:', error)
+      throw error
+    }
+  }
+
+  const addDataInRow = () => {
+    const newSatuan =
+      selectedJenisPengadaan.value?.satuan || satuanKuantum.value || ''
+    dataInList.value.push({
+      no_in: '',
+      tanggal: '',
+      jumlah: '',
+      satuan: newSatuan,
+    })
+  }
+
+  const removeDataInRow = (index) => {
+    if (dataInList.value.length > 1) {
+      dataInList.value.splice(index, 1)
+    }
+  }
+
+  // ✅ ADD: Number formatting functions
+  const formatAngkaRibuan = (value) => {
+    if (!value && value !== 0) return ''
+    const num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''))
+    if (isNaN(num)) return ''
+    return new Intl.NumberFormat('id-ID').format(num)
+  }
+
+  const unformatAngka = (value) => {
+    if (!value) return ''
+    return value.toString().replace(/[^0-9.-]/g, '')
+  }
+
+  // ✅ UPDATED: Expose the force clear method - AFTER all functions are declared
   defineExpose({
     clearForm,
     forceClearForm,
     populateForm,
     getFormData,
-    clearFormWithDelay,
+    clearFormWithDelay, // ✅ Now properly defined
     validateForm,
-    submitForm,
-    updateForm,
+    submitForm, // ✅ Now properly defined
+    updateForm, // ✅ Now properly defined
     pengadaanStore,
     hasChanges,
     saveInitialData,
-    addDataInRow,
+    addDataInRow, // ✅ Now properly defined
   })
 
   // ✅ ADD: Watch for form changes
@@ -862,6 +873,7 @@
       atasnamaRekening,
       nomorPO,
       tanggalPengadaan,
+      tanggalPengajuan, // ✅ NEW: Include in watch
       jenisPengadaan,
       kuantum,
       jumlahSPP, // ✅ ADD: Include jumlahSPP in watch
@@ -1164,7 +1176,7 @@
           for="nomor-po"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Nomor PO <span class="text-red-500">*</span>  
+          Nomor PO <span class="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -1182,13 +1194,32 @@
           for="tanggal-pengadaan"
           class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
         >
-          Tanggal Pengadaan <span class="text-red-500">*</span>
+          Tanggal PO <span class="text-red-500">*</span>
         </label>
         <input
           type="date"
           id="tanggal-pengadaan"
           class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
           v-model="tanggalPengadaan"
+          required
+        />
+      </div>
+
+      <!-- ✅ NEW: Tanggal Pengajuan field -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center w-full gap-2 sm:gap-0"
+      >
+        <label
+          for="tanggal-pengajuan"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+        >
+          Tanggal Pengajuan <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="date"
+          id="tanggal-pengajuan"
+          class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base"
+          v-model="tanggalPengajuan"
           required
         />
       </div>

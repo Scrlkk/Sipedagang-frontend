@@ -28,8 +28,8 @@
   ]
 
   const tanggalSurat = computed(() => {
-    if (!props.item?.tanggal_pengadaan) return ''
-    const [tahun, bulan] = props.item.tanggal_pengadaan.split('-')
+    if (!props.item?.tanggal_pengajuan) return ''
+    const [tahun, bulan] = props.item.tanggal_pengajuan.split('-')
     return `${bulanIndo[parseInt(bulan)]} ${tahun}`
   })
 
@@ -91,14 +91,12 @@
     return num ? parseInt(num) : 0
   }
 
-  // Ambil satuan dari string, misal "6000000 LITER" => "LITER"
   function satuanSaja(val) {
     if (!val) return ''
     const match = (val + '').match(/[a-zA-Z]+$/)
     return match ? match[0] : ''
   }
 
-  // ✅ Format angka dengan separator ribuan
   const formatRupiah = (angka) => {
     if (!angka && angka !== 0) return '0'
     return new Intl.NumberFormat('id-ID').format(angka)
@@ -227,7 +225,6 @@
               </div>
               <div class="flex justify-between">
                 <div>Harga</div>
-                <!-- ✅ Gunakan harga per satuan dari setting -->
                 <div>Rp. {{ formatRupiah(hargaPerSatuan) }},-</div>
               </div>
               <div
@@ -235,7 +232,6 @@
                 v-if="ppnTotal !== 0 || pphTotal !== 0"
               >
                 <div>Harga Sebelum Pajak</div>
-                <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
                 <div>Rp. {{ formatRupiah(hargaSebelumPajak) }},-</div>
               </div>
               <div
@@ -243,7 +239,6 @@
                 v-if="ppnTotal !== 0 || pphTotal !== 0"
               >
                 <div>DPP</div>
-                <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
                 <div>Rp. {{ formatRupiah(dpp) }},-</div>
               </div>
               <div class="flex justify-between" v-if="ppnTotal !== 0">
@@ -256,20 +251,17 @@
               </div>
               <div class="flex justify-between font-bold">
                 <div>Nominal</div>
-                <!-- ✅ Gunakan nilai yang sudah dihitung dari backend -->
                 <div>Rp. {{ formatRupiah(nominal) }},-</div>
               </div>
 
               <div class="text-center text-[16px] pt-1">
                 <div>
-                  Surakarta, <span class="pl-2">{{ tanggalSurat }}</span>
+                  Surakarta, <span class="pl-6">{{ tanggalSurat }}</span>
                 </div>
 
                 <div class="mt-24">
-                  <!-- ✅ Tampilkan nama supplier dari database -->
-                  <div>{{ item.nama_suplier || 'Punakawan' }}</div>
-                  <!-- ✅ Tampilkan nama perusahaan dari database -->
-                  <div>{{ item.nama_perusahaan || 'UD. Ali Baba Sejati' }}</div>
+                  <div>{{ item.nama_suplier || '-' }}</div>
+                  <div>{{ item.nama_perusahaan || '-' }}</div>
                 </div>
               </div>
             </div>

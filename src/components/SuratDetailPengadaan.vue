@@ -45,8 +45,8 @@
   ]
 
   const tanggalSurat = computed(() => {
-    if (!props.item?.tanggal_pengadaan) return ''
-    const [tahun, bulan, tanggal] = props.item.tanggal_pengadaan.split('-')
+    if (!props.item?.tanggal_pengajuan) return ''
+    const [tahun, bulan, tanggal] = props.item.tanggal_pengajuan.split('-')
     return `${parseInt(tanggal)} ${bulanIndo[parseInt(bulan)]} ${tahun}`
   })
 
