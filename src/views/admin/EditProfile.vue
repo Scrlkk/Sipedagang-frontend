@@ -13,19 +13,14 @@
   import { config } from '@/config/env'
   import { Cropper, CircleStencil } from 'vue-advanced-cropper'
   import Swal from 'sweetalert2'
-  import MainElement from '@/components/MainElement.vue'
-  import StaffAddIconElement from '@/components/StaffAddIconElement.vue'
   import ButtonElement from '@/components/ButtonElement.vue'
   import 'vue-advanced-cropper/dist/style.css'
 
-  const iconHover = ref(false)
   const router = useRouter()
   const userStore = useUserStore()
 
-  // ✅ Get instance untuk akses parent component
   const instance = getCurrentInstance()
 
-  // Update pageTitle untuk menampilkan nama pengguna
   const pageTitle = computed(() => {
     if (namaPengguna.value) {
       return `Edit Profile - ${namaPengguna.value}`

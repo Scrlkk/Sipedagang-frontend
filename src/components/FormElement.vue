@@ -833,78 +833,211 @@
     }
   }
 
-  // ✅ ADD: Number formatting functions
+  // ✅ ADD: Missing input handlers
+  const handleKuantumInput = (event) => {
+    const value = unformatAngka(event.target.value)
+    kuantum.value = value
+    event.target.value = formatAngkaRibuan(value)
+    checkForChanges()
+  }
+
+  const handleSPPInput = (event) => {
+    const value = unformatAngka(event.target.value)
+    jumlahSPP.value = value
+    event.target.value = formatAngkaRibuan(value)
+    checkForChanges()
+  }
+
+  const handleDataInJumlahInput = (event, index) => {
+    const value = unformatAngka(event.target.value)
+    dataInList.value[index].jumlah = value
+    event.target.value = formatAngkaRibuan(value)
+    checkForChanges()
+  }
+
+  // ✅ ENHANCED: Keypress handler dengan limit 16 digit dan desimal 2 digit
+  const handleNumericKeypress = (event) => {
+    const char = String.fromCharCode(event.which || event.keyCode)
+    const currentValue = event.target.value
+
+    // Allow: backspace, delete, tab, escape, enter
+    if (
+      [8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+      // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+      (event.keyCode === 65 && event.ctrlKey === true) ||
+      (event.keyCode === 67 && event.ctrlKey === true) ||
+      (event.keyCode === 86 && event.ctrlKey === true) ||
+      (event.keyCode === 88 && event.ctrlKey === true) ||
+      // Allow: home, end, left, right, down, up
+      (event.keyCode >= 35 && event.keyCode <= 40)
+    ) {
+      return
+    }
+
+    // ✅ NEW: Check digit limit (16 digits max)
+    const cleanValue = unformatAngka(currentValue)
+    const digitCount = cleanValue.replace(/[^\d]/g, '').length
+
+    if (char >= '0' && char <= '9' && digitCount >= 16) {
+      event.preventDefault()
+      return
+    }
+
+    // ✅ ENHANCED: Allow angka (0-9) dan koma untuk desimal
+    if ((char >= '0' && char <= '9') || char === ',') {
+      // Cek jika koma sudah ada
+      if (char === ',' && currentValue.includes(',')) {
+        event.preventDefault()
+        return
+      }
+
+      // ✅ NEW: Cek limit 2 digit setelah koma
+      if (char >= '0' && char <= '9' && currentValue.includes(',')) {
+        const parts = currentValue.split(',')
+        if (parts[1] && parts[1].length >= 2) {
+          event.preventDefault()
+          return
+        }
+      }
+
+      return
+    }
+
+    // Block semua karakter lain
+    event.preventDefault()
+  }
+
+  // ✅ ENHANCED: Format function dengan desimal 2 digit max
   const formatAngkaRibuan = (value) => {
     if (!value && value !== 0) return ''
-    const num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''))
+
+    // Convert to string dan handle berbagai format input
+    let cleanValue = value.toString()
+
+    // Replace koma dengan titik untuk decimal (Indonesia format)
+    cleanValue = cleanValue.replace(',', '.')
+
+    // Remove semua karakter selain angka, titik, dan minus
+    cleanValue = cleanValue.replace(/[^\d.-]/g, '')
+
+    // Handle empty atau invalid values
+    if (!cleanValue || cleanValue === '-' || cleanValue === '.') return ''
+
+    // ✅ ENHANCED: Limit to 16 digits dan 2 decimal places
+    const digitsOnly = cleanValue.replace(/[^\d]/g, '')
+    if (digitsOnly.length > 16) {
+      const hasDecimal = cleanValue.includes('.')
+      const parts = cleanValue.split('.')
+      const integerPart = parts[0].replace(/[^\d]/g, '').substring(0, 16)
+
+      if (hasDecimal && parts[1]) {
+        const remainingDigits = 16 - integerPart.length
+        const decimalPart = parts[1]
+          .replace(/[^\d]/g, '')
+          .substring(0, Math.max(0, Math.min(remainingDigits, 2))) // ✅ Max 2 decimal places
+        cleanValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart
+      } else {
+        cleanValue = integerPart
+      }
+    } else if (cleanValue.includes('.')) {
+      // ✅ NEW: Limit decimal places to 2 even if total digits < 16
+      const parts = cleanValue.split('.')
+      if (parts[1] && parts[1].length > 2) {
+        cleanValue = `${parts[0]}.${parts[1].substring(0, 2)}`
+      }
+    }
+
+    // Convert ke number
+    const num = parseFloat(cleanValue)
     if (isNaN(num)) return ''
-    return new Intl.NumberFormat('id-ID').format(num)
+
+    // ✅ ENHANCED: Format dengan titik sebagai thousand separator dan koma sebagai decimal
+    // Pastikan maksimal 2 decimal places
+    const formatted = new Intl.NumberFormat('id-ID', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(num)
+
+    return formatted
   }
 
+  // ✅ ENHANCED: Unformat function yang handle desimal dengan benar
   const unformatAngka = (value) => {
     if (!value) return ''
-    return value.toString().replace(/[^0-9.-]/g, '')
+
+    let cleanValue = value.toString()
+
+    // ✅ ENHANCED: Handle Indonesia format dengan desimal
+    // 1. Pisahkan bagian integer dan decimal berdasarkan koma terakhir
+    const lastCommaIndex = cleanValue.lastIndexOf(',')
+    
+    if (lastCommaIndex !== -1) {
+      // Ada koma (decimal separator)
+      const beforeComma = cleanValue.substring(0, lastCommaIndex)
+      const afterComma = cleanValue.substring(lastCommaIndex + 1)
+      
+      // Remove titik dari bagian sebelum koma (thousand separator)
+      const integerPart = beforeComma.replace(/\./g, '')
+      
+      // Keep hanya angka di bagian decimal dan limit 2 digit
+      const decimalPart = afterComma.replace(/[^\d]/g, '').substring(0, 2)
+      
+      cleanValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart
+    } else {
+      // Tidak ada koma (decimal) - remove semua titik (thousand separator)
+      cleanValue = cleanValue.replace(/\./g, '')
+    }
+
+    // Remove karakter lain selain angka, titik decimal, dan minus
+    cleanValue = cleanValue.replace(/[^\d.-]/g, '')
+
+    return cleanValue
   }
 
-  // ✅ UPDATED: Expose the force clear method - AFTER all functions are declared
-  defineExpose({
-    clearForm,
-    forceClearForm,
-    populateForm,
-    getFormData,
-    clearFormWithDelay, // ✅ Now properly defined
-    validateForm,
-    submitForm, // ✅ Now properly defined
-    updateForm, // ✅ Now properly defined
-    pengadaanStore,
-    hasChanges,
-    saveInitialData,
-    addDataInRow, // ✅ Now properly defined
-  })
+  // ✅ ENHANCED: Paste handler dengan desimal support
+  const handlePaste = (event, type, rowIndex = null) => {
+    event.preventDefault()
 
-  // ✅ ADD: Watch for form changes
-  watch(
-    [
-      searchCompany,
-      namaSupplier,
-      namaPerusahaan,
-      jenisBank,
-      nomorRekening,
-      atasnamaRekening,
-      nomorPO,
-      tanggalPengadaan,
-      tanggalPengajuan, // ✅ NEW: Include in watch
-      jenisPengadaan,
-      kuantum,
-      jumlahSPP, // ✅ ADD: Include jumlahSPP in watch
-      dataInList,
-    ],
-    () => {
-      checkForChanges()
-    },
-    { deep: true },
-  )
+    const pastedData = (event.clipboardData || window.clipboardData).getData('text')
+    let cleanValue = unformatAngka(pastedData)
 
-  onMounted(() => {
-    if (!props.isEditMode) {
-      nextTick(() => {
-        saveInitialData()
-      })
+    // ✅ ENHANCED: Limit to 16 digits dan 2 decimal places
+    const digitsOnly = cleanValue.replace(/[^\d]/g, '')
+    if (digitsOnly.length > 16) {
+      const hasDecimal = cleanValue.includes('.')
+      const parts = cleanValue.split('.')
+      const integerPart = parts[0].replace(/[^\d]/g, '').substring(0, 16)
+
+      if (hasDecimal && parts[1]) {
+        const remainingDigits = 16 - integerPart.length
+        const decimalPart = parts[1]
+          .replace(/[^\d]/g, '')
+          .substring(0, Math.max(0, Math.min(remainingDigits, 2))) // ✅ Max 2 decimal places
+        cleanValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart
+      } else {
+        cleanValue = integerPart
+      }
+    } else if (cleanValue.includes('.')) {
+      // ✅ NEW: Limit decimal places to 2 even if total digits < 16
+      const parts = cleanValue.split('.')
+      if (parts[1] && parts[1].length > 2) {
+        cleanValue = `${parts[0]}.${parts[1].substring(0, 2)}`
+      }
     }
 
-    // ✅ Add click outside listener
-    document.addEventListener('click', handleClickOutside)
-  })
-
-  onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside)
-    if (searchTimeout.value) {
-      clearTimeout(searchTimeout.value)
+    if (type === 'kuantum') {
+      kuantum.value = cleanValue
+      event.target.value = formatAngkaRibuan(cleanValue)
+    } else if (type === 'spp') {
+      jumlahSPP.value = cleanValue
+      event.target.value = formatAngkaRibuan(cleanValue)
+    } else if (type === 'dataIn' && rowIndex !== null) {
+      dataInList.value[rowIndex].jumlah = cleanValue
+      event.target.value = formatAngkaRibuan(cleanValue)
     }
-    if (searchJenisPengadaanTimeout.value) {
-      clearTimeout(searchJenisPengadaanTimeout.value)
-    }
-  })
+    
+    checkForChanges()
+  }
 </script>
 
 <template>
@@ -1459,8 +1592,11 @@
             placeholder="Masukkan kuantum"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             :value="formatAngkaRibuan(kuantum)"
-            @input="kuantum = unformatAngka($event.target.value)"
-            inputmode="numeric"
+            @input="handleKuantumInput"
+            @keypress="handleNumericKeypress"
+            @paste="handlePaste($event, 'kuantum')"
+            inputmode="decimal"
+            autocomplete="off"
             required
           />
           <div
@@ -1512,10 +1648,13 @@
           <input
             type="text"
             :value="formatAngkaRibuan(row.jumlah)"
-            @input="row.jumlah = unformatAngka($event.target.value)"
+            @input="handleDataInJumlahInput($event, idx)"
+            @keypress="handleNumericKeypress"
+            @paste="handlePaste($event, 'dataIn', idx)"
             placeholder="Masukkan jumlah"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            inputmode="numeric"
+            inputmode="decimal"
+            autocomplete="off"
             required
           />
           <div
@@ -1623,14 +1762,16 @@
         </label>
         <div class="relative w-full">
           <input
-            _
             type="text"
             id="jumlah-spp"
             placeholder="Masukkan jumlah SPP"
             class="border-[2.2px] border-[#D9D9D9] rounded-lg h-10 sm:h-11.5 px-3 sm:px-7 w-full text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             :value="formatAngkaRibuan(jumlahSPP)"
-            @input="jumlahSPP = unformatAngka($event.target.value)"
-            inputmode="numeric"
+            @input="handleSPPInput"
+            @keypress="handleNumericKeypress"
+            @paste="handlePaste($event, 'spp')"
+            inputmode="decimal"
+            autocomplete="off"
           />
           <div
             class="absolute inset-y-0 right-2 flex items-center text-gray-500 border-l-[1px] border-[#D9D9D9] my-0.5 pl-2"
