@@ -31,6 +31,11 @@
   const inputPage = ref('')
   const inputRef = ref(null)
 
+  // ✅ NEW: Computed untuk placeholder yang menunjukkan max halaman
+  const placeholderText = computed(() => {
+    return `1-${props.totalPages}`
+  })
+
   // Fungsi untuk handle input page - DIPERBAIKI
   function handleInputPage(e) {
     const value = e.target.value.trim()
@@ -86,11 +91,11 @@
             type="number"
             min="1"
             :max="props.totalPages"
-            :placeholder="`${props.currentPage}`"
+            :placeholder="placeholderText"
             v-model="inputPage"
             @change="handleInputPage"
             @keyup="handleKeyUp"
-            class="border border-[#CED4DA] rounded-md w-12 h-6 px-1 text-center text-xs focus:outline-[#0099FF] focus:text-[#0099FF] focus:border-[#0099FF] transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            class="border border-[#CED4DA] rounded-md w-14 h-6 px-1 text-center text-xs focus:outline-[#0099FF] focus:text-[#0099FF] focus:border-[#0099FF] transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-gray-400"
           />
         </div>
       </div>
@@ -209,11 +214,11 @@
         type="number"
         min="1"
         :max="props.totalPages"
-        :placeholder="`${props.currentPage}`"
+        :placeholder="placeholderText"
         v-model="inputPage"
         @change="handleInputPage"
         @keyup="handleKeyUp"
-        class="border border-[#CED4DA] rounded-sm w-16 h-8 px-2 text-center focus:outline-[#0099FF] focus:text-[#0099FF] focus:border-[#0099FF] transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        class="border border-[#CED4DA] rounded-sm w-20 h-8 px-2 text-center focus:outline-[#0099FF] focus:text-[#0099FF] focus:border-[#0099FF] transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-gray-400"
       />
       <div class="text-[#6C757D]">/Page</div>
     </div>

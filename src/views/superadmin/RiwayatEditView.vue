@@ -132,13 +132,13 @@
     try {
       isSubmitting.value = true
 
-      // ✅ FIXED: Get form data dan kirim sebagai parameter
+      // ✅ FIXED: Get form data sekali saja
       if (typeof formRef.value.getFormData === 'function') {
         const formData = formRef.value.getFormData()
         console.log('Form data before update:', formData)
         console.log('Pengadaan ID:', pengadaanId)
 
-        // ✅ FIXED: Call updateForm dengan data yang lengkap
+        // ✅ FIXED: Panggil updateForm dengan parameter yang benar
         if (typeof formRef.value.updateForm === 'function') {
           await formRef.value.updateForm(pengadaanId, formData)
         } else {

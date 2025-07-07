@@ -711,7 +711,7 @@
       } else {
         console.log('No valid in_data found, using default')
         dataInList.value = [
-          { no_in: '', tanggal: '', jumlah: '', satuan: actualSatuan }, // ✅ Gunakan satuan yang konsisten
+          { no_in: '', tanggal: '', jumlah: '', satuan: actualSatuan }, // ✅ Gununakan satuan yang konsisten
         ]
       }
 
@@ -793,19 +793,24 @@
     }
   }
 
-  const updateForm = async (id) => {
+  const updateForm = async (id, formData) => {
     try {
+      console.log('updateForm called with:', { id, formData })
+
+      // ✅ FIXED: Jangan ambil data dari getFormData() lagi, gunakan formData yang dikirim
       const validation = validateForm()
       if (!validation.isValid) {
         throw new Error(validation.errors.join(', '))
       }
 
-      const formData = getFormData()
+      // ✅ FIXED: Gunakan formData yang sudah dikirim dari parent
       const result = await pengadaanStore.updatePengadaan(id, formData)
 
       if (result) {
+        // ✅ FIXED: Jangan clear form, hanya update initial data
         nextTick(() => {
           saveInitialData()
+          console.log('Initial data updated after successful update')
         })
       }
 
@@ -970,18 +975,18 @@
     // ✅ ENHANCED: Handle Indonesia format dengan desimal
     // 1. Pisahkan bagian integer dan decimal berdasarkan koma terakhir
     const lastCommaIndex = cleanValue.lastIndexOf(',')
-    
+
     if (lastCommaIndex !== -1) {
       // Ada koma (decimal separator)
       const beforeComma = cleanValue.substring(0, lastCommaIndex)
       const afterComma = cleanValue.substring(lastCommaIndex + 1)
-      
+
       // Remove titik dari bagian sebelum koma (thousand separator)
       const integerPart = beforeComma.replace(/\./g, '')
-      
+
       // Keep hanya angka di bagian decimal dan limit 2 digit
       const decimalPart = afterComma.replace(/[^\d]/g, '').substring(0, 2)
-      
+
       cleanValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart
     } else {
       // Tidak ada koma (decimal) - remove semua titik (thousand separator)
@@ -998,7 +1003,9 @@
   const handlePaste = (event, type, rowIndex = null) => {
     event.preventDefault()
 
-    const pastedData = (event.clipboardData || window.clipboardData).getData('text')
+    const pastedData = (event.clipboardData || window.clipboardData).getData(
+      'text',
+    )
     let cleanValue = unformatAngka(pastedData)
 
     // ✅ ENHANCED: Limit to 16 digits dan 2 decimal places
@@ -1035,9 +1042,30 @@
       dataInList.value[rowIndex].jumlah = cleanValue
       event.target.value = formatAngkaRibuan(cleanValue)
     }
-    
+
     checkForChanges()
   }
+
+  // ✅ FIXED: Expose all methods including populateForm
+  defineExpose({
+    clearForm,
+    forceClearForm,
+    populateForm, // ✅ ADD: Expose populateForm method
+    getFormData,
+    validateForm,
+    submitForm,
+    updateForm,
+    clearFormWithDelay,
+    addDataInRow,
+    removeDataInRow,
+    handleKuantumInput,
+    handleSPPInput,
+    handleDataInJumlahInput,
+    handleNumericKeypress,
+    formatAngkaRibuan,
+    unformatAngka,
+    handlePaste,
+  })
 </script>
 
 <template>
@@ -1756,9 +1784,9 @@
       >
         <label
           for="jumlah-spp"
-          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base"
+          class="min-w-0 sm:min-w-45 font-medium text-sm sm:text-base flex items-center gap-1"
         >
-          Jumlah SPP <span class="text-gray-500">(Opsional)</span>        
+          Jumlah SPP<span class="text-gray-500 text-sm">(Opsional)</span>
         </label>
         <div class="relative w-full">
           <input
