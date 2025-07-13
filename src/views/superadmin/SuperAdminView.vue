@@ -611,68 +611,74 @@
       </div>
 
       <!-- Additional Info Section with Summary Cards -->
-      <div class="mt-12 sm:mt-16 px-2">
-        <!-- Super Admin Info Card -->
-        <div class="text-center">
-          <div
-            class="bg-white/60 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300"
-          >
-            <div class="flex items-center justify-center mb-4">
-              <div class="flex -space-x-2">
-                <div
-                  class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                >
-                  <svg
-                    class="w-5 h-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+      <div class="max-w-7xl mx-auto">
+        <div class="mt-12 sm:mt-16 px-2">
+          <!-- Super Admin Info Card -->
+          <div class="text-center">
+            <div
+              class="bg-white/60 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300"
+            >
+              <div class="flex items-center justify-center mb-4">
+                <div class="flex -space-x-2">
+                  <div
+                    class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div
-                  class="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                >
-                  <svg
-                    class="w-5 h-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                    <svg
+                      class="w-5 h-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    class="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div
-                  class="w-10 h-10 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                >
-                  <svg
-                    class="w-5 h-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                    <svg
+                      class="w-5 h-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    class="w-10 h-10 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
+                    <svg
+                      class="w-5 h-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
                 </div>
               </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">Super Admin</h3>
+              <p class="text-gray-600">
+                Mengelola sistem pengadaan secara efisien
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Super Admin</h3>
-            <p class="text-gray-600">
-              Mengelola sistem pengadaan secara efisien
-            </p>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="text-center pb-6 text-gray-600 text-[10px] sm:text-sm">
+      <p>Copyright @ 2025 Pengadaan Komoditas Kantor Cabang Surakarta</p>
     </div>
   </section>
 </template>

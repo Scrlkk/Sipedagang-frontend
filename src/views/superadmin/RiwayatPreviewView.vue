@@ -92,10 +92,37 @@
     @page {
       size: A4 portrait;
       margin: 10mm;
+      /* Mencoba menyembunyikan header/footer browser */
+      @top-left {
+        content: '';
+      }
+      @top-center {
+        content: '';
+      }
+      @top-right {
+        content: '';
+      }
+      @bottom-left {
+        content: '';
+      }
+      @bottom-center {
+        content: '';
+      }
+      @bottom-right {
+        content: '';
+      }
+    }
+
+    /* Hindari konten terpotong header/footer */
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .page-break {
       page-break-after: always;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
     }
 
     .page-break:last-child {
@@ -104,6 +131,13 @@
 
     .surat-section {
       margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Gunakan properti yang benar untuk print colors */
+    * {
+      print-color-adjust: exact !important;
+      -webkit-print-color-adjust: exact !important;
     }
   }
 </style>

@@ -94,7 +94,7 @@
   const isProfileDropdownOpen = ref(false)
 
   const toggleProfileDropdown = () => {
-    isProfileDropdownOpen.value = !isProfileDropdownOpen.value
+    isProfileDropdownOpen.value = !isProfileDropdown.value
   }
 
   const closeDropdown = (event) => {
@@ -149,7 +149,7 @@
   <section
     class="h-screen w-full relative bg-gradient-to-br from-slate-50 to-blue-50"
   >
-    <AdminWave class="z-0" />
+    <AdminWave />
     <header>
       <div
         class="flex flex-row justify-between items-center px-4 sm:px-6 md:px-8 lg:px-10 sm:pt-3 sm:pb-2 lg:pt-4 lg:pb-5"
@@ -360,10 +360,15 @@
       </div>
     </header>
 
-    <div class=" relative z-10 -mt-3 sm:mt-0 md:-mt-2">
+    <div class="relative z-10 -mt-3 sm:mt-0 md:-mt-2">
       <router-view />
     </div>
   </section>
+  <div
+    class="absolute items-center lg:items-end bottom-0 flex flex-col w-full pr-3 mb-3 text-[#232323] text-[12px] md:text-sm md:text-white"
+  >
+    <p>Copyright @ 2025 Pengadaan Komoditas Kantor Cabang Surakarta</p>
+  </div>
 </template>
 
 <style scoped>
